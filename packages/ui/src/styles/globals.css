@@ -57,12 +57,40 @@ html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:hidden {
   display: none !important;
 }
 
-/* Standardize Icon centering */
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] svg,
-html[data-sidebar-state="collapsed"]
-  [data-slot="sidebar-menu-button"]
-  .hugeicons-react {
-  display: block;
+/* Rigid stability for Menu Buttons - Maintains 24px icon offset in both states */
+[data-slot="sidebar-menu-button"] {
+  padding-left: 1rem !important; /* 16px */
+  justify-content: flex-start !important;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-item"] {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] {
+  padding-left: 0.5rem !important; /* 8px */
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 2rem !important; /* 32px centered in 48px area = 8px margin. 8+8+8 = 24px */
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Ensure LogoDisplay (size-8 div) is perfectly centered and stable */
+[data-slot="sidebar-header"] div.size-8 {
+  margin-left: 0.5rem !important; /* 8px matches p-2? No, header has p-2 (8px), button needs +8px to hit 16px start */
+}
+
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-header"] div.size-8 {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Standardize Icon behavior */
+[data-slot="sidebar-menu-button"] svg,
+[data-slot="sidebar-menu-button"] .hugeicons-react {
+  display: block !important;
 }
 
 /* Initial transition suppression for zero-flash load */
