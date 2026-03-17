@@ -25,12 +25,26 @@ import { useIsMobile } from "@mindorbit/ui/hooks/use-mobile"
 import { cn } from "@mindorbit/ui/lib/utils"
 import type { VariantProps } from "class-variance-authority"
 
-const SIDEBAR_COOKIE_NAME = "sidebar_state"
+export const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "4rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+
+/**
+ * Read the sidebar cookie synchronously.
+ * Safe to call during render (client) or on the server.
+ * Returns undefined if the cookie is not set.
+ */
+function readSidebarCookie(): boolean | undefined {
+  if (typeof document === "undefined") return undefined
+  const match = document.cookie.match(
+    new RegExp(`(?:^|;)\\s*${SIDEBAR_COOKIE_NAME}=([^;]*)`)
+  )
+  if (!match) return undefined
+  return match[1] === "true"
+}
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -68,21 +82,23 @@ function SidebarProvider({
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
 
-  const [_open, _setOpen] = React.useState(defaultOpen)
-
-  // Use a second state to track if we've hydrated to avoid mismatches
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-    const match = document.cookie.match(
-      new RegExp(`(?:^|; ) ${SIDEBAR_COOKIE_NAME}=([^;]*)`)
-    )
-    if (match) {
-      _setOpen(match[1] === "true")
+  // ✅ Read the cookie SYNCHRONOUSLY during the initial useState call.
+  // This means the very first render already reflects the persisted state,
+  // so there is no flash/jump after mount.
+  const [_open, _setOpen] = React.useState<boolean>(() => {
+    if (typeof document !== "undefined") {
+      const stateAttr =
+        document.documentElement.getAttribute("data-sidebar-state")
+      if (stateAttr) {
+        return stateAttr === "expanded"
+      }
     }
-  }, [])
+    const fromCookie = readSidebarCookie()
+    return fromCookie !== undefined ? fromCookie : defaultOpen
+  })
+
   const open = openProp ?? _open
+
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value
@@ -91,10 +107,20 @@ function SidebarProvider({
       } else {
         _setOpen(openState)
       }
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
     [setOpenProp, open]
   )
+
+  // ✅ Keep the cookie and the DOM in sync with the open state.
+  // This ensures that any state change (trigger, shortcut, etc.) is persisted
+  // and applied immediately to the HTML element for zero-flash load.
+  React.useEffect(() => {
+    document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+    document.documentElement.setAttribute(
+      "data-sidebar-state",
+      open ? "expanded" : "collapsed"
+    )
+  }, [open])
 
   const toggleSidebar = React.useCallback(() => {
     return isMobile
@@ -135,13 +161,7 @@ function SidebarProvider({
     <SidebarContext.Provider value={contextValue}>
       <div
         data-slot="sidebar-wrapper"
-        style={
-          {
-            "--sidebar-width": SIDEBAR_WIDTH,
-            "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-            ...style,
-          } as React.CSSProperties
-        }
+        style={style}
         className={cn(
           "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
           className
@@ -222,7 +242,7 @@ function Sidebar({
       <div
         data-slot="sidebar-gap"
         className={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "cubic-bezier(0.4, 0, 0.2, 1) relative w-(--sidebar-width) bg-transparent transition-[width] duration-200",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
@@ -234,7 +254,7 @@ function Sidebar({
         data-slot="sidebar-container"
         data-side={side}
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
+          "cubic-bezier(0.4, 0, 0.2, 1) fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -292,7 +312,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       className={cn(
-        "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] sm:flex ltr:-translate-x-1/2 rtl:-translate-x-1/2",
+        "hover:after:bg-sidebar-border cubic-bezier(0.4, 0, 0.2, 1) absolute inset-y-0 z-20 hidden w-4 transition-all duration-200 group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] sm:flex ltr:-translate-x-1/2 rtl:-translate-x-1/2",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
         "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize",
         "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
@@ -374,7 +394,7 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
-        "no-scrollbar flex min-h-0 flex-1 flex-col gap-0 overflow-auto transition-all duration-200 group-data-[collapsible=icon]:overflow-hidden",
+        "no-scrollbar cubic-bezier(0.4, 0, 0.2, 1) flex min-h-0 flex-1 flex-col gap-0 overflow-auto transition-all duration-200 group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
       {...props}
@@ -406,7 +426,7 @@ function SidebarGroupLabel({
     props: mergeProps<"div">(
       {
         className: cn(
-          "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+          "text-sidebar-foreground/70 ring-sidebar-ring cubic-bezier(0.4, 0, 0.2, 1) flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
           className
         ),
       },
@@ -481,12 +501,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  // overflow-hidden is key — lets the button clip text as it narrows
-  // No forced size/justify-center/gap-0 on icon mode to avoid layout jump
-  // group-data-[collapsible=icon]: rules make the button a centered square when collapsed
-  // w-full stays so the button fills the li, but justify-center centers the icon
-  // p-0 + explicit size on icon mode avoids padding pushing the icon off-center
-  "peer/menu-button group/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden transition-all duration-200 ease-linear group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:font-medium [&_svg]:size-[18px] [&_svg]:flex-none [&_svg]:shrink-0",
+  "peer/menu-button group/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground cubic-bezier(0.4, 0, 0.2, 1) flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden transition-all duration-200 group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:font-medium [&_svg]:size-[18px] [&_svg]:flex-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -507,21 +522,10 @@ const sidebarMenuButtonVariants = cva(
   }
 )
 
-// Context to pass collapsed state into SidebarMenuButtonText
 const SidebarMenuButtonContext = React.createContext<{
   isCollapsed: boolean
 }>({ isCollapsed: false })
 
-/**
- * Wrap your text label in this component inside SidebarMenuButton
- * to get a smooth fade+clip transition when the sidebar collapses.
- *
- * Usage:
- *   <SidebarMenuButton>
- *     <MyIcon />
- *     <SidebarMenuButtonText>Dashboard</SidebarMenuButtonText>
- *   </SidebarMenuButton>
- */
 export function SidebarMenuButtonText({
   className,
   children,
@@ -531,7 +535,7 @@ export function SidebarMenuButtonText({
   return (
     <span
       className={cn(
-        "truncate whitespace-nowrap transition-[opacity,max-width] duration-200 ease-linear",
+        "cubic-bezier(0.4, 0, 0.2, 1) truncate whitespace-nowrap transition-[opacity,max-width] duration-200",
         isCollapsed
           ? "max-w-0 overflow-hidden opacity-0"
           : "max-w-[200px] opacity-100",
@@ -589,7 +593,6 @@ const SidebarMenuButton = React.forwardRef<
       },
     })
 
-    // Inject collapsed context so SidebarMenuButtonText children can react
     const withContext = (
       <SidebarMenuButtonContext.Provider value={{ isCollapsed }}>
         {children}
@@ -611,14 +614,9 @@ const SidebarMenuButton = React.forwardRef<
     }
 
     return (
-      <Tooltip>
+      <Tooltip open={state === "collapsed" && !isMobile ? undefined : false}>
         {finalComp}
-        <TooltipContent
-          side="right"
-          align="center"
-          hidden={state !== "collapsed" || isMobile}
-          {...tooltip}
-        />
+        <TooltipContent side="right" align="center" {...tooltip} />
       </Tooltip>
     )
   }

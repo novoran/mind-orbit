@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Notification01Icon, Share01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { AnimatedThemeToggler } from "@mindorbit/ui/components/animated-theme-toggler"
@@ -13,6 +12,7 @@ import {
 import { Button } from "@mindorbit/ui/components/button"
 import { SidebarTrigger } from "@mindorbit/ui/components/sidebar"
 import { useLocation } from "@tanstack/react-router"
+import * as React from "react"
 import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
 
@@ -36,44 +36,54 @@ export function Header() {
   const pathnames = location.pathname.split("/").filter((x) => x)
 
   return (
-    <header className="bg-background sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b px-4 transition-all ease-linear">
+    <header className="bg-background cubic-bezier(0.4, 0, 0.2, 1) sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b px-4 transition-all duration-200">
       <div className="flex items-center gap-1">
-        <SidebarTrigger className="-ml-1" />
+        <SidebarTrigger className="-ml-1 cursor-pointer" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
               <TeamSwitcher teams={teamsData} />
             </BreadcrumbItem>
-            {pathnames.length > 0 && <BreadcrumbSeparator />}
-            {pathnames.map((name, index) => {
-              const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`
-              const isLast = index === pathnames.length - 1
-              const displayName = name.charAt(0).toUpperCase() + name.slice(1)
+            <BreadcrumbSeparator />
+            {pathnames.length === 0 ? (
+              <BreadcrumbItem>
+                <BreadcrumbPage>Dashboard</BreadcrumbPage>
+              </BreadcrumbItem>
+            ) : (
+              pathnames.map((name, index) => {
+                const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`
+                const isLast = index === pathnames.length - 1
+                const displayName = name.charAt(0).toUpperCase() + name.slice(1)
 
-              return (
-                <React.Fragment key={routeTo}>
-                  <BreadcrumbItem>
-                    {isLast ? (
-                      <BreadcrumbPage>{displayName}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink href={routeTo}>
-                        {displayName}
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                  {!isLast && <BreadcrumbSeparator />}
-                </React.Fragment>
-              )
-            })}
+                return (
+                  <React.Fragment key={routeTo}>
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage>{displayName}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink href={routeTo}>
+                          {displayName}
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                    {!isLast && <BreadcrumbSeparator />}
+                  </React.Fragment>
+                )
+              })
+            )}
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative cursor-pointer p-0"
+        >
           <HugeiconsIcon icon={Notification01Icon} strokeWidth={2} size={20} />
-          <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full border-2 border-white bg-red-500 dark:border-slate-950" />
+          <span className="absolute top-1.5 right-1.5 size-2 rounded-full border-2 border-white bg-red-500 dark:border-slate-950" />
         </Button>
-        <AnimatedThemeToggler />
+        <AnimatedThemeToggler className="cursor-pointer" />
         <NavUser user={userData} />
       </div>
     </header>

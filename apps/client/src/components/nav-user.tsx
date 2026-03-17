@@ -1,11 +1,7 @@
-import { AnimatedThemeToggler } from "@mindorbit/ui/components/animated-theme-toggler"
-
 import {
   CheckmarkBadgeIcon,
   CreditCardIcon,
   Logout01Icon as LogoutIcon,
-  NotificationIcon,
-  SparklesIcon,
   UnfoldMoreIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -19,7 +15,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@mindorbit/ui/components/dropdown-menu"
@@ -27,7 +22,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@mindorbit/ui/components/sidebar"
 
 export function NavUser({
@@ -39,7 +33,6 @@ export function NavUser({
     avatar: string
   }
 }) {
-  const { isMobile } = useSidebar()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -68,42 +61,7 @@ export function NavUser({
               className="ml-auto size-4"
             />
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar>
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>
-                      {user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-xs">{user.email}</span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer gap-2">
-                <AnimatedThemeToggler className="size-4" />
-                <span>Theme Toggle</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+          <DropdownMenuContent className="rounded-lg" align="end">
             <DropdownMenuGroup>
               <DropdownMenuItem className="cursor-pointer">
                 <HugeiconsIcon icon={CheckmarkBadgeIcon} strokeWidth={2} />
@@ -112,10 +70,6 @@ export function NavUser({
               <DropdownMenuItem className="cursor-pointer">
                 <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2} />
                 Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <HugeiconsIcon icon={NotificationIcon} strokeWidth={2} />
-                Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

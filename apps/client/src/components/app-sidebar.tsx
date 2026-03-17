@@ -131,7 +131,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden">
             Main
           </SidebarGroupLabel>
           <SidebarMenu>
@@ -158,7 +158,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden">
             Team
           </SidebarGroupLabel>
           <SidebarMenu>

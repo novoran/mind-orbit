@@ -29,10 +29,8 @@ export function WorkspaceSwitcher({
     image?: string
   }>
 }) {
-  const { isMobile, state } = useSidebar()
+  const { isMobile } = useSidebar()
   const [activeWorkspace, setActiveWorkspace] = React.useState(workspaces[0])
-
-  const isCollapsed = state === "collapsed"
 
   const LogoDisplay = ({
     workspace,
@@ -72,24 +70,20 @@ export function WorkspaceSwitcher({
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <LogoDisplay workspace={activeWorkspace} />
-                {!isCollapsed && (
-                  <>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">
-                        {activeWorkspace.name}
-                      </span>
-                      <span className="truncate text-xs">
-                        {activeWorkspace.plan}
-                      </span>
-                    </div>
-                    <HugeiconsIcon
-                      icon={UnfoldMoreIcon}
-                      strokeWidth={2}
-                      size={16}
-                      className="ml-auto"
-                    />
-                  </>
-                )}
+                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                  <span className="truncate font-medium">
+                    {activeWorkspace.name}
+                  </span>
+                  <span className="truncate text-xs">
+                    {activeWorkspace.plan}
+                  </span>
+                </div>
+                <HugeiconsIcon
+                  icon={UnfoldMoreIcon}
+                  strokeWidth={2}
+                  size={16}
+                  className="ml-auto group-data-[collapsible=icon]:hidden"
+                />
               </SidebarMenuButton>
             }
           />

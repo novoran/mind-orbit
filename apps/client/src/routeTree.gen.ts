@@ -8,43 +8,287 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as rootRouteImport } from "./routes/__root"
+import { Route as TeamsRouteImport } from "./routes/teams"
+import { Route as TeamChatRouteImport } from "./routes/team-chat"
+import { Route as TasksRouteImport } from "./routes/tasks"
+import { Route as SettingsRouteImport } from "./routes/settings"
+import { Route as ProjectsRouteImport } from "./routes/projects"
+import { Route as MilestonesRouteImport } from "./routes/milestones"
+import { Route as MeetingRouteImport } from "./routes/meeting"
+import { Route as IdeaHubRouteImport } from "./routes/idea-hub"
+import { Route as FilesRouteImport } from "./routes/files"
+import { Route as AnalyticsRouteImport } from "./routes/analytics"
+import { Route as AiToolsRouteImport } from "./routes/ai-tools"
+import { Route as AiChatRouteImport } from "./routes/ai-chat"
+import { Route as IndexRouteImport } from "./routes/index"
 
+const TeamsRoute = TeamsRouteImport.update({
+  id: "/teams",
+  path: "/teams",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamChatRoute = TeamChatRouteImport.update({
+  id: "/team-chat",
+  path: "/team-chat",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TasksRoute = TasksRouteImport.update({
+  id: "/tasks",
+  path: "/tasks",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: "/settings",
+  path: "/settings",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: "/projects",
+  path: "/projects",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MilestonesRoute = MilestonesRouteImport.update({
+  id: "/milestones",
+  path: "/milestones",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeetingRoute = MeetingRouteImport.update({
+  id: "/meeting",
+  path: "/meeting",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdeaHubRoute = IdeaHubRouteImport.update({
+  id: "/idea-hub",
+  path: "/idea-hub",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilesRoute = FilesRouteImport.update({
+  id: "/files",
+  path: "/files",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: "/analytics",
+  path: "/analytics",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiToolsRoute = AiToolsRouteImport.update({
+  id: "/ai-tools",
+  path: "/ai-tools",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiChatRoute = AiChatRouteImport.update({
+  id: "/ai-chat",
+  path: "/ai-chat",
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  "/": typeof IndexRoute
+  "/ai-chat": typeof AiChatRoute
+  "/ai-tools": typeof AiToolsRoute
+  "/analytics": typeof AnalyticsRoute
+  "/files": typeof FilesRoute
+  "/idea-hub": typeof IdeaHubRoute
+  "/meeting": typeof MeetingRoute
+  "/milestones": typeof MilestonesRoute
+  "/projects": typeof ProjectsRoute
+  "/settings": typeof SettingsRoute
+  "/tasks": typeof TasksRoute
+  "/team-chat": typeof TeamChatRoute
+  "/teams": typeof TeamsRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  "/": typeof IndexRoute
+  "/ai-chat": typeof AiChatRoute
+  "/ai-tools": typeof AiToolsRoute
+  "/analytics": typeof AnalyticsRoute
+  "/files": typeof FilesRoute
+  "/idea-hub": typeof IdeaHubRoute
+  "/meeting": typeof MeetingRoute
+  "/milestones": typeof MilestonesRoute
+  "/projects": typeof ProjectsRoute
+  "/settings": typeof SettingsRoute
+  "/tasks": typeof TasksRoute
+  "/team-chat": typeof TeamChatRoute
+  "/teams": typeof TeamsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  "/": typeof IndexRoute
+  "/ai-chat": typeof AiChatRoute
+  "/ai-tools": typeof AiToolsRoute
+  "/analytics": typeof AnalyticsRoute
+  "/files": typeof FilesRoute
+  "/idea-hub": typeof IdeaHubRoute
+  "/meeting": typeof MeetingRoute
+  "/milestones": typeof MilestonesRoute
+  "/projects": typeof ProjectsRoute
+  "/settings": typeof SettingsRoute
+  "/tasks": typeof TasksRoute
+  "/team-chat": typeof TeamChatRoute
+  "/teams": typeof TeamsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | "/"
+    | "/ai-chat"
+    | "/ai-tools"
+    | "/analytics"
+    | "/files"
+    | "/idea-hub"
+    | "/meeting"
+    | "/milestones"
+    | "/projects"
+    | "/settings"
+    | "/tasks"
+    | "/team-chat"
+    | "/teams"
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | "/"
+    | "/ai-chat"
+    | "/ai-tools"
+    | "/analytics"
+    | "/files"
+    | "/idea-hub"
+    | "/meeting"
+    | "/milestones"
+    | "/projects"
+    | "/settings"
+    | "/tasks"
+    | "/team-chat"
+    | "/teams"
+  id:
+    | "__root__"
+    | "/"
+    | "/ai-chat"
+    | "/ai-tools"
+    | "/analytics"
+    | "/files"
+    | "/idea-hub"
+    | "/meeting"
+    | "/milestones"
+    | "/projects"
+    | "/settings"
+    | "/tasks"
+    | "/team-chat"
+    | "/teams"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiChatRoute: typeof AiChatRoute
+  AiToolsRoute: typeof AiToolsRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  FilesRoute: typeof FilesRoute
+  IdeaHubRoute: typeof IdeaHubRoute
+  MeetingRoute: typeof MeetingRoute
+  MilestonesRoute: typeof MilestonesRoute
+  ProjectsRoute: typeof ProjectsRoute
+  SettingsRoute: typeof SettingsRoute
+  TasksRoute: typeof TasksRoute
+  TeamChatRoute: typeof TeamChatRoute
+  TeamsRoute: typeof TeamsRoute
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
+    "/teams": {
+      id: "/teams"
+      path: "/teams"
+      fullPath: "/teams"
+      preLoaderRoute: typeof TeamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/team-chat": {
+      id: "/team-chat"
+      path: "/team-chat"
+      fullPath: "/team-chat"
+      preLoaderRoute: typeof TeamChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/tasks": {
+      id: "/tasks"
+      path: "/tasks"
+      fullPath: "/tasks"
+      preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/settings": {
+      id: "/settings"
+      path: "/settings"
+      fullPath: "/settings"
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/projects": {
+      id: "/projects"
+      path: "/projects"
+      fullPath: "/projects"
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/milestones": {
+      id: "/milestones"
+      path: "/milestones"
+      fullPath: "/milestones"
+      preLoaderRoute: typeof MilestonesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/meeting": {
+      id: "/meeting"
+      path: "/meeting"
+      fullPath: "/meeting"
+      preLoaderRoute: typeof MeetingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/idea-hub": {
+      id: "/idea-hub"
+      path: "/idea-hub"
+      fullPath: "/idea-hub"
+      preLoaderRoute: typeof IdeaHubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/files": {
+      id: "/files"
+      path: "/files"
+      fullPath: "/files"
+      preLoaderRoute: typeof FilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/analytics": {
+      id: "/analytics"
+      path: "/analytics"
+      fullPath: "/analytics"
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/ai-tools": {
+      id: "/ai-tools"
+      path: "/ai-tools"
+      fullPath: "/ai-tools"
+      preLoaderRoute: typeof AiToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/ai-chat": {
+      id: "/ai-chat"
+      path: "/ai-chat"
+      fullPath: "/ai-chat"
+      preLoaderRoute: typeof AiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/": {
+      id: "/"
+      path: "/"
+      fullPath: "/"
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -53,14 +297,26 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiChatRoute: AiChatRoute,
+  AiToolsRoute: AiToolsRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  FilesRoute: FilesRoute,
+  IdeaHubRoute: IdeaHubRoute,
+  MeetingRoute: MeetingRoute,
+  MilestonesRoute: MilestonesRoute,
+  ProjectsRoute: ProjectsRoute,
+  SettingsRoute: SettingsRoute,
+  TasksRoute: TasksRoute,
+  TeamChatRoute: TeamChatRoute,
+  TeamsRoute: TeamsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { getRouter } from "./router.tsx"
+import type { createStart } from "@tanstack/react-start"
+declare module "@tanstack/react-start" {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>

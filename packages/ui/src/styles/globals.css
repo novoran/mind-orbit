@@ -41,6 +41,34 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Sidebar dimensions */
+  --sidebar-width: 16rem;
+  --sidebar-width-icon: 4rem;
+}
+
+/* Sidebar state overrides - applied by head script before React loads */
+html[data-sidebar-state="collapsed"] {
+  --sidebar-width: var(--sidebar-width-icon);
+}
+
+/* Zero-flash visibility for collapsed sidebar elements */
+html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:hidden {
+  display: none !important;
+}
+
+html[data-sidebar-state="collapsed"]
+  .group-data-\[collapsible\=icon\]\:items-center {
+  align-items: center !important;
+}
+
+html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:px-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:p-2 {
+  padding: 0.5rem !important;
 }
 
 .dark {
