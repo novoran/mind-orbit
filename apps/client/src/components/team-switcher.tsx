@@ -1,4 +1,4 @@
-import { PlusSignIcon, UnfoldMoreIcon } from "@hugeicons/core-free-icons"
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import * as React from "react"
 
@@ -44,24 +44,16 @@ export function TeamSwitcher({
               ) : typeof activeTeam.logo === "function" ||
                 Array.isArray(activeTeam.logo) ? (
                 <HugeiconsIcon
-                  icon={activeTeam.logo as any}
+                  icon={activeTeam.logo as never}
                   className="size-4"
                 />
               ) : (
                 (activeTeam.logo as React.ReactNode)
               )}
             </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{activeTeam.name}</span>
-              <span className="text-muted-foreground truncate text-xs">
-                {activeTeam.plan}
-              </span>
+            <div className="flex-1 text-left text-sm leading-tight font-semibold">
+              {activeTeam.name}
             </div>
-            <HugeiconsIcon
-              icon={UnfoldMoreIcon}
-              strokeWidth={2}
-              className="text-muted-foreground size-4"
-            />
           </Button>
         }
       />
@@ -89,7 +81,7 @@ export function TeamSwitcher({
               ) : typeof team.logo === "function" ||
                 Array.isArray(team.logo) ? (
                 <HugeiconsIcon
-                  icon={team.logo as any}
+                  icon={team.logo as never}
                   className="size-3.5 shrink-0"
                 />
               ) : (

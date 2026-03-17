@@ -77,9 +77,6 @@ export function WorkspaceSwitcher({
                       <span className="truncate font-medium">
                         {activeWorkspace.name}
                       </span>
-                      <span className="truncate text-xs">
-                        {activeWorkspace.plan}
-                      </span>
                     </div>
                     <HugeiconsIcon
                       icon={UnfoldMoreIcon}
