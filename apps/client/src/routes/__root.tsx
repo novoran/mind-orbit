@@ -3,12 +3,29 @@ import * as React from "react"
 
 import appCss from "@mindorbit/ui/globals.css?url"
 
+import { SIDEBAR_COOKIE_NAME } from "@mindorbit/ui/components/sidebar"
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
 import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
 
 import { NotFound } from "@/components/not-found"
 
 export const Route = createRootRoute({
+  // Runs on both server and client — read the sidebar cookie
+  loader: ({ context }: { context: { request?: Request } }) => {
+    let cookieHeader = ""
+    if (context.request) {
+      cookieHeader = context.request.headers.get("cookie") ?? ""
+    } else if (typeof document !== "undefined") {
+      cookieHeader = document.cookie
+    }
+
+    const match = cookieHeader.match(
+      new RegExp(`(?:^|;)\\s*${SIDEBAR_COOKIE_NAME}=([^;]*)`)
+    )
+    // Default to open (true) if no cookie exists yet
+    const sidebarOpen = match ? match[1] === "true" : true
+    return { sidebarOpen }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -53,8 +70,14 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { sidebarOpen } = Route.useLoaderData()
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-sidebar-state={sidebarOpen ? "expanded" : "collapsed"}
+    >
       <head>
         <HeadContent />
       </head>
