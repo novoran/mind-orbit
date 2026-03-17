@@ -1,11 +1,14 @@
-import { Moon01Icon, Sun01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 
+import { Moon01Icon, Sun01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@mindorbit/ui/lib/utils"
+import { Button } from "./button"
 
-interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"button"> {
+interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<
+  typeof Button
+> {
   duration?: number
 }
 
@@ -51,7 +54,7 @@ export const AnimatedThemeToggler = ({
       const newTheme = !isDark
       setIsDark(newTheme)
       document.documentElement.classList.toggle("dark")
-      localStorage.setItem("theme", newTheme ? "dark" : "light")
+      localStorage.setItem("vite-ui-theme", newTheme ? "dark" : "light")
     }
 
     if (typeof document.startViewTransition !== "function") {
@@ -81,15 +84,16 @@ export const AnimatedThemeToggler = ({
   }, [isDark, duration])
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon"
       ref={buttonRef}
       onClick={toggleTheme}
-      className={cn(className)}
+      className={cn("size-9", className)}
       {...props}
     >
       <HugeiconsIcon icon={isDark ? Sun01Icon : Moon01Icon} />
       <span className="sr-only">Toggle theme</span>
-    </button>
+    </Button>
   )
 }

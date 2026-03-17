@@ -1,6 +1,7 @@
 import * as React from "react"
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
+import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
 
 import appCss from "@mindorbit/ui/globals.css?url"
 
@@ -59,7 +60,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider storageKey="vite-ui-theme">{children}</ThemeProvider>
+        <ThemeProvider storageKey="vite-ui-theme">
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>

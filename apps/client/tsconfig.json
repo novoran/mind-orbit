@@ -1,6 +1,6 @@
 {
   "extends": "@mindorbit/typescript-config/react.json",
-  "include": ["src"],
+  "include": ["src", "../../packages/ui/src/hooks/use-mobile.ts"],
   "compilerOptions": {
     "types": ["vite/client"],
 

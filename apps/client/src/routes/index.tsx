@@ -1,6 +1,6 @@
-import { Button } from "@mindorbit/ui/components/button"
 import { AnimatedThemeToggler } from "@mindorbit/ui/components/animated-theme-toggler"
-import { createFileRoute } from "@tanstack/react-router"
+import { Button } from "@mindorbit/ui/components/button"
+import { Link, createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/")({ component: App })
 
@@ -21,7 +21,10 @@ function App() {
             individuals, it centralizes tasks, documentation, and payments into
             a structured, workspace-centric ecosystem.
           </p>
-          <Button className="mt-6">Get Started</Button>
+          <div className="mt-6 flex gap-3">
+            <Button render={<Link to="/dashboard" />}>Go to Dashboard</Button>
+            <Button variant="outline">Learn More</Button>
+          </div>
         </div>
       </div>
     </div>
