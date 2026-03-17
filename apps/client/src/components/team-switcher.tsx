@@ -6,6 +6,7 @@ import { Button } from "@mindorbit/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -62,47 +63,51 @@ export function TeamSwitcher({
         align="start"
         sideOffset={4}
       >
-        <DropdownMenuLabel className="text-muted-foreground text-xs">
-          Teams
-        </DropdownMenuLabel>
-        {teams.map((team, index) => (
-          <DropdownMenuItem
-            key={team.name}
-            onClick={() => setActiveTeam(team)}
-            className="gap-2 p-2"
-          >
-            <div className="flex size-6 items-center justify-center overflow-hidden rounded-md border">
-              {team.image ? (
-                <img
-                  src={team.image}
-                  alt={team.name}
-                  className="size-full object-cover"
-                />
-              ) : typeof team.logo === "function" ||
-                Array.isArray(team.logo) ? (
-                <HugeiconsIcon
-                  icon={team.logo as never}
-                  className="size-3.5 shrink-0"
-                />
-              ) : (
-                (team.logo as React.ReactNode)
-              )}
-            </div>
-            {team.name}
-            <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-muted-foreground text-xs">
+            Teams
+          </DropdownMenuLabel>
+          {teams.map((team, index) => (
+            <DropdownMenuItem
+              key={team.name}
+              onClick={() => setActiveTeam(team)}
+              className="gap-2 p-2"
+            >
+              <div className="flex size-6 items-center justify-center overflow-hidden rounded-md border">
+                {team.image ? (
+                  <img
+                    src={team.image}
+                    alt={team.name}
+                    className="size-full object-cover"
+                  />
+                ) : typeof team.logo === "function" ||
+                  Array.isArray(team.logo) ? (
+                  <HugeiconsIcon
+                    icon={team.logo as never}
+                    className="size-3.5 shrink-0"
+                  />
+                ) : (
+                  (team.logo as React.ReactNode)
+                )}
+              </div>
+              {team.name}
+              <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="gap-2 p-2">
-          <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-            <HugeiconsIcon
-              icon={PlusSignIcon}
-              strokeWidth={2}
-              className="size-4"
-            />
-          </div>
-          <div className="text-muted-foreground font-medium">Add team</div>
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem className="gap-2 p-2">
+            <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+              <HugeiconsIcon
+                icon={PlusSignIcon}
+                strokeWidth={2}
+                className="size-4"
+              />
+            </div>
+            <div className="text-muted-foreground font-medium">Add team</div>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -68,18 +68,20 @@ function SidebarProvider({
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
 
-  const [_open, _setOpen] = React.useState(() => {
-    // Check cookies on initial client-side render
-    if (typeof document !== "undefined") {
-      const match = document.cookie.match(
-        new RegExp(`(?:^|; ) ${SIDEBAR_COOKIE_NAME}=([^;]*)`)
-      )
-      if (match) {
-        return match[1] === "true"
-      }
+  const [_open, _setOpen] = React.useState(defaultOpen)
+
+  // Use a second state to track if we've hydrated to avoid mismatches
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+    const match = document.cookie.match(
+      new RegExp(`(?:^|; ) ${SIDEBAR_COOKIE_NAME}=([^;]*)`)
+    )
+    if (match) {
+      _setOpen(match[1] === "true")
     }
-    return defaultOpen
-  })
+  }, [])
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
