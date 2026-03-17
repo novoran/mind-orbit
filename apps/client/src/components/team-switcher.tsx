@@ -2,7 +2,6 @@ import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import * as React from "react"
 
-import { Button } from "@mindorbit/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@mindorbit/ui/components/dropdown-menu"
+import { SidebarMenuButton } from "@mindorbit/ui/components/sidebar"
 
 export function TeamSwitcher({
   teams,
@@ -30,12 +30,11 @@ export function TeamSwitcher({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="ghost"
+          <SidebarMenuButton
             size="lg"
-            className="data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex h-12 items-center gap-2 rounded-lg px-2 py-1.5 transition-colors"
+            className="hover:bg-accent/50 hover:text-foreground data-[state=open]:bg-accent/50 h-auto w-auto rounded-lg px-2 py-1.5 font-semibold transition-all"
           >
-            <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+            <div className="text-primary flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-md">
               {activeTeam.image ? (
                 <img
                   src={activeTeam.image}
@@ -46,16 +45,16 @@ export function TeamSwitcher({
                 Array.isArray(activeTeam.logo) ? (
                 <HugeiconsIcon
                   icon={activeTeam.logo as never}
-                  className="size-4"
+                  className="size-3.5"
                 />
               ) : (
                 (activeTeam.logo as React.ReactNode)
               )}
             </div>
-            <div className="flex-1 text-left text-sm leading-tight font-semibold">
+            <div className="flex-1 text-left text-sm leading-tight">
               {activeTeam.name}
             </div>
-          </Button>
+          </SidebarMenuButton>
         }
       />
       <DropdownMenuContent
