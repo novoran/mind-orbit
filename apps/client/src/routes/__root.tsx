@@ -15,7 +15,12 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "MindOrbit",
+      },
+      {
+        name: "description",
+        content:
+          "MindOrbit is a multi-tenant, AI-powered productivity and project management platform.",
       },
     ],
     links: [

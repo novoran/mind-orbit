@@ -13,12 +13,15 @@ function App() {
       </div>
       <div className="mt-8 flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
         <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>
-            We&apos;ve already added the button component and dark mode for you.
+          <h1 className="text-lg font-medium">Welcome to MindOrbit</h1>
+          <p className="text-muted-foreground mt-2">
+            MindOrbit is a multi-tenant, AI-powered productivity and project
+            management platform designed to unify fragmented workflows into a
+            single operational hub. Built for freelancers, small teams, and
+            individuals, it centralizes tasks, documentation, and payments into
+            a structured, workspace-centric ecosystem.
           </p>
-          <Button className="mt-2">Button</Button>
+          <Button className="mt-6">Get Started</Button>
         </div>
       </div>
     </div>
