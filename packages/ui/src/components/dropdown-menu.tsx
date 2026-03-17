@@ -16,10 +16,11 @@ function DropdownMenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
 const DropdownMenuTrigger = React.forwardRef<
   HTMLButtonElement,
   MenuPrimitive.Trigger.Props
->((props, ref) => {
+>(({ className, ...props }, ref) => {
   return (
     <MenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
+      className={cn("flex items-center justify-center", className)}
       {...props}
       ref={ref}
     />

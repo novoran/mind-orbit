@@ -47,81 +47,75 @@
   --sidebar-width-icon: 4rem;
 }
 
-/* Sidebar state overrides - applied by head script before React loads */
+/* Zero-flash sidebar state overrides - applied before React hydration */
 html[data-sidebar-state="collapsed"] {
   --sidebar-width: var(--sidebar-width-icon);
 }
 
-/* Zero-flash visibility and alignment for collapsed sidebar */
+/* Force Tailwind's hidden-in-collapsed-mode class to fire immediately */
 html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:hidden {
   display: none !important;
 }
 
+/* Center all major sidebar sections */
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-header"],
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-group"],
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-footer"] {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
+  padding-left: 0;
+  padding-right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* Center all menu buttons and ensure they are perfectly square icons */
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-item"],
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu"] {
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-item"] {
-  width: 100% !important;
-  display: flex !important;
-  justify-content: center !important;
-}
-
-/* Force centering and consistent sizing for menu buttons */
+/* Force centering for SidebarMenuButton and its direct children */
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] {
-  width: 2.25rem !important; /* size-9 */
-  height: 2.25rem !important;
-  padding: 0 !important;
-  justify-content: center !important;
-  align-items: center !important;
-  margin: 0 auto !important;
-  display: flex !important;
-  transition: none !important;
+  width: 2.25rem; /* Standard size-9 clickable hover area */
+  height: 2.25rem;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  display: flex;
+  gap: 0; /* Remove gap in collapsed mode to avoid shifting icon */
 }
 
-/* Ensure any wrapped content (like Links) also behaves as center flex */
+/* Force all children inside SidebarMenuButton to be centered */
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] > * {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  size: 100% !important;
+  margin: 0;
+  flex-shrink: 0;
 }
 
-/* Hide everything except the icon/logo */
+/* Ensure LogoDisplay (size-8 div) is perfectly centered */
 html[data-sidebar-state="collapsed"]
   [data-slot="sidebar-menu-button"]
-  *:not(svg):not(.hugeicons-react):not([data-slot="sidebar-menu-button"]) {
-  display: none !important;
+  div.size-8 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Center icons specifically */
+/* Standardize Icon centering */
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] svg,
 html[data-sidebar-state="collapsed"]
   [data-slot="sidebar-menu-button"]
   .hugeicons-react {
-  margin: 0 !important;
-  flex-shrink: 0 !important;
+  display: block;
 }
 
-/* Disable all sidebar transitions on initial reload to prevent "jumping" */
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-container"],
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-gap"],
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-inner"],
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-inset"] {
+/* Initial transition suppression for zero-flash load */
+html:not(.hydrated) [data-slot="sidebar-container"],
+html:not(.hydrated) [data-slot="sidebar-gap"],
+html:not(.hydrated) [data-slot="sidebar-inset"] {
   transition: none !important;
 }
 
