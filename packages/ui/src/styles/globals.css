@@ -52,23 +52,55 @@ html[data-sidebar-state="collapsed"] {
   --sidebar-width: var(--sidebar-width-icon);
 }
 
-/* Zero-flash visibility for collapsed sidebar elements */
+/* Zero-flash visibility and alignment for collapsed sidebar */
 html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:hidden {
   display: none !important;
 }
 
-html[data-sidebar-state="collapsed"]
-  .group-data-\[collapsible\=icon\]\:items-center {
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-header"],
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-group"],
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-footer"] {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
 }
 
-html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:px-0 {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu"] {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
-html[data-sidebar-state="collapsed"] .group-data-\[collapsible\=icon\]\:p-2 {
-  padding: 0.5rem !important;
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-item"] {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] {
+  width: 2rem !important;
+  height: 2rem !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+  display: flex !important;
+}
+
+/* Ensure icons inside buttons are centered */
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] > svg,
+html[data-sidebar-state="collapsed"]
+  [data-slot="sidebar-menu-button"]
+  > .hugeicons-react {
+  margin: 0 !important;
+}
+
+/* Ensure no transitions on reload */
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-container"],
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-gap"] {
+  transition: none !important;
 }
 
 .dark {

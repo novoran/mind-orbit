@@ -1,41 +1,14 @@
-import {
-  HeadContent,
-  Link,
-  Scripts,
-  createRootRoute,
-} from "@tanstack/react-router"
+import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import * as React from "react"
 
 import appCss from "@mindorbit/ui/globals.css?url"
 
-import {
-  SIDEBAR_COOKIE_NAME,
-  SidebarInset,
-  SidebarProvider,
-} from "@mindorbit/ui/components/sidebar"
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
 import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
 
-import { AppSidebar } from "@/components/app-sidebar"
-import { Header } from "@/components/header"
+import { NotFound } from "@/components/not-found"
 
 export const Route = createRootRoute({
-  // Runs on both server and client — read the sidebar cookie
-  loader: ({ context }: { context: { request?: Request } }) => {
-    let cookieHeader = ""
-    if (context.request) {
-      cookieHeader = context.request.headers.get("cookie") ?? ""
-    } else if (typeof document !== "undefined") {
-      cookieHeader = document.cookie
-    }
-
-    const match = cookieHeader.match(
-      new RegExp(`(?:^|;)\\s*${SIDEBAR_COOKIE_NAME}=([^;]*)`)
-    )
-    // Default to open (true) if no cookie exists yet
-    const sidebarOpen = match ? match[1] === "true" : true
-    return { sidebarOpen }
-  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -76,45 +49,18 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
-  notFoundComponent: () => (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 py-20">
-      <h1 className="text-4xl font-bold text-slate-800 dark:text-slate-200">
-        404
-      </h1>
-      <p className="text-muted-foreground">
-        Oops! The page you're looking for doesn't exist.
-      </p>
-      <Link
-        to="/"
-        className="text-primary hover:text-primary/80 font-medium transition-colors hover:underline"
-      >
-        Go back to Dashboard
-      </Link>
-    </div>
-  ),
+  notFoundComponent: NotFound,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  // Read the server-loaded sidebar state — available synchronously on both
-  // server and client, so the first render is already correct with no flash.
-  const { sidebarOpen } = Route.useLoaderData()
-
   return (
-    <html lang="en" data-sidebar-state={sidebarOpen ? "expanded" : "collapsed"}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
         <ThemeProvider storageKey="vite-ui-theme">
-          <TooltipProvider>
-            <SidebarProvider defaultOpen={sidebarOpen}>
-              <AppSidebar />
-              <SidebarInset>
-                <Header />
-                <div className="p-4">{children}</div>
-              </SidebarInset>
-            </SidebarProvider>
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
         <Scripts />
       </body>
