@@ -28,25 +28,28 @@ import { TeamSwitcher } from "@/components/team-switcher"
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Shahrear Ahamed",
+    email: "shahrear@mindorbit.com",
+    avatar: "https://avatar.vercel.sh/shahrear.png",
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "MindOrbit Hub",
       logo: <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} />,
       plan: "Enterprise",
+      image: "https://avatar.vercel.sh/mindorbit.png",
     },
     {
-      name: "Acme Corp.",
+      name: "Product Design",
       logo: <HugeiconsIcon icon={AudioWave01Icon} strokeWidth={2} />,
       plan: "Startup",
+      image: "https://avatar.vercel.sh/design.png",
     },
     {
-      name: "Evil Corp.",
+      name: "Engineering",
       logo: <HugeiconsIcon icon={CommandIcon} strokeWidth={2} />,
       plan: "Free",
+      image: "https://avatar.vercel.sh/eng.png",
     },
   ],
   navMain: [

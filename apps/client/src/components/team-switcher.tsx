@@ -26,6 +26,7 @@ export function TeamSwitcher({
     name: string
     logo: React.ReactNode
     plan: string
+    image?: string
   }>
 }) {
   const { isMobile } = useSidebar()
@@ -43,8 +44,16 @@ export function TeamSwitcher({
               />
             }
           >
-            <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-              {activeTeam.logo}
+            <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
+              {activeTeam.image ? (
+                <img
+                  src={activeTeam.image}
+                  alt={activeTeam.name}
+                  className="size-full object-cover"
+                />
+              ) : (
+                activeTeam.logo
+              )}
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{activeTeam.name}</span>
@@ -72,8 +81,16 @@ export function TeamSwitcher({
                   onClick={() => setActiveTeam(team)}
                   className="gap-2 p-2"
                 >
-                  <div className="flex size-6 items-center justify-center rounded-md border">
-                    {team.logo}
+                  <div className="flex size-6 items-center justify-center overflow-hidden rounded-md border">
+                    {team.image ? (
+                      <img
+                        src={team.image}
+                        alt={team.name}
+                        className="size-full object-cover"
+                      />
+                    ) : (
+                      team.logo
+                    )}
                   </div>
                   {team.name}
                   <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
