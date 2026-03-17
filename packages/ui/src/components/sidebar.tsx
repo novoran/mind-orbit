@@ -1,5 +1,3 @@
-"use client"
-
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { cva } from "class-variance-authority"
@@ -31,7 +29,7 @@ const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3rem"
+const SIDEBAR_WIDTH_ICON = "4rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContextProps = {
@@ -375,7 +373,7 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(
-        "no-scrollbar flex min-h-0 flex-1 flex-col gap-0 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "no-scrollbar flex min-h-0 flex-1 flex-col gap-0 overflow-auto transition-all duration-200 group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
       {...props}
@@ -388,7 +386,10 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="sidebar-group"
       data-sidebar="group"
-      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+      className={cn(
+        "relative flex w-full min-w-0 flex-col p-2 transition-all duration-200 group-data-[collapsible=icon]:p-0",
+        className
+      )}
       {...props}
     />
   )
@@ -461,7 +462,10 @@ function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
     <ul
       data-slot="sidebar-menu"
       data-sidebar="menu"
-      className={cn("flex w-full min-w-0 flex-col gap-0", className)}
+      className={cn(
+        "flex w-full min-w-0 flex-col gap-1 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:py-2",
+        className
+      )}
       {...props}
     />
   )
@@ -472,14 +476,17 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
     <li
       data-slot="sidebar-menu-item"
       data-sidebar="menu-item"
-      className={cn("group/menu-item relative", className)}
+      className={cn(
+        "group/menu-item relative group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:w-full group-data-[collapsible=icon]:justify-center",
+        className
+      )}
       {...props}
     />
   )
 }
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button group/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:font-medium [&_svg]:size-4 [&_svg]:shrink-0 [&>span:last-child]:truncate",
+  "peer/menu-button group/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden transition-all duration-200 group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:font-medium [&_svg]:shrink-0 [&>span:last-child]:truncate",
   {
     variants: {
       variant: {
@@ -500,59 +507,71 @@ const sidebarMenuButtonVariants = cva(
   }
 )
 
-function SidebarMenuButton({
-  render,
-  isActive = false,
-  variant = "default",
-  size = "default",
-  tooltip,
-  className,
-  ...props
-}: useRender.ComponentProps<"button"> &
-  React.ComponentProps<"button"> & {
-    isActive?: boolean
-    tooltip?: string | React.ComponentProps<typeof TooltipContent>
-  } & VariantProps<typeof sidebarMenuButtonVariants>) {
-  const { isMobile, state } = useSidebar()
-  const comp = useRender({
-    defaultTagName: "button",
-    props: mergeProps<"button">(
-      {
-        className: cn(sidebarMenuButtonVariants({ variant, size }), className),
-      },
-      props
-    ),
-    render: !tooltip ? render : <TooltipTrigger render={render} />,
-    state: {
-      slot: "sidebar-menu-button",
-      sidebar: "menu-button",
-      size,
-      active: isActive,
+const SidebarMenuButton = React.forwardRef<
+  HTMLButtonElement,
+  useRender.ComponentProps<"button"> &
+    React.ComponentProps<"button"> & {
+      isActive?: boolean
+      tooltip?: string | React.ComponentProps<typeof TooltipContent>
+    } & VariantProps<typeof sidebarMenuButtonVariants>
+>(
+  (
+    {
+      render,
+      isActive = false,
+      variant = "default",
+      size = "default",
+      tooltip,
+      className,
+      ...props
     },
-  })
+    ref
+  ) => {
+    const { isMobile, state } = useSidebar()
+    const comp = useRender({
+      defaultTagName: "button",
+      props: mergeProps<"button">(
+        {
+          className: cn(
+            sidebarMenuButtonVariants({ variant, size }),
+            className
+          ),
+          ref,
+        },
+        props
+      ),
+      render: !tooltip ? render : <TooltipTrigger render={render} />,
+      state: {
+        slot: "sidebar-menu-button",
+        sidebar: "menu-button",
+        size,
+        active: isActive,
+      },
+    })
 
-  if (!tooltip) {
-    return comp
-  }
-
-  if (typeof tooltip === "string") {
-    tooltip = {
-      children: tooltip,
+    if (!tooltip) {
+      return comp
     }
-  }
 
-  return (
-    <Tooltip>
-      {comp}
-      <TooltipContent
-        side="right"
-        align="center"
-        hidden={state !== "collapsed" || isMobile}
-        {...tooltip}
-      />
-    </Tooltip>
-  )
-}
+    if (typeof tooltip === "string") {
+      tooltip = {
+        children: tooltip,
+      }
+    }
+
+    return (
+      <Tooltip>
+        {comp}
+        <TooltipContent
+          side="right"
+          align="center"
+          hidden={state !== "collapsed" || isMobile}
+          {...tooltip}
+        />
+      </Tooltip>
+    )
+  }
+)
 
 function SidebarMenuAction({
   className,

@@ -1,9 +1,14 @@
-import * as React from "react"
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
+import * as React from "react"
+
+import appCss from "@mindorbit/ui/globals.css?url"
+
+import { SidebarInset, SidebarProvider } from "@mindorbit/ui/components/sidebar"
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
 import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
 
-import appCss from "@mindorbit/ui/globals.css?url"
+import { AppSidebar } from "@/components/app-sidebar"
+import { Header } from "@/components/header"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -61,7 +66,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider storageKey="vite-ui-theme">
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <Header />
+                <div className="p-4">{children}</div>
+              </SidebarInset>
+            </SidebarProvider>
+          </TooltipProvider>
         </ThemeProvider>
         <Scripts />
       </body>

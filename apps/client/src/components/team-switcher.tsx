@@ -1,120 +1,117 @@
-import * as React from "react"
-
 import { PlusSignIcon, UnfoldMoreIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import * as React from "react"
+
+import { Button } from "@mindorbit/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@mindorbit/ui/components/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@mindorbit/ui/components/sidebar"
 
 export function TeamSwitcher({
   teams,
 }: {
   teams: Array<{
     name: string
-    logo: React.ReactNode
+    logo: React.ReactNode | React.ComponentProps<typeof HugeiconsIcon>["icon"]
     plan: string
     image?: string
   }>
 }) {
-  const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <SidebarMenuButton
-                size="lg"
-                className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
-              />
-            }
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="lg"
+            className="data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex h-12 items-center gap-2 rounded-lg px-2 py-1.5 transition-colors"
           >
-            <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
+            <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
               {activeTeam.image ? (
                 <img
                   src={activeTeam.image}
                   alt={activeTeam.name}
                   className="size-full object-cover"
                 />
+              ) : typeof activeTeam.logo === "function" ||
+                Array.isArray(activeTeam.logo) ? (
+                <HugeiconsIcon
+                  icon={activeTeam.logo as any}
+                  className="size-4"
+                />
               ) : (
-                activeTeam.logo
+                (activeTeam.logo as React.ReactNode)
               )}
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{activeTeam.name}</span>
-              <span className="truncate text-xs">{activeTeam.plan}</span>
+              <span className="truncate font-semibold">{activeTeam.name}</span>
+              <span className="text-muted-foreground truncate text-xs">
+                {activeTeam.plan}
+              </span>
             </div>
             <HugeiconsIcon
               icon={UnfoldMoreIcon}
               strokeWidth={2}
-              className="ml-auto"
+              className="text-muted-foreground size-4"
             />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
+          </Button>
+        }
+      />
+      <DropdownMenuContent
+        className="w-56 rounded-lg"
+        align="start"
+        sideOffset={4}
+      >
+        <DropdownMenuLabel className="text-muted-foreground text-xs">
+          Teams
+        </DropdownMenuLabel>
+        {teams.map((team, index) => (
+          <DropdownMenuItem
+            key={team.name}
+            onClick={() => setActiveTeam(team)}
+            className="gap-2 p-2"
           >
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="text-muted-foreground text-xs">
-                Teams
-              </DropdownMenuLabel>
-              {teams.map((team, index) => (
-                <DropdownMenuItem
-                  key={team.name}
-                  onClick={() => setActiveTeam(team)}
-                  className="gap-2 p-2"
-                >
-                  <div className="flex size-6 items-center justify-center overflow-hidden rounded-md border">
-                    {team.image ? (
-                      <img
-                        src={team.image}
-                        alt={team.name}
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      team.logo
-                    )}
-                  </div>
-                  {team.name}
-                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="gap-2 p-2">
-                <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                  <HugeiconsIcon
-                    icon={PlusSignIcon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </div>
-                <div className="text-muted-foreground font-medium">
-                  Add team
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+            <div className="flex size-6 items-center justify-center overflow-hidden rounded-md border">
+              {team.image ? (
+                <img
+                  src={team.image}
+                  alt={team.name}
+                  className="size-full object-cover"
+                />
+              ) : typeof team.logo === "function" ||
+                Array.isArray(team.logo) ? (
+                <HugeiconsIcon
+                  icon={team.logo as any}
+                  className="size-3.5 shrink-0"
+                />
+              ) : (
+                (team.logo as React.ReactNode)
+              )}
+            </div>
+            {team.name}
+            <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="gap-2 p-2">
+          <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+            <HugeiconsIcon
+              icon={PlusSignIcon}
+              strokeWidth={2}
+              className="size-4"
+            />
+          </div>
+          <div className="text-muted-foreground font-medium">Add team</div>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

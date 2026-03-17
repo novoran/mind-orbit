@@ -1,4 +1,5 @@
 import { cva } from "class-variance-authority"
+import * as React from "react"
 
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cn } from "@mindorbit/ui/lib/utils"
@@ -41,21 +42,24 @@ const buttonVariants = cva(
   }
 )
 
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  render,
-  ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-  return (
-    <ButtonPrimitive
-      render={render}
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
-}
+const Button = React.forwardRef<
+  HTMLButtonElement,
+  ButtonPrimitive.Props & VariantProps<typeof buttonVariants>
+>(
+  (
+    { className, variant = "default", size = "default", render, ...props },
+    ref
+  ) => {
+    return (
+      <ButtonPrimitive
+        render={render}
+        ref={ref}
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        {...props}
+      />
+    )
+  }
+)
 
 export { Button, buttonVariants }

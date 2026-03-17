@@ -1,9 +1,9 @@
-"use client"
+import { AnimatedThemeToggler } from "@mindorbit/ui/components/animated-theme-toggler"
 
 import {
   CheckmarkBadgeIcon,
   CreditCardIcon,
-  LogoutIcon,
+  Logout01Icon as LogoutIcon,
   NotificationIcon,
   SparklesIcon,
   UnfoldMoreIcon,
@@ -93,30 +93,33 @@ export function NavUser({
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer gap-2">
+                <AnimatedThemeToggler className="size-4" />
+                <span>Theme Toggle</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <HugeiconsIcon icon={CheckmarkBadgeIcon} strokeWidth={2} />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2} />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <HugeiconsIcon icon={NotificationIcon} strokeWidth={2} />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400">
               <HugeiconsIcon icon={LogoutIcon} strokeWidth={2} />
               Log out
             </DropdownMenuItem>

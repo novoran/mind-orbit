@@ -1,175 +1,247 @@
 import {
-  AudioWave01Icon,
-  BookOpen02Icon,
-  CommandIcon,
-  ComputerTerminalIcon,
-  CropIcon,
-  LayoutBottomIcon,
-  MapsIcon,
-  PieChartIcon,
-  RoboticIcon,
-  Settings05Icon,
+  Analytics01Icon,
+  Briefcase02Icon,
+  Chatting01Icon,
+  DashboardCircleIcon,
+  Flag01Icon,
+  Folder01Icon,
+  Idea01Icon,
+  Key01Icon,
+  Logout01Icon,
+  MagicWand01Icon,
+  QuestionIcon,
+  Settings02Icon,
+  Task01Icon,
+  UserGroupIcon,
+  Video01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@mindorbit/ui/components/sidebar"
+import { Link } from "@tanstack/react-router"
 import * as React from "react"
+import { WorkspaceSwitcher } from "./workspace-switcher"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
-
-// This is sample data.
-const data = {
-  user: {
-    name: "Shahrear Ahamed",
-    email: "shahrear@mindorbit.com",
-    avatar: "https://avatar.vercel.sh/shahrear.png",
+const teamsData = [
+  {
+    name: "MindOrbit Hub",
+    logo: (
+      <div className="bg-primary flex size-full items-center justify-center font-bold text-white">
+        M
+      </div>
+    ),
+    plan: "Pro",
+    image: "https://avatar.vercel.sh/mindorbit.png",
   },
-  teams: [
+  {
+    name: "Team Galaxy",
+    logo: DashboardCircleIcon,
+    plan: "Free",
+  },
+]
+
+const data = {
+  mainNav: [
     {
-      name: "MindOrbit Hub",
-      logo: <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} />,
-      plan: "Enterprise",
-      image: "https://avatar.vercel.sh/mindorbit.png",
+      title: "Dashboard",
+      url: "/",
+      icon: DashboardCircleIcon,
+      isActive: true,
     },
     {
-      name: "Product Design",
-      logo: <HugeiconsIcon icon={AudioWave01Icon} strokeWidth={2} />,
-      plan: "Startup",
-      image: "https://avatar.vercel.sh/design.png",
+      title: "AI Chat",
+      url: "/ai-chat",
+      icon: Chatting01Icon,
     },
     {
-      name: "Engineering",
-      logo: <HugeiconsIcon icon={CommandIcon} strokeWidth={2} />,
-      plan: "Free",
-      image: "https://avatar.vercel.sh/eng.png",
+      title: "Idea Hub",
+      url: "/idea-hub",
+      icon: Idea01Icon,
     },
   ],
-  navMain: [
+  spaceNav: [
     {
-      title: "Playground",
-      url: "#",
-      icon: <HugeiconsIcon icon={ComputerTerminalIcon} strokeWidth={2} />,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
+      title: "Team Chat",
+      url: "/team-chat",
+      icon: Chatting01Icon,
     },
     {
-      title: "Models",
-      url: "#",
-      icon: <HugeiconsIcon icon={RoboticIcon} strokeWidth={2} />,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
+      title: "Meeting",
+      url: "/meeting",
+      icon: Video01Icon,
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: <HugeiconsIcon icon={BookOpen02Icon} strokeWidth={2} />,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
+      title: "Teams",
+      url: "/teams",
+      icon: UserGroupIcon,
+    },
+    {
+      title: "Projects",
+      url: "/projects",
+      icon: Briefcase02Icon,
+    },
+    {
+      title: "Milestones",
+      url: "/milestones",
+      icon: Flag01Icon,
+    },
+    {
+      title: "Tasks",
+      url: "/tasks",
+      icon: Task01Icon,
+    },
+    {
+      title: "AI / Tools",
+      url: "/ai-tools",
+      icon: MagicWand01Icon,
+    },
+    {
+      title: "Files",
+      url: "/files",
+      icon: Folder01Icon,
+    },
+    {
+      title: "Analytics",
+      url: "/analytics",
+      icon: Analytics01Icon,
     },
     {
       title: "Settings",
-      url: "#",
-      icon: <HugeiconsIcon icon={Settings05Icon} strokeWidth={2} />,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: <HugeiconsIcon icon={CropIcon} strokeWidth={2} />,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: <HugeiconsIcon icon={PieChartIcon} strokeWidth={2} />,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: <HugeiconsIcon icon={MapsIcon} strokeWidth={2} />,
+      url: "/settings",
+      icon: Settings02Icon,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+    <Sidebar collapsible="icon" {...props} className="border-r">
+      <SidebarHeader className="flex h-16 justify-center border-b group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
+        <WorkspaceSwitcher workspaces={teamsData} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Main
+          </SidebarGroupLabel>
+          <SidebarMenu>
+            {data.mainNav.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  render={<Link to={item.url} />}
+                  isActive={item.isActive}
+                  className="data-active:bg-primary/5 data-active:text-primary cursor-pointer transition-colors"
+                >
+                  <HugeiconsIcon
+                    icon={item.icon}
+                    strokeWidth={2}
+                    size={18}
+                    className="shrink-0"
+                  />
+                  <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
+                    {item.title}
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Team
+          </SidebarGroupLabel>
+          <SidebarMenu>
+            {data.spaceNav.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  render={<Link to={item.url} />}
+                  className="cursor-pointer transition-colors"
+                >
+                  <HugeiconsIcon
+                    icon={item.icon}
+                    strokeWidth={2}
+                    size={18}
+                    className="shrink-0"
+                  />
+                  <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
+                    {item.title}
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
+      <SidebarFooter className="flex flex-col gap-4 p-4 group-data-[collapsible=icon]:p-2">
+        <div className="bg-primary/5 border-primary/10 relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-4 group-data-[collapsible=icon]:hidden">
+          <div className="relative z-10 flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <div className="bg-primary/10 flex size-5 items-center justify-center rounded-md">
+                <HugeiconsIcon
+                  icon={Key01Icon}
+                  className="text-primary size-3"
+                  strokeWidth={2.5}
+                />
+              </div>
+              <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                Unlock Pro
+              </span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-slate-500">
+              Get unlimited AI credits and advanced tools.
+            </p>
+          </div>
+          <button className="bg-primary hover:bg-primary/90 w-full cursor-pointer rounded-lg py-1.5 text-xs font-bold text-white transition-all hover:scale-[1.02]">
+            Upgrade Now
+          </button>
+        </div>
+
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Support"
+              className="cursor-pointer transition-colors"
+            >
+              <HugeiconsIcon
+                icon={QuestionIcon}
+                strokeWidth={2}
+                size={18}
+                className="shrink-0"
+              />
+              <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
+                Support
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Logout"
+              className="group cursor-pointer bg-red-600 text-white transition-colors hover:bg-red-700"
+            >
+              <HugeiconsIcon
+                icon={Logout01Icon}
+                strokeWidth={2}
+                size={18}
+                className="shrink-0"
+              />
+              <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
+                Logout
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
