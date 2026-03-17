@@ -72,6 +72,7 @@ html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu"] {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
+  gap: 0.5rem !important;
 }
 
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-item"] {
@@ -80,26 +81,47 @@ html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-item"] {
   justify-content: center !important;
 }
 
+/* Force centering and consistent sizing for menu buttons */
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] {
-  width: 2rem !important;
-  height: 2rem !important;
+  width: 2.25rem !important; /* size-9 */
+  height: 2.25rem !important;
   padding: 0 !important;
   justify-content: center !important;
+  align-items: center !important;
   margin: 0 auto !important;
   display: flex !important;
+  transition: none !important;
 }
 
-/* Ensure icons inside buttons are centered */
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] > svg,
+/* Ensure any wrapped content (like Links) also behaves as center flex */
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] > * {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  size: 100% !important;
+}
+
+/* Hide everything except the icon/logo */
 html[data-sidebar-state="collapsed"]
   [data-slot="sidebar-menu-button"]
-  > .hugeicons-react {
-  margin: 0 !important;
+  *:not(svg):not(.hugeicons-react):not([data-slot="sidebar-menu-button"]) {
+  display: none !important;
 }
 
-/* Ensure no transitions on reload */
+/* Center icons specifically */
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-menu-button"] svg,
+html[data-sidebar-state="collapsed"]
+  [data-slot="sidebar-menu-button"]
+  .hugeicons-react {
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Disable all sidebar transitions on initial reload to prevent "jumping" */
 html[data-sidebar-state="collapsed"] [data-slot="sidebar-container"],
-html[data-sidebar-state="collapsed"] [data-slot="sidebar-gap"] {
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-gap"],
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-inner"],
+html[data-sidebar-state="collapsed"] [data-slot="sidebar-inset"] {
   transition: none !important;
 }
 
