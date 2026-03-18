@@ -3,6 +3,7 @@ import {
   Briefcase02Icon,
   Chatting01Icon,
   DashboardCircleIcon,
+  DashboardSquare02Icon,
   Flag01Icon,
   Folder01Icon,
   Idea01Icon,
@@ -28,7 +29,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@mindorbit/ui/components/sidebar"
-import { Link } from "@tanstack/react-router"
+import { Link, useLocation } from "@tanstack/react-router"
 import * as React from "react"
 import { WorkspaceSwitcher } from "./workspace-switcher"
 
@@ -55,7 +56,7 @@ const data = {
     {
       title: "Dashboard",
       url: "/",
-      icon: DashboardCircleIcon,
+      icon: DashboardSquare02Icon,
       isActive: true,
     },
     {
@@ -124,6 +125,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const location = useLocation()
+
   return (
     <Sidebar collapsible="icon" {...props} className="border-r">
       <SidebarHeader className="flex h-16 justify-center border-b group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
@@ -131,7 +134,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden dark:text-slate-500">
             Main
           </SidebarGroupLabel>
           <SidebarMenu>
@@ -140,7 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton
                   tooltip={item.title}
                   render={<Link to={item.url} />}
-                  isActive={item.isActive}
+                  isActive={location.pathname === item.url}
                   className="data-active:bg-primary/5 data-active:text-primary cursor-pointer transition-colors"
                 >
                   <HugeiconsIcon
@@ -158,7 +161,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden dark:text-slate-500">
             Team
           </SidebarGroupLabel>
           <SidebarMenu>
@@ -167,7 +170,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton
                   tooltip={item.title}
                   render={<Link to={item.url} />}
-                  className="cursor-pointer transition-colors"
+                  isActive={location.pathname === item.url}
+                  className="data-active:bg-primary/5 data-active:text-primary cursor-pointer transition-colors"
                 >
                   <HugeiconsIcon
                     icon={item.icon}
@@ -185,10 +189,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="flex flex-col gap-4 p-4 group-data-[collapsible=icon]:p-2">
-        <div className="bg-primary/5 border-primary/10 relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-4 group-data-[collapsible=icon]:hidden">
+        <div className="bg-primary/5 border-primary/10 dark:bg-primary/10 dark:border-primary/20 relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-4 group-data-[collapsible=icon]:hidden">
           <div className="relative z-10 flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <div className="bg-primary/10 flex size-5 items-center justify-center rounded-md">
+              <div className="bg-primary/10 dark:bg-primary/20 flex size-5 items-center justify-center rounded-md">
                 <HugeiconsIcon
                   icon={Key01Icon}
                   className="text-primary size-3"
@@ -199,7 +203,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 Unlock Pro
               </span>
             </div>
-            <p className="text-[11px] leading-relaxed text-slate-500">
+            <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
               Get unlimited AI credits and advanced tools.
             </p>
           </div>
@@ -228,13 +232,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Logout"
-              className="group cursor-pointer bg-red-600 text-white transition-colors hover:bg-red-700"
+              className="group/logout cursor-pointer bg-red-600 text-white transition-all duration-250 hover:bg-red-700 hover:text-white!"
             >
               <HugeiconsIcon
                 icon={Logout01Icon}
                 strokeWidth={2}
                 size={18}
-                className="shrink-0"
+                className="shrink-0 group-hover/logout:text-white!"
               />
               <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
                 Logout
