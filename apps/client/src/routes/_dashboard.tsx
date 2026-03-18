@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router"
+import { Outlet, createFileRoute, useLocation } from "@tanstack/react-router"
 
 import {
   SIDEBAR_COOKIE_NAME,
@@ -29,6 +29,7 @@ export const Route = createFileRoute("/_dashboard")({
 
 function DashboardLayout() {
   const { sidebarOpen } = Route.useLoaderData()
+  const location = useLocation()
 
   return (
     <SidebarProvider defaultOpen={sidebarOpen}>
@@ -36,7 +37,9 @@ function DashboardLayout() {
       <SidebarInset>
         <Header />
         <div className="p-4">
-          <Outlet />
+          <div key={location.pathname} className="animate-fade-in-up">
+            <Outlet />
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
