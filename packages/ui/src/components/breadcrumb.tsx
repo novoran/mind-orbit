@@ -52,7 +52,10 @@ function BreadcrumbLink({
     defaultTagName: "a",
     props: mergeProps<"a">(
       {
-        className: cn("hover:text-foreground transition-colors", className),
+        className: cn(
+          "hover:text-foreground cubic-bezier(0.4, 0, 0.2, 1) transition-all duration-250",
+          className
+        ),
       },
       props
     ),
