@@ -144,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   tooltip={item.title}
                   render={<Link to={item.url} />}
                   isActive={location.pathname === item.url}
-                  className="data-active:bg-primary/5 data-active:text-primary cursor-pointer transition-colors"
+                  className="data-active:bg-primary/5 data-active:text-primary dark:data-active:bg-primary/25 cursor-pointer transition-colors dark:data-active:text-white"
                 >
                   <HugeiconsIcon
                     icon={item.icon}
@@ -171,7 +171,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   tooltip={item.title}
                   render={<Link to={item.url} />}
                   isActive={location.pathname === item.url}
-                  className="data-active:bg-primary/5 data-active:text-primary cursor-pointer transition-colors"
+                  className="data-active:bg-primary/5 data-active:text-primary dark:data-active:bg-primary/25 cursor-pointer transition-colors dark:data-active:text-white"
                 >
                   <HugeiconsIcon
                     icon={item.icon}

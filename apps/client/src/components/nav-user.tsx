@@ -39,7 +39,10 @@ export function NavUser({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
+              <SidebarMenuButton
+                size="lg"
+                className="cursor-pointer hover:bg-transparent active:bg-transparent aria-expanded:bg-transparent data-[state=open]:bg-transparent"
+              />
             }
           >
             <Avatar>

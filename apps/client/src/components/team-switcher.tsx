@@ -32,7 +32,7 @@ export function TeamSwitcher({
         render={
           <SidebarMenuButton
             size="lg"
-            className="hover:text-foreground cubic-bezier(0.4, 0, 0.2, 1) h-auto w-auto rounded-lg px-2 py-1.5 font-semibold transition-all duration-200 hover:bg-transparent"
+            className="hover:text-foreground cubic-bezier(0.4, 0, 0.2, 1) h-auto w-auto cursor-pointer rounded-lg px-2 py-1.5 font-semibold transition-all duration-200 hover:bg-transparent active:bg-transparent aria-expanded:bg-transparent data-[state=open]:bg-transparent"
           >
             <div className="text-primary flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-md">
               {activeTeam.image ? (

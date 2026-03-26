@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/outfit";
 
 @custom-variant dark (&:is(.dark *));
 @source "../../../apps/**/*.{ts,tsx}";
@@ -32,7 +33,7 @@
   --chart-3: oklch(0.511 0.262 276.966);
   --chart-4: oklch(0.457 0.24 277.023);
   --chart-5: oklch(0.398 0.195 277.366);
-  --radius: 0.75rem;
+  --radius: 0.45rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.511 0.262 276.966);
@@ -182,7 +183,8 @@ html:not(.hydrated) [data-slot="sidebar-inset"] {
   --color-sidebar-active-foreground: var(--sidebar-active-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: "Geist Variable", sans-serif;
+  --font-sans: "Outfit Variable", sans-serif;
+  --font-heading: var(--font-sans);
 }
 
 @layer base {
@@ -191,6 +193,9 @@ html:not(.hydrated) [data-slot="sidebar-inset"] {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 

@@ -67,7 +67,7 @@ export function WorkspaceSwitcher({
             render={
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                className="data-[state=open]:text-sidebar-accent-foreground cursor-pointer hover:bg-transparent active:bg-transparent aria-expanded:bg-transparent data-[state=open]:bg-transparent"
               >
                 <LogoDisplay workspace={activeWorkspace} />
                 <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
