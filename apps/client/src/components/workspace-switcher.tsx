@@ -1,7 +1,5 @@
 import { PlusSignIcon, UnfoldMoreIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import * as React from "react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@mindorbit/ui/components/dropdown-menu"
 import {
@@ -18,79 +15,49 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@mindorbit/ui/components/sidebar"
+import * as React from "react"
 
 export function WorkspaceSwitcher({
-  workspaces,
+  teams,
 }: {
-  workspaces: Array<{
+  teams: Array<{
     name: string
-    logo: React.ReactNode | React.ComponentProps<typeof HugeiconsIcon>["icon"]
+    logo: any
     plan: string
-    image?: string
   }>
 }) {
   const { isMobile } = useSidebar()
-  const [activeWorkspace, setActiveWorkspace] = React.useState(workspaces[0])
-
-  const LogoDisplay = ({
-    workspace,
-  }: {
-    workspace: (typeof workspaces)[0]
-  }) => (
-    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
-      {workspace.image ? (
-        <img
-          src={workspace.image}
-          alt={workspace.name}
-          className="size-full object-cover"
-        />
-      ) : typeof workspace.logo === "function" ||
-        Array.isArray(workspace.logo) ? (
-        <HugeiconsIcon
-          icon={
-            workspace.logo as React.ComponentProps<typeof HugeiconsIcon>["icon"]
-          }
-          className="size-3.5"
-        />
-      ) : (
-        (workspace.logo as React.ReactNode)
-      )}
-    </div>
-  )
-
+  const [activeTeam, setActiveTeam] = React.useState(teams[0])
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          {/* Base UI: render prop merges trigger behavior onto SidebarMenuButton */}
           <DropdownMenuTrigger
             render={
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:text-sidebar-accent-foreground cursor-pointer hover:bg-transparent active:bg-transparent aria-expanded:bg-transparent data-[state=open]:bg-transparent"
+                className="cursor-pointer hover:bg-transparent active:bg-transparent aria-expanded:bg-transparent"
               >
-                <LogoDisplay workspace={activeWorkspace} />
-                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground ml-0! flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <HugeiconsIcon icon={activeTeam.logo} className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {activeWorkspace.name}
+                    {activeTeam.name}
                   </span>
-                  <span className="truncate text-xs">
-                    {activeWorkspace.plan}
-                  </span>
+                  <span className="truncate text-xs">{activeTeam.plan}</span>
                 </div>
                 <HugeiconsIcon
                   icon={UnfoldMoreIcon}
                   strokeWidth={2}
-                  size={16}
-                  className="ml-auto group-data-[collapsible=icon]:hidden"
+                  className="ml-auto size-4"
                 />
               </SidebarMenuButton>
             }
           />
 
-          {/* min-w-56 ensures readable width even when trigger is icon-only */}
           <DropdownMenuContent
-            className="min-w-56 rounded-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             align="start"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
@@ -99,53 +66,33 @@ export function WorkspaceSwitcher({
               <DropdownMenuLabel className="text-muted-foreground text-xs">
                 Workspaces
               </DropdownMenuLabel>
-              {workspaces.map((workspace, index) => (
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              {teams.map((team) => (
                 <DropdownMenuItem
-                  key={workspace.name}
-                  onClick={() => setActiveWorkspace(workspace)}
-                  className="gap-2 p-2"
+                  key={team.name}
+                  onClick={() => setActiveTeam(team)}
+                  className="cursor-pointer gap-2 p-2"
                 >
-                  <div className="flex size-6 items-center justify-center overflow-hidden rounded-md border">
-                    {workspace.image ? (
-                      <img
-                        src={workspace.image}
-                        alt={workspace.name}
-                        className="size-full object-cover"
-                      />
-                    ) : typeof workspace.logo === "function" ||
-                      Array.isArray(workspace.logo) ? (
-                      <HugeiconsIcon
-                        icon={
-                          workspace.logo as React.ComponentProps<
-                            typeof HugeiconsIcon
-                          >["icon"]
-                        }
-                        className="size-3.5 shrink-0"
-                      />
-                    ) : (
-                      (workspace.logo as React.ReactNode)
-                    )}
+                  <div className="flex size-6 items-center justify-center rounded-sm border">
+                    <HugeiconsIcon
+                      icon={team.logo}
+                      className="size-4 shrink-0"
+                    />
                   </div>
-                  {workspace.name}
-                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                  {team.name}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="gap-2 p-2">
-                <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                  <HugeiconsIcon
-                    icon={PlusSignIcon}
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </div>
-                <div className="text-muted-foreground font-medium">
-                  Add workspace
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            <DropdownMenuItem className="cursor-pointer gap-2 p-2">
+              <div className="bg-background flex size-6 items-center justify-center rounded-md border">
+                <HugeiconsIcon icon={PlusSignIcon} className="size-4" />
+              </div>
+              <div className="text-muted-foreground font-medium">
+                Add workspace
+              </div>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

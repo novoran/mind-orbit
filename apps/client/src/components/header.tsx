@@ -26,7 +26,6 @@ const teamsData = [
   {
     name: "Global Team",
     logo: Share01Icon,
-    plan: "Free",
     image: "https://avatar.vercel.sh/global.png",
   },
 ]

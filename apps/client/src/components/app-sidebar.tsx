@@ -7,7 +7,6 @@ import {
   Flag01Icon,
   Folder01Icon,
   Idea01Icon,
-  Key01Icon,
   Logout01Icon,
   MagicWand01Icon,
   QuestionIcon,
@@ -21,42 +20,47 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@mindorbit/ui/components/sidebar"
-import { Link, useLocation } from "@tanstack/react-router"
 import * as React from "react"
-import { WorkspaceSwitcher } from "./workspace-switcher"
 
-const teamsData = [
+import { NavMain } from "@/components/nav-main"
+import { NavPro } from "@/components/nav-pro"
+import { WorkspaceSwitcher } from "@/components/workspace-switcher"
+
+export const teamsData = [
   {
-    name: "MindOrbit Hub",
-    logo: (
-      <div className="bg-primary flex size-full items-center justify-center font-bold text-white">
-        M
-      </div>
-    ),
-    plan: "Pro",
-    image: "https://avatar.vercel.sh/mindorbit.png",
+    name: "Acme Inc",
+    logo: DashboardSquare02Icon,
+    plan: "Enterprise",
   },
   {
-    name: "Team Galaxy",
+    name: "Acme Corp.",
     logo: DashboardCircleIcon,
+    plan: "Startup",
+  },
+  {
+    name: "Evil Corp.",
+    logo: DashboardSquare02Icon,
     plan: "Free",
   },
 ]
 
-const data = {
+export const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
   mainNav: [
     {
       title: "Dashboard",
       url: "/",
-      icon: DashboardSquare02Icon,
+      icon: DashboardCircleIcon,
       isActive: true,
     },
     {
@@ -102,7 +106,7 @@ const data = {
       icon: Task01Icon,
     },
     {
-      title: "AI / Tools",
+      title: "AI Tools",
       url: "/ai-tools",
       icon: MagicWand01Icon,
     },
@@ -125,93 +129,17 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const location = useLocation()
-
   return (
-    <Sidebar collapsible="icon" {...props} className="border-r">
-      <SidebarHeader className="flex h-16 justify-center border-b group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
-        <WorkspaceSwitcher workspaces={teamsData} />
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <WorkspaceSwitcher teams={teamsData} />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden dark:text-slate-500">
-            Main
-          </SidebarGroupLabel>
-          <SidebarMenu>
-            {data.mainNav.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  tooltip={item.title}
-                  render={<Link to={item.url} />}
-                  isActive={location.pathname === item.url}
-                  className="data-active:bg-primary/5 data-active:text-primary dark:data-active:bg-primary/25 cursor-pointer transition-colors dark:data-active:text-white"
-                >
-                  <HugeiconsIcon
-                    icon={item.icon}
-                    strokeWidth={2}
-                    size={18}
-                    className="shrink-0"
-                  />
-                  <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
-                    {item.title}
-                  </span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-bold tracking-wider text-slate-400 uppercase group-data-[collapsible=icon]:hidden dark:text-slate-500">
-            Team
-          </SidebarGroupLabel>
-          <SidebarMenu>
-            {data.spaceNav.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  tooltip={item.title}
-                  render={<Link to={item.url} />}
-                  isActive={location.pathname === item.url}
-                  className="data-active:bg-primary/5 data-active:text-primary dark:data-active:bg-primary/25 cursor-pointer transition-colors dark:data-active:text-white"
-                >
-                  <HugeiconsIcon
-                    icon={item.icon}
-                    strokeWidth={2}
-                    size={18}
-                    className="shrink-0"
-                  />
-                  <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
-                    {item.title}
-                  </span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+        <NavMain items={data.mainNav} label="Main" />
+        <NavMain items={data.spaceNav} label="Spaces" />
       </SidebarContent>
-      <SidebarFooter className="flex flex-col gap-4 p-4 group-data-[collapsible=icon]:p-2">
-        <div className="bg-primary/5 border-primary/10 dark:bg-primary/10 dark:border-primary/20 relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-4 group-data-[collapsible=icon]:hidden">
-          <div className="relative z-10 flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <div className="bg-primary/10 dark:bg-primary/20 flex size-5 items-center justify-center rounded-md">
-                <HugeiconsIcon
-                  icon={Key01Icon}
-                  className="text-primary size-3"
-                  strokeWidth={2.5}
-                />
-              </div>
-              <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                Unlock Pro
-              </span>
-            </div>
-            <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
-              Get unlimited AI credits and advanced tools.
-            </p>
-          </div>
-          <button className="bg-primary hover:bg-primary/90 w-full cursor-pointer rounded-lg py-1.5 text-xs font-bold text-white transition-all hover:scale-[1.02]">
-            Upgrade Now
-          </button>
-        </div>
-
+      <SidebarFooter>
+        <NavPro />
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton

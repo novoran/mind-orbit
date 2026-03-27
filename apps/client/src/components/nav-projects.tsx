@@ -21,14 +21,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@mindorbit/ui/components/sidebar"
+import { Link } from "@tanstack/react-router"
 
 export function NavProjects({
   projects,
 }: {
   projects: Array<{
-    name: string
+    title: string
     url: string
-    icon: React.ReactNode
+    icon: any
   }>
 }) {
   const { isMobile } = useSidebar()
@@ -37,10 +38,13 @@ export function NavProjects({
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton render={<a href={item.url} />}>
-              {item.icon}
-              <span>{item.name}</span>
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton
+              tooltip={item.title}
+              render={<Link to={item.url} />}
+            >
+              <HugeiconsIcon icon={item.icon} strokeWidth={2} />
+              <span>{item.title}</span>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger
