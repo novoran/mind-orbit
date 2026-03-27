@@ -3,6 +3,7 @@ import { flushSync } from "react-dom"
 
 import { Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@mindorbit/ui/lib/utils"
 import { Button } from "./button"
 
@@ -14,7 +15,7 @@ interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<
 
 export const AnimatedThemeToggler = ({
   className,
-  duration = 400,
+  duration = 250,
   ...props
 }: AnimatedThemeTogglerProps) => {
   const [isDark, setIsDark] = useState(false)
@@ -89,10 +90,21 @@ export const AnimatedThemeToggler = ({
       size="icon"
       ref={buttonRef}
       onClick={toggleTheme}
-      className={cn("size-9", className)}
+      className={cn("relative size-9 overflow-hidden", className)}
       {...props}
     >
-      <HugeiconsIcon icon={isDark ? Sun01Icon : Moon02Icon} />
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={isDark ? "sun" : "moon"}
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+          className="flex items-center justify-center"
+        >
+          <HugeiconsIcon icon={isDark ? Sun01Icon : Moon02Icon} />
+        </motion.span>
+      </AnimatePresence>
       <span className="sr-only">Toggle theme</span>
     </Button>
   )

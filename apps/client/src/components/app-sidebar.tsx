@@ -1,4 +1,5 @@
 import {
+  AiChat02Icon,
   Analytics01Icon,
   Briefcase02Icon,
   Chatting01Icon,
@@ -61,7 +62,7 @@ export const data = {
     {
       title: "AI Chat",
       url: "/ai-chat",
-      icon: Chatting01Icon,
+      icon: AiChat02Icon,
     },
     {
       title: "Idea Hub",

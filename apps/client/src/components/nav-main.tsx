@@ -1,6 +1,5 @@
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { cn } from "@mindorbit/ui/lib/utils"
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,7 +15,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@mindorbit/ui/components/sidebar"
+import { cn } from "@mindorbit/ui/lib/utils"
 import { Link } from "@tanstack/react-router"
+import { AnimatePresence, motion } from "framer-motion"
 
 export function NavMain({
   items,
@@ -81,9 +82,20 @@ export function NavMain({
                           >
                             {item.title}
                           </span>
-                          {isActive && (
-                            <div className="bg-primary absolute right-2 size-1.5 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]" />
-                          )}
+                          <AnimatePresence>
+                            {isActive && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{
+                                  duration: 0.2,
+                                  ease: "easeInOut",
+                                }}
+                                className="bg-primary absolute right-2 size-1.5 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                              />
+                            )}
+                          </AnimatePresence>
                         </>
                       )}
                     </Link>
@@ -148,9 +160,20 @@ export function NavMain({
                                 >
                                   {subItem.title}
                                 </span>
-                                {isActive && (
-                                  <div className="bg-primary absolute right-2 size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]" />
-                                )}
+                                <AnimatePresence>
+                                  {isActive && (
+                                    <motion.div
+                                      initial={{ scale: 0, opacity: 0 }}
+                                      animate={{ scale: 1, opacity: 1 }}
+                                      exit={{ scale: 0, opacity: 0 }}
+                                      transition={{
+                                        duration: 0.2,
+                                        ease: "easeInOut",
+                                      }}
+                                      className="bg-primary absolute right-2 size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                                    />
+                                  )}
+                                </AnimatePresence>
                               </>
                             )}
                           </Link>
