@@ -49,14 +49,23 @@ export function NavMain({
                   render={({ className, ...props }) => (
                     <Link
                       to={item.url}
-                      className={className}
+                      className={cn(className, "transition-all duration-250")}
                       activeOptions={{ exact: item.url === "/" }}
+                      activeProps={{
+                        className:
+                          "bg-primary/10 text-primary! dark:bg-primary/20",
+                      }}
                       {...props}
                     >
                       {({ isActive }) => (
                         <>
                           {item.icon && (
-                            <div className="flex size-4 shrink-0 items-center justify-center">
+                            <div
+                              className={cn(
+                                "flex size-4 shrink-0 items-center justify-center transition-colors duration-250",
+                                isActive && "text-primary"
+                              )}
+                            >
                               <HugeiconsIcon
                                 icon={item.icon}
                                 strokeWidth={2}
@@ -64,9 +73,16 @@ export function NavMain({
                               />
                             </div>
                           )}
-                          <span>{item.title}</span>
+                          <span
+                            className={cn(
+                              "transition-colors duration-250",
+                              isActive && "font-semibold"
+                            )}
+                          >
+                            {item.title}
+                          </span>
                           {isActive && (
-                            <div className="bg-primary absolute right-2 size-1.5 rounded-full" />
+                            <div className="bg-primary absolute right-2 size-1.5 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
                           )}
                         </>
                       )}
@@ -111,15 +127,22 @@ export function NavMain({
                         render={({ className, ...props }) => (
                           <Link
                             to={subItem.url}
-                            className={className}
+                            className={cn(
+                              className,
+                              "transition-all duration-200"
+                            )}
+                            activeProps={{
+                              className:
+                                "bg-primary/10 text-primary dark:bg-primary/20",
+                            }}
                             {...props}
                           >
                             {({ isActive }: { isActive: boolean }) => (
                               <>
                                 <span
                                   className={cn(
-                                    isActive &&
-                                      "text-primary font-medium transition-colors"
+                                    "transition-colors duration-250",
+                                    isActive && "text-primary font-semibold"
                                   )}
                                 >
                                   {subItem.title}

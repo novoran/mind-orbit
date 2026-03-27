@@ -1,5 +1,6 @@
 import { PlusSignIcon, UnfoldMoreIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { Badge } from "@mindorbit/ui/components/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +16,19 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@mindorbit/ui/components/sidebar"
+import { cn } from "@mindorbit/ui/lib/utils"
 import * as React from "react"
+
+const getPlanBadgeColor = (plan: string) => {
+  switch (plan.toLowerCase()) {
+    case "enterprise":
+      return "border-indigo-500/20 bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/20"
+    case "startup":
+      return "border-emerald-500/20 bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20"
+    default:
+      return "border-slate-500/20 bg-slate-500/10 text-slate-500 dark:bg-slate-500/20"
+  }
+}
 
 export function WorkspaceSwitcher({
   teams,
@@ -45,7 +58,15 @@ export function WorkspaceSwitcher({
                   <span className="truncate font-medium">
                     {activeTeam.name}
                   </span>
-                  <span className="truncate text-xs">{activeTeam.plan}</span>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "h-3.5 w-fit px-1 text-[9px] font-bold tracking-wider uppercase transition-all duration-200 group-data-[collapsible=icon]:hidden",
+                      getPlanBadgeColor(activeTeam.plan)
+                    )}
+                  >
+                    {activeTeam.plan}
+                  </Badge>
                 </div>
                 <HugeiconsIcon
                   icon={UnfoldMoreIcon}
@@ -80,7 +101,16 @@ export function WorkspaceSwitcher({
                       className="size-4 shrink-0"
                     />
                   </div>
-                  {team.name}
+                  <span className="flex-1 truncate">{team.name}</span>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "h-3.5 px-1 text-[9px] font-bold tracking-wider uppercase",
+                      getPlanBadgeColor(team.plan)
+                    )}
+                  >
+                    {team.plan}
+                  </Badge>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>

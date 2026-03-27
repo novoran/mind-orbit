@@ -28,6 +28,16 @@ const teamsData = [
     logo: Share01Icon,
     image: "https://avatar.vercel.sh/global.png",
   },
+  {
+    name: "Marketing Team",
+    logo: Share01Icon,
+    image: "https://avatar.vercel.sh/marketing.png",
+  },
+  {
+    name: "Development Team",
+    logo: Share01Icon,
+    image: "https://avatar.vercel.sh/development.png",
+  },
 ]
 
 export function Header() {
