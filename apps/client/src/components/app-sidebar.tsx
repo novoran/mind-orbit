@@ -29,8 +29,8 @@ import {
 import * as React from "react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavPro } from "@/components/nav-pro"
 import { WorkspaceSwitcher } from "@/components/workspace-switcher"
+import { Banner } from "./banner"
 
 export const teamsData = [
   {
@@ -136,7 +136,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-        <NavPro />
+        <Banner />
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
