@@ -28,9 +28,9 @@ import {
 } from "@mindorbit/ui/components/sidebar"
 import * as React from "react"
 
+import { Banner } from "@/components/banner"
 import { NavMain } from "@/components/nav-main"
 import { WorkspaceSwitcher } from "@/components/workspace-switcher"
-import { Banner } from "./banner"
 
 export const teamsData = [
   {
