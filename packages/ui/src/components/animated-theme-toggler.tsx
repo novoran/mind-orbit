@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 
-import { Moon01Icon, Sun01Icon } from "@hugeicons/core-free-icons"
+import { Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@mindorbit/ui/lib/utils"
 import { Button } from "./button"
@@ -92,7 +92,7 @@ export const AnimatedThemeToggler = ({
       className={cn("size-9", className)}
       {...props}
     >
-      <HugeiconsIcon icon={isDark ? Sun01Icon : Moon01Icon} />
+      <HugeiconsIcon icon={isDark ? Sun01Icon : Moon02Icon} />
       <span className="sr-only">Toggle theme</span>
     </Button>
   )
