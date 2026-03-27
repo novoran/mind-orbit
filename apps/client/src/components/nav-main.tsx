@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router"
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { cn } from "@mindorbit/ui/lib/utils"
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,6 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@mindorbit/ui/components/sidebar"
+import { Link } from "@tanstack/react-router"
 
 export function NavMain({
   items,
@@ -45,19 +46,33 @@ export function NavMain({
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  render={<Link to={item.url} />}
-                >
-                  {item.icon && (
-                    <div className="flex size-4 shrink-0 items-center justify-center">
-                      <HugeiconsIcon
-                        icon={item.icon}
-                        strokeWidth={2}
-                        className="size-4"
-                      />
-                    </div>
+                  render={({ className, ...props }) => (
+                    <Link
+                      to={item.url}
+                      className={className}
+                      activeOptions={{ exact: item.url === "/" }}
+                      {...props}
+                    >
+                      {({ isActive }) => (
+                        <>
+                          {item.icon && (
+                            <div className="flex size-4 shrink-0 items-center justify-center">
+                              <HugeiconsIcon
+                                icon={item.icon}
+                                strokeWidth={2}
+                                className="size-4"
+                              />
+                            </div>
+                          )}
+                          <span>{item.title}</span>
+                          {isActive && (
+                            <div className="bg-primary absolute right-2 size-1.5 rounded-full" />
+                          )}
+                        </>
+                      )}
+                    </Link>
                   )}
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
+                />
               </SidebarMenuItem>
             )
           }
@@ -92,9 +107,31 @@ export function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton render={<Link to={subItem.url} />}>
-                        <span>{subItem.title}</span>
-                      </SidebarMenuSubButton>
+                      <SidebarMenuSubButton
+                        render={({ className, ...props }) => (
+                          <Link
+                            to={subItem.url}
+                            className={className}
+                            {...props}
+                          >
+                            {({ isActive }: { isActive: boolean }) => (
+                              <>
+                                <span
+                                  className={cn(
+                                    isActive &&
+                                      "text-primary font-medium transition-colors"
+                                  )}
+                                >
+                                  {subItem.title}
+                                </span>
+                                {isActive && (
+                                  <div className="bg-primary absolute right-2 size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+                                )}
+                              </>
+                            )}
+                          </Link>
+                        )}
+                      />
                     </SidebarMenuSubItem>
                   ))}
                 </SidebarMenuSub>

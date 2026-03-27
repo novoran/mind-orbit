@@ -25,6 +25,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
 } from "@mindorbit/ui/components/sidebar"
 import * as React from "react"
 
@@ -36,12 +37,12 @@ export const teamsData = [
   {
     name: "Acme Inc",
     logo: DashboardSquare02Icon,
-    plan: "Enterprise",
+    plan: "Pro",
   },
   {
     name: "Acme Corp.",
     logo: DashboardCircleIcon,
-    plan: "Startup",
+    plan: "Team",
   },
   {
     name: "Evil Corp.",
@@ -131,12 +132,15 @@ export const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="border-b">
         <WorkspaceSwitcher teams={teamsData} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.mainNav} label="Main" />
-        <NavMain items={data.spaceNav} label="Spaces" />
+        <SidebarMenu>
+          <NavMain items={data.mainNav} label="Main" />
+          <SidebarSeparator className="my-2" />
+          <NavMain items={data.spaceNav} label="Spaces" />
+        </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
         <NavPro />
