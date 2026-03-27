@@ -1,3 +1,5 @@
+"use client"
+
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible"
 
 function Collapsible({ ...props }: CollapsiblePrimitive.Root.Props) {
@@ -16,4 +18,4 @@ function CollapsibleContent({ ...props }: CollapsiblePrimitive.Panel.Props) {
   )
 }
 
-export { Collapsible, CollapsibleContent, CollapsibleTrigger }
+export { Collapsible, CollapsibleTrigger, CollapsibleContent }
