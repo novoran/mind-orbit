@@ -1,5 +1,4 @@
-import { Notification01Icon, Share01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { Share01Icon } from "@hugeicons/core-free-icons"
 import { AnimatedThemeToggler } from "@mindorbit/ui/components/animated-theme-toggler"
 import {
   Breadcrumb,
@@ -9,11 +8,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@mindorbit/ui/components/breadcrumb"
-import { Button } from "@mindorbit/ui/components/button"
 import { SidebarTrigger } from "@mindorbit/ui/components/sidebar"
 import { useLocation } from "@tanstack/react-router"
 import * as React from "react"
 import { NavUser } from "./nav-user"
+import { NotificationCenter } from "./notification-center"
 import { TeamSwitcher } from "./team-switcher"
 
 const userData = {
@@ -84,14 +83,7 @@ export function Header() {
         </Breadcrumb>
       </div>
       <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative cursor-pointer p-0"
-        >
-          <HugeiconsIcon icon={Notification01Icon} strokeWidth={2} size={20} />
-          <span className="absolute top-1.5 right-1.5 size-2 rounded-full border-2 border-white bg-red-500 dark:border-slate-950" />
-        </Button>
+        <NotificationCenter />
         <AnimatedThemeToggler className="cursor-pointer" />
         <NavUser user={userData} />
       </div>
