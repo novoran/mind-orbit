@@ -53,7 +53,7 @@ export function NavMain({
                       activeOptions={{ exact: item.url === "/" }}
                       activeProps={{
                         className:
-                          "bg-primary/10 text-primary! dark:bg-primary/20",
+                          "bg-primary/10 text-primary! dark:bg-white/10 dark:text-white!",
                       }}
                       {...props}
                     >
@@ -63,7 +63,7 @@ export function NavMain({
                             <div
                               className={cn(
                                 "flex size-4 shrink-0 items-center justify-center transition-colors duration-250",
-                                isActive && "text-primary"
+                                isActive && "text-primary dark:text-white"
                               )}
                             >
                               <HugeiconsIcon
@@ -82,7 +82,7 @@ export function NavMain({
                             {item.title}
                           </span>
                           {isActive && (
-                            <div className="bg-primary absolute right-2 size-1.5 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+                            <div className="bg-primary absolute right-2 size-1.5 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]" />
                           )}
                         </>
                       )}
@@ -133,7 +133,7 @@ export function NavMain({
                             )}
                             activeProps={{
                               className:
-                                "bg-primary/10 text-primary dark:bg-primary/20",
+                                "bg-primary/10 text-primary dark:bg-white/10 dark:text-white!",
                             }}
                             {...props}
                           >
@@ -142,13 +142,14 @@ export function NavMain({
                                 <span
                                   className={cn(
                                     "transition-colors duration-250",
-                                    isActive && "text-primary font-semibold"
+                                    isActive &&
+                                      "text-primary font-semibold dark:text-white"
                                   )}
                                 >
                                   {subItem.title}
                                 </span>
                                 {isActive && (
-                                  <div className="bg-primary absolute right-2 size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+                                  <div className="bg-primary absolute right-2 size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]" />
                                 )}
                               </>
                             )}

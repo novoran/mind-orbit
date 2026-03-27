@@ -21,9 +21,9 @@ import * as React from "react"
 
 const getPlanBadgeColor = (plan: string) => {
   switch (plan.toLowerCase()) {
-    case "enterprise":
+    case "team":
       return "border-indigo-500/20 bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/20"
-    case "startup":
+    case "pro":
       return "border-emerald-500/20 bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/20"
     default:
       return "border-slate-500/20 bg-slate-500/10 text-slate-500 dark:bg-slate-500/20"
