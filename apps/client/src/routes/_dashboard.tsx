@@ -7,7 +7,7 @@ import { Header } from "@/components/header"
 
 export const Route = createFileRoute("/_dashboard")({
   loader: () => {
-    return { sidebarOpen: false }
+    return { sidebarOpen: true }
   },
   component: DashboardLayout,
 })

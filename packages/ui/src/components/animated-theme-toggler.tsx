@@ -4,6 +4,7 @@ import { flushSync } from "react-dom"
 import { Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { AnimatePresence, motion } from "framer-motion"
+
 import { cn } from "@mindorbit/ui/lib/utils"
 import { Button } from "./button"
 
@@ -96,11 +97,16 @@ export const AnimatedThemeToggler = ({
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={isDark ? "sun" : "moon"}
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 12 }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
-          className="flex items-center justify-center"
+          initial={{ opacity: 0, rotate: -45, scale: 0.9 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 45, scale: 0.9 }}
+          transition={{
+            type: "spring",
+            stiffness: 800,
+            damping: 40,
+            mass: 0.1,
+          }}
+          className="pt-0.1 flex items-center justify-center"
         >
           <HugeiconsIcon icon={isDark ? Sun01Icon : Moon02Icon} />
         </motion.span>

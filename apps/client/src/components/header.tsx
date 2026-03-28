@@ -8,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@mindorbit/ui/components/breadcrumb"
-import { SidebarTrigger } from "@mindorbit/ui/components/sidebar"
 import { useLocation } from "@tanstack/react-router"
 import * as React from "react"
 import { NavUser } from "./nav-user"
@@ -46,7 +45,7 @@ export function Header() {
   return (
     <header className="bg-background cubic-bezier(0.4, 0, 0.2, 1) sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b px-4 transition-all duration-200">
       <div className="flex items-center gap-1">
-        <SidebarTrigger className="-ml-1 cursor-pointer" />
+        {/* <SidebarTrigger className="-ml-1 cursor-pointer" /> */}
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
