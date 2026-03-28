@@ -1,17 +1,22 @@
-import { Moon01Icon, Sun01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 
-import { cn } from "@mindorbit/ui/lib/utils"
+import { Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { AnimatePresence, motion } from "framer-motion"
 
-interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"button"> {
+import { cn } from "@mindorbit/ui/lib/utils"
+import { Button } from "./button"
+
+interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<
+  typeof Button
+> {
   duration?: number
 }
 
 export const AnimatedThemeToggler = ({
   className,
-  duration = 400,
+  duration = 250,
   ...props
 }: AnimatedThemeTogglerProps) => {
   const [isDark, setIsDark] = useState(false)
@@ -51,7 +56,7 @@ export const AnimatedThemeToggler = ({
       const newTheme = !isDark
       setIsDark(newTheme)
       document.documentElement.classList.toggle("dark")
-      localStorage.setItem("theme", newTheme ? "dark" : "light")
+      localStorage.setItem("vite-ui-theme", newTheme ? "dark" : "light")
     }
 
     if (typeof document.startViewTransition !== "function") {
@@ -81,15 +86,32 @@ export const AnimatedThemeToggler = ({
   }, [isDark, duration])
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon"
       ref={buttonRef}
       onClick={toggleTheme}
-      className={cn(className)}
+      className={cn("relative size-9 overflow-hidden", className)}
       {...props}
     >
-      <HugeiconsIcon icon={isDark ? Sun01Icon : Moon01Icon} />
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={isDark ? "sun" : "moon"}
+          initial={{ opacity: 0, rotate: -45, scale: 0.9 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 45, scale: 0.9 }}
+          transition={{
+            type: "spring",
+            stiffness: 800,
+            damping: 40,
+            mass: 0.1,
+          }}
+          className="pt-0.1 flex items-center justify-center"
+        >
+          <HugeiconsIcon icon={isDark ? Sun01Icon : Moon02Icon} />
+        </motion.span>
+      </AnimatePresence>
       <span className="sr-only">Toggle theme</span>
-    </button>
+    </Button>
   )
 }

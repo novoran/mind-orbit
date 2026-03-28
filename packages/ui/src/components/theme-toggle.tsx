@@ -1,8 +1,5 @@
-"use client"
-
-import * as React from "react"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { Moon01Icon, Sun01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 import { Button } from "./button"
 import { useTheme } from "./theme-provider"
