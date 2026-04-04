@@ -42,6 +42,18 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
         clientSecret: process.env.APPLE_CLIENT_SECRET || "PLACEHOLDER",
       },
     },
+    trustedOrigins: [
+      process.env.SITE_URL,
+      process.env.WEB_SITE_URL,
+      process.env.CLIENT_SITE_URL,
+      process.env.ADMIN_SITE_URL,
+      process.env.DOCS_SITE_URL,
+    ].filter((origin): origin is string => !!origin),
+    advanced: {
+      crossSubDomainCookies: {
+        enabled: true,
+      },
+    },
     plugins: [convex({ authConfig })],
   } satisfies BetterAuthOptions;
 };
