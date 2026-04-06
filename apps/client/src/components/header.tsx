@@ -3,12 +3,11 @@ import { AnimatedThemeToggler } from "@mindorbit/ui/components/animated-theme-to
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@mindorbit/ui/components/breadcrumb"
-import { useLocation } from "@tanstack/react-router"
+import { Link, useLocation } from "@tanstack/react-router"
 import * as React from "react"
 import { NavUser } from "./nav-user"
 import { NotificationCenter } from "./notification-center"
@@ -51,32 +50,41 @@ export function Header() {
               <TeamSwitcher teams={teamsData} />
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            {pathnames.length === 0 ? (
-              <BreadcrumbItem>
+            <BreadcrumbItem>
+              {pathnames.length === 0 ? (
                 <BreadcrumbPage>Dashboard</BreadcrumbPage>
-              </BreadcrumbItem>
-            ) : (
-              pathnames.map((name, index) => {
-                const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`
-                const isLast = index === pathnames.length - 1
-                const displayName = name.charAt(0).toUpperCase() + name.slice(1)
+              ) : (
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                >
+                  Dashboard
+                </Link>
+              )}
+            </BreadcrumbItem>
+            {pathnames.map((name, index) => {
+              const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`
+              const isLast = index === pathnames.length - 1
+              const displayName = name.charAt(0).toUpperCase() + name.slice(1)
 
-                return (
-                  <React.Fragment key={routeTo}>
-                    <BreadcrumbItem>
-                      {isLast ? (
-                        <BreadcrumbPage>{displayName}</BreadcrumbPage>
-                      ) : (
-                        <BreadcrumbLink href={routeTo}>
-                          {displayName}
-                        </BreadcrumbLink>
-                      )}
-                    </BreadcrumbItem>
-                    {!isLast && <BreadcrumbSeparator />}
-                  </React.Fragment>
-                )
-              })
-            )}
+              return (
+                <React.Fragment key={routeTo}>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    {isLast ? (
+                      <BreadcrumbPage>{displayName}</BreadcrumbPage>
+                    ) : (
+                      <Link
+                        to={routeTo}
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                      >
+                        {displayName}
+                      </Link>
+                    )}
+                  </BreadcrumbItem>
+                </React.Fragment>
+              )
+            })}
           </BreadcrumbList>
         </Breadcrumb>
       </div>

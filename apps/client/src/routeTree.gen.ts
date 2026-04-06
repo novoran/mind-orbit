@@ -27,7 +27,12 @@ import { Route as DashboardAiToolsRouteImport } from "./routes/_dashboard/ai-too
 import { Route as DashboardAiChatRouteImport } from "./routes/_dashboard/ai-chat"
 import { Route as AuthSignUpRouteImport } from "./routes/_auth/sign-up"
 import { Route as AuthSignInRouteImport } from "./routes/_auth/sign-in"
+import { Route as DashboardProfileIndexRouteImport } from "./routes/_dashboard/profile.index"
 import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$"
+import { Route as DashboardProfileSecurityRouteImport } from "./routes/_dashboard/profile.security"
+import { Route as DashboardProfilePreferencesRouteImport } from "./routes/_dashboard/profile.preferences"
+import { Route as DashboardProfileNotificationsRouteImport } from "./routes/_dashboard/profile.notifications"
+import { Route as DashboardProfileAccountRouteImport } from "./routes/_dashboard/profile.account"
 
 const DashboardRoute = DashboardRouteImport.update({
   id: "/_dashboard",
@@ -117,10 +122,38 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: "/sign-in",
   getParentRoute: () => AuthRoute,
 } as any)
+const DashboardProfileIndexRoute = DashboardProfileIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardProfileRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: "/api/auth/$",
   path: "/api/auth/$",
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardProfileSecurityRoute =
+  DashboardProfileSecurityRouteImport.update({
+    id: "/security",
+    path: "/security",
+    getParentRoute: () => DashboardProfileRoute,
+  } as any)
+const DashboardProfilePreferencesRoute =
+  DashboardProfilePreferencesRouteImport.update({
+    id: "/preferences",
+    path: "/preferences",
+    getParentRoute: () => DashboardProfileRoute,
+  } as any)
+const DashboardProfileNotificationsRoute =
+  DashboardProfileNotificationsRouteImport.update({
+    id: "/notifications",
+    path: "/notifications",
+    getParentRoute: () => DashboardProfileRoute,
+  } as any)
+const DashboardProfileAccountRoute = DashboardProfileAccountRouteImport.update({
+  id: "/account",
+  path: "/account",
+  getParentRoute: () => DashboardProfileRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -134,13 +167,18 @@ export interface FileRoutesByFullPath {
   "/idea-hub": typeof DashboardIdeaHubRoute
   "/meeting": typeof DashboardMeetingRoute
   "/milestones": typeof DashboardMilestonesRoute
-  "/profile": typeof DashboardProfileRoute
+  "/profile": typeof DashboardProfileRouteWithChildren
   "/projects": typeof DashboardProjectsRoute
   "/settings": typeof DashboardSettingsRoute
   "/tasks": typeof DashboardTasksRoute
   "/team-chat": typeof DashboardTeamChatRoute
   "/teams": typeof DashboardTeamsRoute
+  "/profile/account": typeof DashboardProfileAccountRoute
+  "/profile/notifications": typeof DashboardProfileNotificationsRoute
+  "/profile/preferences": typeof DashboardProfilePreferencesRoute
+  "/profile/security": typeof DashboardProfileSecurityRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
+  "/profile/": typeof DashboardProfileIndexRoute
 }
 export interface FileRoutesByTo {
   "/": typeof DashboardIndexRoute
@@ -153,13 +191,17 @@ export interface FileRoutesByTo {
   "/idea-hub": typeof DashboardIdeaHubRoute
   "/meeting": typeof DashboardMeetingRoute
   "/milestones": typeof DashboardMilestonesRoute
-  "/profile": typeof DashboardProfileRoute
   "/projects": typeof DashboardProjectsRoute
   "/settings": typeof DashboardSettingsRoute
   "/tasks": typeof DashboardTasksRoute
   "/team-chat": typeof DashboardTeamChatRoute
   "/teams": typeof DashboardTeamsRoute
+  "/profile/account": typeof DashboardProfileAccountRoute
+  "/profile/notifications": typeof DashboardProfileNotificationsRoute
+  "/profile/preferences": typeof DashboardProfilePreferencesRoute
+  "/profile/security": typeof DashboardProfileSecurityRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
+  "/profile": typeof DashboardProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -174,14 +216,19 @@ export interface FileRoutesById {
   "/_dashboard/idea-hub": typeof DashboardIdeaHubRoute
   "/_dashboard/meeting": typeof DashboardMeetingRoute
   "/_dashboard/milestones": typeof DashboardMilestonesRoute
-  "/_dashboard/profile": typeof DashboardProfileRoute
+  "/_dashboard/profile": typeof DashboardProfileRouteWithChildren
   "/_dashboard/projects": typeof DashboardProjectsRoute
   "/_dashboard/settings": typeof DashboardSettingsRoute
   "/_dashboard/tasks": typeof DashboardTasksRoute
   "/_dashboard/team-chat": typeof DashboardTeamChatRoute
   "/_dashboard/teams": typeof DashboardTeamsRoute
   "/_dashboard/": typeof DashboardIndexRoute
+  "/_dashboard/profile/account": typeof DashboardProfileAccountRoute
+  "/_dashboard/profile/notifications": typeof DashboardProfileNotificationsRoute
+  "/_dashboard/profile/preferences": typeof DashboardProfilePreferencesRoute
+  "/_dashboard/profile/security": typeof DashboardProfileSecurityRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
+  "/_dashboard/profile/": typeof DashboardProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -202,7 +249,12 @@ export interface FileRouteTypes {
     | "/tasks"
     | "/team-chat"
     | "/teams"
+    | "/profile/account"
+    | "/profile/notifications"
+    | "/profile/preferences"
+    | "/profile/security"
     | "/api/auth/$"
+    | "/profile/"
   fileRoutesByTo: FileRoutesByTo
   to:
     | "/"
@@ -215,13 +267,17 @@ export interface FileRouteTypes {
     | "/idea-hub"
     | "/meeting"
     | "/milestones"
-    | "/profile"
     | "/projects"
     | "/settings"
     | "/tasks"
     | "/team-chat"
     | "/teams"
+    | "/profile/account"
+    | "/profile/notifications"
+    | "/profile/preferences"
+    | "/profile/security"
     | "/api/auth/$"
+    | "/profile"
   id:
     | "__root__"
     | "/_auth"
@@ -242,7 +298,12 @@ export interface FileRouteTypes {
     | "/_dashboard/team-chat"
     | "/_dashboard/teams"
     | "/_dashboard/"
+    | "/_dashboard/profile/account"
+    | "/_dashboard/profile/notifications"
+    | "/_dashboard/profile/preferences"
+    | "/_dashboard/profile/security"
     | "/api/auth/$"
+    | "/_dashboard/profile/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -379,12 +440,47 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthRoute
     }
+    "/_dashboard/profile/": {
+      id: "/_dashboard/profile/"
+      path: "/"
+      fullPath: "/profile/"
+      preLoaderRoute: typeof DashboardProfileIndexRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
     "/api/auth/$": {
       id: "/api/auth/$"
       path: "/api/auth/$"
       fullPath: "/api/auth/$"
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    "/_dashboard/profile/security": {
+      id: "/_dashboard/profile/security"
+      path: "/security"
+      fullPath: "/profile/security"
+      preLoaderRoute: typeof DashboardProfileSecurityRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
+    "/_dashboard/profile/preferences": {
+      id: "/_dashboard/profile/preferences"
+      path: "/preferences"
+      fullPath: "/profile/preferences"
+      preLoaderRoute: typeof DashboardProfilePreferencesRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
+    "/_dashboard/profile/notifications": {
+      id: "/_dashboard/profile/notifications"
+      path: "/notifications"
+      fullPath: "/profile/notifications"
+      preLoaderRoute: typeof DashboardProfileNotificationsRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
+    "/_dashboard/profile/account": {
+      id: "/_dashboard/profile/account"
+      path: "/account"
+      fullPath: "/profile/account"
+      preLoaderRoute: typeof DashboardProfileAccountRouteImport
+      parentRoute: typeof DashboardProfileRoute
     }
   }
 }
@@ -401,6 +497,25 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface DashboardProfileRouteChildren {
+  DashboardProfileAccountRoute: typeof DashboardProfileAccountRoute
+  DashboardProfileNotificationsRoute: typeof DashboardProfileNotificationsRoute
+  DashboardProfilePreferencesRoute: typeof DashboardProfilePreferencesRoute
+  DashboardProfileSecurityRoute: typeof DashboardProfileSecurityRoute
+  DashboardProfileIndexRoute: typeof DashboardProfileIndexRoute
+}
+
+const DashboardProfileRouteChildren: DashboardProfileRouteChildren = {
+  DashboardProfileAccountRoute: DashboardProfileAccountRoute,
+  DashboardProfileNotificationsRoute: DashboardProfileNotificationsRoute,
+  DashboardProfilePreferencesRoute: DashboardProfilePreferencesRoute,
+  DashboardProfileSecurityRoute: DashboardProfileSecurityRoute,
+  DashboardProfileIndexRoute: DashboardProfileIndexRoute,
+}
+
+const DashboardProfileRouteWithChildren =
+  DashboardProfileRoute._addFileChildren(DashboardProfileRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardAiChatRoute: typeof DashboardAiChatRoute
   DashboardAiToolsRoute: typeof DashboardAiToolsRoute
@@ -409,7 +524,7 @@ interface DashboardRouteChildren {
   DashboardIdeaHubRoute: typeof DashboardIdeaHubRoute
   DashboardMeetingRoute: typeof DashboardMeetingRoute
   DashboardMilestonesRoute: typeof DashboardMilestonesRoute
-  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardProfileRoute: typeof DashboardProfileRouteWithChildren
   DashboardProjectsRoute: typeof DashboardProjectsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTasksRoute: typeof DashboardTasksRoute
@@ -426,7 +541,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIdeaHubRoute: DashboardIdeaHubRoute,
   DashboardMeetingRoute: DashboardMeetingRoute,
   DashboardMilestonesRoute: DashboardMilestonesRoute,
-  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardProfileRoute: DashboardProfileRouteWithChildren,
   DashboardProjectsRoute: DashboardProjectsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTasksRoute: DashboardTasksRoute,
