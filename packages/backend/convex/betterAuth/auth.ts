@@ -58,11 +58,6 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
       "http://localhost:3000",
       "http://localhost:3001",
     ].filter((origin): origin is string => !!origin),
-    advanced: {
-      crossSubDomainCookies: {
-        enabled: true,
-      },
-    },
     plugins: [convex({ authConfig })],
   } satisfies BetterAuthOptions;
 };

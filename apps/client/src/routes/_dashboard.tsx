@@ -19,7 +19,10 @@ function DashboardLayout() {
       <SidebarInset>
         <Header />
         <div className="p-4">
-          <div key={location.pathname} className="animate-fade-in-up">
+          <div
+            key={location.pathname.split("/")[1]}
+            className="animate-fade-in-up"
+          >
             <Outlet />
           </div>
         </div>

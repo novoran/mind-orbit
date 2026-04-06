@@ -21,6 +21,15 @@ import * as React from "react"
 
 export const Route = createFileRoute("/_dashboard/profile/notifications")({
   component: NotificationsPage,
+  head: () => ({
+    meta: [
+      { title: "Notification Settings | MindOrbit" },
+      {
+        name: "description",
+        content: "Choose how and when you want to be notified.",
+      },
+    ],
+  }),
 })
 
 function NotificationsPage() {

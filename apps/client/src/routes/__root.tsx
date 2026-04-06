@@ -9,10 +9,10 @@ import {
 import { createServerFn } from "@tanstack/react-start"
 import * as React from "react"
 
-import appCss from "@mindorbit/ui/globals.css?url"
-
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
 import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
+import appCss from "@mindorbit/ui/globals.css?url"
+import getCookie, { deleteCookie, setCookie } from "get-cookie"
 
 import type { ConvexQueryClient } from "@convex-dev/react-query"
 import type { QueryClient } from "@tanstack/react-query"
@@ -26,6 +26,13 @@ const getAuth = createServerFn({ method: "GET" }).handler(async () => {
   return await getToken()
 })
 
+// Synchronous client-side cache for the auth session to enable instant transitions
+// const authCache = {
+//   initialized: false,
+//   isAuthenticated: false,
+//   token: null as string | null,
+// }
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
   convexQueryClient: ConvexQueryClient
@@ -38,7 +45,31 @@ export const Route = createRootRouteWithContext<{
   } | null
 }>()({
   beforeLoad: async () => {
-    const token = await getAuth()
+    // If we're on the server, perform the server-side check
+    if (typeof window === "undefined") {
+      const token = await getAuth()
+      return {
+        isAuthenticated: !!token,
+        token,
+      }
+    }
+
+    // On the client, we use a synchronous cookie check for "instant" transitions.
+    // This removes the wait for a network promise during internal link clicks.
+    const isAuthActive = getCookie("mind-orbit.auth-active") === "true"
+
+    if (isAuthActive) {
+      // Optimistically assume authenticated for instant navigation.
+      // The RootComponent's useSession will handle the actual data fetching.
+      return {
+        isAuthenticated: true,
+      }
+    }
+
+    // Fallback for initial load or if the cookie is missing/stale
+    const session = await authClient.getSession()
+    const token = session.data?.session.token ?? null
+
     return {
       isAuthenticated: !!token,
       token,
@@ -102,6 +133,17 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   const context = useRouteContext({ from: Route.id })
   const loaderData = Route.useLoaderData()
+  const session = authClient.useSession()
+
+  // Reactive sync to manage the synchronous 'mind-orbit.auth-active' cookie.
+  // This allows future navigations to be 'instant' while staying in sync with the session.
+  React.useEffect(() => {
+    if (session.data) {
+      setCookie("mind-orbit.auth-active", "true", 30) // 30 days
+    } else if (session.isPending === false) {
+      deleteCookie("mind-orbit.auth-active")
+    }
+  }, [session.data, session.isPending])
 
   return (
     <ConvexBetterAuthProvider

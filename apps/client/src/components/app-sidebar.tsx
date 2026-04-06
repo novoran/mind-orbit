@@ -28,7 +28,6 @@ import {
   SidebarRail,
 } from "@mindorbit/ui/components/sidebar"
 import * as React from "react"
-import { useNavigate } from "@tanstack/react-router"
 
 import { Banner } from "@/components/banner"
 import { NavMain } from "@/components/nav-main"
@@ -127,7 +126,6 @@ export const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const navigate = useNavigate()
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -161,13 +159,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={async () => {
-                await authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      navigate({ to: "/sign-in" })
-                    },
-                  },
-                })
+                window.location.href = "/sign-in"
+                await authClient.signOut()
               }}
               tooltip="Logout"
               className="group/logout cursor-pointer bg-red-600 text-white transition-all duration-250 hover:bg-red-700 hover:text-white!"

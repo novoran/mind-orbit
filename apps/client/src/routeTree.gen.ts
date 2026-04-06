@@ -32,7 +32,6 @@ import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$"
 import { Route as DashboardProfileSecurityRouteImport } from "./routes/_dashboard/profile.security"
 import { Route as DashboardProfilePreferencesRouteImport } from "./routes/_dashboard/profile.preferences"
 import { Route as DashboardProfileNotificationsRouteImport } from "./routes/_dashboard/profile.notifications"
-import { Route as DashboardProfileAccountRouteImport } from "./routes/_dashboard/profile.account"
 
 const DashboardRoute = DashboardRouteImport.update({
   id: "/_dashboard",
@@ -150,11 +149,6 @@ const DashboardProfileNotificationsRoute =
     path: "/notifications",
     getParentRoute: () => DashboardProfileRoute,
   } as any)
-const DashboardProfileAccountRoute = DashboardProfileAccountRouteImport.update({
-  id: "/account",
-  path: "/account",
-  getParentRoute: () => DashboardProfileRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   "/": typeof DashboardIndexRoute
@@ -173,7 +167,6 @@ export interface FileRoutesByFullPath {
   "/tasks": typeof DashboardTasksRoute
   "/team-chat": typeof DashboardTeamChatRoute
   "/teams": typeof DashboardTeamsRoute
-  "/profile/account": typeof DashboardProfileAccountRoute
   "/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/profile/security": typeof DashboardProfileSecurityRoute
@@ -196,7 +189,6 @@ export interface FileRoutesByTo {
   "/tasks": typeof DashboardTasksRoute
   "/team-chat": typeof DashboardTeamChatRoute
   "/teams": typeof DashboardTeamsRoute
-  "/profile/account": typeof DashboardProfileAccountRoute
   "/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/profile/security": typeof DashboardProfileSecurityRoute
@@ -223,7 +215,6 @@ export interface FileRoutesById {
   "/_dashboard/team-chat": typeof DashboardTeamChatRoute
   "/_dashboard/teams": typeof DashboardTeamsRoute
   "/_dashboard/": typeof DashboardIndexRoute
-  "/_dashboard/profile/account": typeof DashboardProfileAccountRoute
   "/_dashboard/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/_dashboard/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/_dashboard/profile/security": typeof DashboardProfileSecurityRoute
@@ -249,7 +240,6 @@ export interface FileRouteTypes {
     | "/tasks"
     | "/team-chat"
     | "/teams"
-    | "/profile/account"
     | "/profile/notifications"
     | "/profile/preferences"
     | "/profile/security"
@@ -272,7 +262,6 @@ export interface FileRouteTypes {
     | "/tasks"
     | "/team-chat"
     | "/teams"
-    | "/profile/account"
     | "/profile/notifications"
     | "/profile/preferences"
     | "/profile/security"
@@ -298,7 +287,6 @@ export interface FileRouteTypes {
     | "/_dashboard/team-chat"
     | "/_dashboard/teams"
     | "/_dashboard/"
-    | "/_dashboard/profile/account"
     | "/_dashboard/profile/notifications"
     | "/_dashboard/profile/preferences"
     | "/_dashboard/profile/security"
@@ -475,13 +463,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DashboardProfileNotificationsRouteImport
       parentRoute: typeof DashboardProfileRoute
     }
-    "/_dashboard/profile/account": {
-      id: "/_dashboard/profile/account"
-      path: "/account"
-      fullPath: "/profile/account"
-      preLoaderRoute: typeof DashboardProfileAccountRouteImport
-      parentRoute: typeof DashboardProfileRoute
-    }
   }
 }
 
@@ -498,7 +479,6 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface DashboardProfileRouteChildren {
-  DashboardProfileAccountRoute: typeof DashboardProfileAccountRoute
   DashboardProfileNotificationsRoute: typeof DashboardProfileNotificationsRoute
   DashboardProfilePreferencesRoute: typeof DashboardProfilePreferencesRoute
   DashboardProfileSecurityRoute: typeof DashboardProfileSecurityRoute
@@ -506,7 +486,6 @@ interface DashboardProfileRouteChildren {
 }
 
 const DashboardProfileRouteChildren: DashboardProfileRouteChildren = {
-  DashboardProfileAccountRoute: DashboardProfileAccountRoute,
   DashboardProfileNotificationsRoute: DashboardProfileNotificationsRoute,
   DashboardProfilePreferencesRoute: DashboardProfilePreferencesRoute,
   DashboardProfileSecurityRoute: DashboardProfileSecurityRoute,

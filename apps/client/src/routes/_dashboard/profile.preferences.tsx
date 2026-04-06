@@ -30,6 +30,16 @@ import * as React from "react"
 
 export const Route = createFileRoute("/_dashboard/profile/preferences")({
   component: PreferencesPage,
+  head: () => ({
+    meta: [
+      { title: "Preferences | MindOrbit" },
+      {
+        name: "description",
+        content:
+          "Manage your application appearance, language, and default behaviors.",
+      },
+    ],
+  }),
 })
 
 function PreferencesPage() {

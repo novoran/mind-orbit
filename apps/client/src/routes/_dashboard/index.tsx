@@ -9,6 +9,17 @@ import { Skeleton } from "@mindorbit/ui/components/skeleton"
 
 export const Route = createFileRoute("/_dashboard/")({
   component: DashboardPage,
+  head: () => ({
+    meta: [
+      {
+        title: "Dashboard | MindOrbit",
+      },
+      {
+        name: "description",
+        content: "Overview of your recent activities, tools, and updates.",
+      },
+    ],
+  }),
 })
 
 function DashboardPage() {

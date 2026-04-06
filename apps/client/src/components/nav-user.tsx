@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@mindorbit/ui/components/sidebar"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 
 import { authClient } from "@/lib/auth-client"
 
@@ -37,7 +37,6 @@ export function NavUser({
     avatar?: string
   }
 }) {
-  const navigate = useNavigate()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -132,15 +131,11 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
-                await authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      navigate({ to: "/sign-in" })
-                    },
-                  },
-                })
+                window.location.href = "/sign-in"
+                await authClient.signOut()
               }}
-              className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600 dark:text-red-400 dark:focus:bg-red-950/20 dark:focus:text-red-400"
+              variant="destructive"
+              className="cursor-pointer"
             >
               <HugeiconsIcon icon={LogoutIcon} strokeWidth={2} />
               Log out

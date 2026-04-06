@@ -18,6 +18,15 @@ import { HugeiconsIcon } from "@hugeicons/react"
 
 export const Route = createFileRoute("/_dashboard/profile/security")({
   component: SecurityPage,
+  head: () => ({
+    meta: [
+      { title: "Security Settings | MindOrbit" },
+      {
+        name: "description",
+        content: "Manage your account security and active sessions.",
+      },
+    ],
+  }),
 })
 
 function SecurityPage() {

@@ -1,5 +1,4 @@
 import {
-  AccountSettingIcon,
   FavouriteIcon,
   LockPasswordIcon,
   Notification01Icon,
@@ -13,6 +12,7 @@ import {
   createFileRoute,
   useLocation,
 } from "@tanstack/react-router"
+import { AnimatePresence, motion } from "framer-motion"
 import * as React from "react"
 
 import { authClient } from "@/lib/auth-client"
@@ -22,8 +22,12 @@ export const Route = createFileRoute("/_dashboard/profile")({
 })
 
 const navItems = [
-  { label: "Profile", to: "/profile", icon: UserCircleIcon, exact: true },
-  { label: "Account", to: "/profile/account", icon: AccountSettingIcon },
+  {
+    label: "Profile & Account",
+    to: "/profile",
+    icon: UserCircleIcon,
+    exact: true,
+  },
   { label: "Security", to: "/profile/security", icon: LockPasswordIcon },
   {
     label: "Notifications",
@@ -35,12 +39,8 @@ const navItems = [
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   "/profile": {
-    title: "Profile Settings",
-    subtitle: "Manage your public identity and profile details.",
-  },
-  "/profile/account": {
-    title: "Account Settings",
-    subtitle: "Manage your account credentials and workspace data.",
+    title: "Profile & Account Settings",
+    subtitle: "Manage your identity, account credentials, and data.",
   },
   "/profile/security": {
     title: "Security Settings",
@@ -63,7 +63,7 @@ function ProfileLayout() {
   const meta = PAGE_TITLES[location.pathname] ?? PAGE_TITLES["/profile"]
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 lg:p-8">
+    <div className="flex flex-1 flex-col gap-6 p-3 lg:p-4">
       {/* Page Header */}
       <div className="flex flex-col gap-1">
         {session.isPending ? (
@@ -90,8 +90,18 @@ function ProfileLayout() {
         </aside>
 
         {/* Content */}
-        <div className="min-w-0 flex-1">
-          <Outlet />
+        <div className="h-[calc(100vh-13rem)] min-w-0 flex-1 overflow-y-auto p-1 pr-3">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
