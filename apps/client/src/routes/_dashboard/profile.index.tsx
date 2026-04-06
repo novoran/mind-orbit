@@ -1,5 +1,3 @@
-import { Download05Icon, Mail01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,7 +56,6 @@ function ProfileIndexPage() {
   const [title, setTitle] = React.useState("")
   const [bio, setBio] = React.useState("")
   const [isUpdating, setIsUpdating] = React.useState(false)
-  const [isExporting, setIsExporting] = React.useState(false)
   const [message, setMessage] = React.useState<{
     type: "success" | "error"
     text: string
@@ -91,12 +88,6 @@ function ProfileIndexPage() {
     } finally {
       setIsUpdating(false)
     }
-  }
-
-  const handleExport = async () => {
-    setIsExporting(true)
-    await new Promise((r) => setTimeout(r, 1500))
-    setIsExporting(false)
   }
 
   const handleDeactivate = () => {
@@ -256,66 +247,6 @@ function ProfileIndexPage() {
           </CardFooter>
         </Card>
       </form>
-
-      {/* Account Settings Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Settings</CardTitle>
-          <CardDescription>
-            Manage your account credentials and workspace data.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6">
-          <div className="bg-muted/30 flex items-center justify-between gap-4 rounded-lg border px-4 py-3">
-            <div className="flex items-center gap-3">
-              <div className="bg-background flex size-9 shrink-0 items-center justify-center rounded-md border">
-                <HugeiconsIcon
-                  icon={Mail01Icon}
-                  size={16}
-                  strokeWidth={2}
-                  className="text-muted-foreground"
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-muted-foreground text-[10px] font-semibold tracking-widest uppercase">
-                  Current Email
-                </span>
-                <span className="text-sm font-medium">{user.email}</span>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" disabled>
-              Change Email
-            </Button>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">Export Workspace Data</span>
-              <span className="text-muted-foreground text-sm">
-                Download a complete archive of your chats, projects, and task
-                history.
-              </span>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExport}
-              disabled={isExporting}
-              className="shrink-0"
-            >
-              <HugeiconsIcon
-                icon={Download05Icon}
-                size={14}
-                strokeWidth={2}
-                data-icon="inline-start"
-              />
-              {isExporting ? "Exporting..." : "Export Data"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Danger Zone */}
       <Card className="border-destructive/40">

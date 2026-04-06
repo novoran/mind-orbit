@@ -2,8 +2,6 @@ import {
   AiChat02Icon,
   Calendar02Icon,
   Globe02Icon,
-  LayoutTopIcon,
-  UniversalAccessCircleIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@mindorbit/ui/components/button"
@@ -23,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@mindorbit/ui/components/select"
-import { Separator } from "@mindorbit/ui/components/separator"
 import { Switch } from "@mindorbit/ui/components/switch"
 import { createFileRoute } from "@tanstack/react-router"
 import * as React from "react"
@@ -52,16 +49,7 @@ function PreferencesPage() {
   const [timeFormat, setTimeFormat] = React.useState("12h")
   const [weekStart, setWeekStart] = React.useState("monday")
 
-  // Default Behaviors
-  const [startupPage, setStartupPage] = React.useState("dashboard")
   const [aiSummaries, setAiSummaries] = React.useState(true)
-  const [autoSave, setAutoSave] = React.useState(true)
-  const [focusMode, setFocusMode] = React.useState(false)
-
-  // Accessibility
-  const [reduceMotion, setReduceMotion] = React.useState(false)
-  const [highContrast, setHighContrast] = React.useState(false)
-  const [largeText, setLargeText] = React.useState(false)
 
   const [isSaving, setIsSaving] = React.useState(false)
   const [saved, setSaved] = React.useState(false)
@@ -80,13 +68,7 @@ function PreferencesPage() {
     setDateFormat("MM/DD/YYYY")
     setTimeFormat("12h")
     setWeekStart("monday")
-    setStartupPage("dashboard")
     setAiSummaries(true)
-    setAutoSave(true)
-    setFocusMode(false)
-    setReduceMotion(false)
-    setHighContrast(false)
-    setLargeText(false)
   }
 
   return (
@@ -149,7 +131,7 @@ function PreferencesPage() {
               <SelectTrigger id="timezone">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-44">
                 <SelectItem value="America/New_York">
                   New York, USA (GMT-5)
                 </SelectItem>
@@ -258,72 +240,6 @@ function PreferencesPage() {
         </CardContent>
       </Card>
 
-      {/* Default Behaviors */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <div className="bg-primary/10 flex size-7 items-center justify-center rounded-md border">
-              <HugeiconsIcon
-                icon={LayoutTopIcon}
-                size={14}
-                strokeWidth={2}
-                className="text-primary"
-              />
-            </div>
-            <div>
-              <CardTitle>Default Behaviors</CardTitle>
-              <CardDescription className="mt-0.5">
-                Configure how the application behaves on startup and during
-                usage.
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label
-              htmlFor="startup-page"
-              className="text-muted-foreground text-xs font-semibold tracking-widest uppercase"
-            >
-              Startup Page
-            </Label>
-            <Select
-              value={startupPage}
-              onValueChange={(v) => v && setStartupPage(v)}
-            >
-              <SelectTrigger id="startup-page">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dashboard">Dashboard</SelectItem>
-                <SelectItem value="ai-chat">AI Chat</SelectItem>
-                <SelectItem value="idea-hub">Idea Hub</SelectItem>
-                <SelectItem value="tasks">Tasks</SelectItem>
-                <SelectItem value="projects">Projects</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Separator />
-
-          <PrefRow
-            label="Auto-save Drafts"
-            description="Automatically save your work every few seconds to prevent data loss."
-            checked={autoSave}
-            onCheckedChange={setAutoSave}
-          />
-
-          <Separator />
-
-          <PrefRow
-            label="Focus Mode"
-            description="Hide non-essential UI elements when working to reduce distractions."
-            checked={focusMode}
-            onCheckedChange={setFocusMode}
-          />
-        </CardContent>
-      </Card>
-
       {/* AI Preferences */}
       <Card>
         <CardHeader>
@@ -350,53 +266,6 @@ function PreferencesPage() {
             description="Automatically generate summaries for long project updates and chat threads."
             checked={aiSummaries}
             onCheckedChange={setAiSummaries}
-            padded
-          />
-        </CardContent>
-      </Card>
-
-      {/* Accessibility */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <div className="bg-primary/10 flex size-7 items-center justify-center rounded-md border">
-              <HugeiconsIcon
-                icon={UniversalAccessCircleIcon}
-                size={14}
-                strokeWidth={2}
-                className="text-primary"
-              />
-            </div>
-            <div>
-              <CardTitle>Accessibility</CardTitle>
-              <CardDescription className="mt-0.5">
-                Adjust settings to improve readability and usability.
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-0">
-          <PrefRow
-            label="Reduce Motion"
-            description="Minimize animations for users sensitive to motion."
-            checked={reduceMotion}
-            onCheckedChange={setReduceMotion}
-            padded
-          />
-          <Separator />
-          <PrefRow
-            label="High Contrast Mode"
-            description="Increase color contrast for better visibility."
-            checked={highContrast}
-            onCheckedChange={setHighContrast}
-            padded
-          />
-          <Separator />
-          <PrefRow
-            label="Larger Text"
-            description="Increase base font size across the interface."
-            checked={largeText}
-            onCheckedChange={setLargeText}
             padded
           />
         </CardContent>
