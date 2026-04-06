@@ -51,6 +51,8 @@ export const update = mutation({
     weekStart: v.optional(v.string()),
     aiSummaries: v.optional(v.boolean()),
     onboardingCompleted: v.optional(v.boolean()),
+    bio: v.optional(v.string()),
+    tagline: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
