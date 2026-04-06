@@ -1,9 +1,8 @@
 import {
-  CheckmarkBadgeIcon,
-  CreditCardIcon,
   LogoutIcon,
   NotificationIcon,
   SparklesIcon,
+  UserSquareIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -114,14 +113,18 @@ export function NavUser({
                 }
                 className="cursor-pointer"
               >
-                <HugeiconsIcon icon={CheckmarkBadgeIcon} strokeWidth={2} />
-                Account
+                <HugeiconsIcon icon={UserSquareIcon} strokeWidth={2} />
+                Profile
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2} />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                render={
+                  <Link
+                    to="/profile/notifications"
+                    className="flex items-center gap-2"
+                  />
+                }
+                className="cursor-pointer"
+              >
                 <HugeiconsIcon icon={NotificationIcon} strokeWidth={2} />
                 Notifications
               </DropdownMenuItem>
