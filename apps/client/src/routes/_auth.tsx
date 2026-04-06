@@ -1,13 +1,19 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
-
 import { AuthLayout } from "@/components/auth/auth-layout"
-import { authClient } from "@/lib/auth-client"
+
+function AuthLayoutWrapper() {
+  return (
+    <AuthLayout>
+      <Outlet />
+    </AuthLayout>
+  )
+}
 
 export const Route = createFileRoute("/_auth")({
-  beforeLoad: async () => {
-    // Shared auth check
-    const session = await authClient.getSession()
-    if (session.data) {
+  beforeLoad: ({ context }) => {
+    // We already have authentication status from the root loader/beforeLoad
+    // Using context prevents redundant async network calls on every transition
+    if (context.isAuthenticated) {
       throw redirect({
         to: "/",
       })
@@ -15,11 +21,3 @@ export const Route = createFileRoute("/_auth")({
   },
   component: AuthLayoutWrapper,
 })
-
-function AuthLayoutWrapper() {
-  return (
-    <AuthLayout title="MindOrbit" subtitle="The universe of your productivity.">
-      <Outlet />
-    </AuthLayout>
-  )
-}

@@ -5,35 +5,33 @@ import {
   UserGroupIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { Link } from "@tanstack/react-router"
 import * as React from "react"
 
 interface AuthLayoutProps {
   children: React.ReactNode
-  title: string
-  subtitle?: string
 }
 
-export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
+export function AuthLayout({ children }: AuthLayoutProps) {
   const year = new Date().getFullYear()
 
   return (
-    <div className="flex h-screen w-full items-center justify-center overflow-hidden p-4 lg:p-8">
-      <div className="flex h-full w-full max-w-6xl overflow-hidden rounded-2xl">
-        {/* Left Sidebar — Rounded card style */}
-        <div className="relative hidden w-[40%] shrink-0 overflow-hidden rounded-2xl lg:flex">
+    <div className="grid min-h-screen lg:grid-cols-3">
+      {/* Left Sidebar — Title, Logo, Features */}
+      <div className="relative hidden flex-col justify-between p-6 lg:flex">
+        <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-3xl bg-slate-950 p-12 shadow-2xl">
           {/* Background Image */}
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
               backgroundImage:
-                'url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2022&auto=format&fit=crop")',
+                "url(https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2022&auto=format&fit=crop)",
             }}
-          >
-            <div className="absolute inset-0 bg-slate-950/50" />
-          </div>
+          />
+          <div className="absolute inset-0 bg-indigo-950/80 mix-blend-multiply" />
 
-          {/* Content */}
-          <div className="relative z-10 flex h-full w-full flex-col justify-between p-10 text-white">
+          {/* Content on top of background */}
+          <div className="relative z-10 flex h-full flex-col justify-between text-white">
             {/* Logo */}
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 shadow-lg">
@@ -92,40 +90,36 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Right Column — Auth Form */}
-        <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto rounded-2xl bg-white p-8">
-          <div className="w-full max-w-sm space-y-7">
-            {/* Mobile Logo */}
-            <div className="flex items-center gap-2 lg:hidden">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
-                <HugeiconsIcon
-                  icon={Rocket01Icon}
-                  className="h-4 w-4 text-white"
-                />
-              </div>
-              <span className="text-lg font-bold">MindOrbit</span>
-            </div>
+      {/* Main Content Area — Auth Form */}
+      <div className="flex flex-col items-center justify-center p-6 lg:col-span-2">
+        <div className="m-auto flex w-full max-w-[400px] flex-col items-center gap-8">
+          {children}
 
-            {(title || subtitle) && (
-              <div>
-                {title && (
-                  <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-                    {title}
-                  </h2>
-                )}
-                {subtitle && (
-                  <p className="mt-1.5 text-sm text-slate-500">{subtitle}</p>
-                )}
-              </div>
-            )}
-
-            {children}
-
-            {/* Mobile Footer */}
-            <p className="text-center text-xs text-slate-400 lg:hidden">
-              © {year} MindOrbit Inc.
-            </p>
+          {/* Footer Links */}
+          <div className="mt-8 flex items-center justify-center gap-6 text-xs font-medium text-slate-400">
+            <Link
+              to="/"
+              hash="privacy"
+              className="underline-offset-4 hover:text-indigo-600 hover:underline"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="/"
+              hash="terms"
+              className="underline-offset-4 hover:text-indigo-600 hover:underline"
+            >
+              Terms
+            </Link>
+            <Link
+              to="/"
+              hash="cookies"
+              className="underline-offset-4 hover:text-indigo-600 hover:underline"
+            >
+              Cookies
+            </Link>
           </div>
         </div>
       </div>

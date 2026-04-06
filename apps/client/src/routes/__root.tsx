@@ -28,6 +28,8 @@ const getAuth = createServerFn({ method: "GET" }).handler(async () => {
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
   convexQueryClient: ConvexQueryClient
+  isAuthenticated?: boolean
+  token?: string | null
 }>()({
   loader: async ({ context }) => {
     const token = await getAuth()
@@ -40,6 +42,13 @@ export const Route = createRootRouteWithContext<{
     }
     return {
       sidebarOpen: true,
+      isAuthenticated: !!token,
+      token,
+    }
+  },
+  beforeLoad: async () => {
+    const token = await getAuth()
+    return {
       isAuthenticated: !!token,
       token,
     }

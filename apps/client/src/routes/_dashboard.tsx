@@ -1,10 +1,10 @@
+import { SidebarInset, SidebarProvider } from "@mindorbit/ui/components/sidebar"
 import {
   Outlet,
   createFileRoute,
   redirect,
   useLocation,
 } from "@tanstack/react-router"
-import { SidebarInset, SidebarProvider } from "@mindorbit/ui/components/sidebar"
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { Header } from "@/components/header"
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_dashboard")({
     const session = await authClient.getSession()
     if (!session.data) {
       throw redirect({
-        to: "/signin",
+        to: "/sign-in",
       })
     }
   },
