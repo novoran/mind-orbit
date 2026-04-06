@@ -79,7 +79,7 @@ export function SignUpForm() {
       <div className="grid grid-cols-2 gap-4">
         <Button
           variant="outline"
-          className="h-10 w-full cursor-pointer justify-center gap-3 border-transparent bg-white font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:ring-slate-300 active:scale-[0.98]"
+          className="h-10 w-full cursor-pointer justify-center gap-3 border-transparent bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:ring-slate-300 active:scale-[0.98]"
           onClick={() =>
             authClient.signIn.social({ provider: "google", callbackURL: "/" })
           }
@@ -89,7 +89,7 @@ export function SignUpForm() {
         </Button>
         <Button
           variant="outline"
-          className="h-10 w-full cursor-pointer justify-center gap-3 border-transparent bg-white font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:ring-slate-300 active:scale-[0.98]"
+          className="h-10 w-full cursor-pointer justify-center gap-3 border-transparent bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:ring-slate-300 active:scale-[0.98]"
           onClick={() =>
             authClient.signIn.social({ provider: "slack", callbackURL: "/" })
           }
@@ -110,7 +110,7 @@ export function SignUpForm() {
 
       {/* Error Message */}
       {error && (
-        <div className="rounded-xl bg-red-50 p-3.5 text-sm font-semibold text-red-600 ring-1 ring-red-100 ring-inset">
+        <div className="rounded-xl bg-red-50 p-3.5 text-sm text-red-600 ring-1 ring-red-100 ring-inset">
           {error}
         </div>
       )}
@@ -305,7 +305,7 @@ export function SignUpForm() {
               />
               <Label
                 htmlFor={field.name}
-                className="cursor-pointer text-sm font-semibold text-slate-500 transition-colors hover:text-slate-700"
+                className="cursor-pointer text-sm text-slate-500 transition-colors hover:text-slate-700"
               >
                 I agree to the{" "}
                 <Link

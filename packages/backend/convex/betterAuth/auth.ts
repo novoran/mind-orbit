@@ -13,7 +13,7 @@ export const authComponent = createClient<DataModel, typeof schema>(
   components.betterAuth as any,
   {
     local: { schema },
-    verbose: false,
+    verbose: true,
   },
 );
 
@@ -24,6 +24,9 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
     baseURL: process.env.SITE_URL,
     secret: process.env.BETTER_AUTH_SECRET,
     database: authComponent.adapter(ctx),
+    emailAndPassword: {
+      enabled: true,
+    },
     socialProviders: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID || "PLACEHOLDER",

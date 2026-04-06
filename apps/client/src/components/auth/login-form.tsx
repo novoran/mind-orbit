@@ -49,9 +49,7 @@ export function LoginForm() {
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
           Welcome Back
         </h1>
-        <p className="text-sm font-medium text-slate-500">
-          Please login to your account
-        </p>
+        <p className="text-sm text-slate-500">Please login to your account</p>
       </div>
 
       {/* Social Logins */}
@@ -121,7 +119,7 @@ export function LoginForm() {
                   id={field.name}
                   type="email"
                   placeholder="name@company.com"
-                  className="h-11 rounded-xl border-transparent bg-slate-50 pl-11 font-medium text-slate-900 shadow-none ring-1 ring-slate-200 transition-all placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-indigo-600"
+                  className="h-11 rounded-xl border-transparent bg-slate-50 pl-11 text-slate-900 shadow-none ring-1 ring-slate-200 transition-all placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-indigo-600"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
@@ -158,7 +156,7 @@ export function LoginForm() {
                   id={field.name}
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="h-11 rounded-xl border-transparent bg-slate-50 pr-11 pl-11 font-medium text-slate-900 shadow-none ring-1 ring-slate-200 transition-all placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-indigo-600"
+                  className="h-11 rounded-xl border-transparent bg-slate-50 pr-11 pl-11 text-slate-900 shadow-none ring-1 ring-slate-200 transition-all placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-indigo-600"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
@@ -214,7 +212,7 @@ export function LoginForm() {
         />
       </form>
 
-      <div className="text-center text-sm font-medium text-slate-500">
+      <div className="text-center text-sm text-slate-500">
         Don&apos;t have an account?{" "}
         <Link
           to="/sign-up"
