@@ -8,10 +8,16 @@ import {
   CardTitle,
 } from "@mindorbit/ui/components/card"
 
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query"
 import { Separator } from "@mindorbit/ui/components/separator"
+import { Skeleton } from "@mindorbit/ui/components/skeleton"
 import { Switch } from "@mindorbit/ui/components/switch"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { gooeyToast } from "goey-toast"
 import * as React from "react"
+
+import { api } from "@mindorbit/backend/_generated/api"
 
 export const Route = createFileRoute("/_dashboard/profile/notifications")({
   component: NotificationsPage,
@@ -27,6 +33,12 @@ export const Route = createFileRoute("/_dashboard/profile/notifications")({
 })
 
 function NotificationsPage() {
+  const mutate = useConvexMutation(api.settings.update)
+  const { data: settings } = useQuery(convexQuery(api.settings.get, {}))
+  const updateSettings = useMutation({
+    mutationFn: mutate,
+  })
+
   const [workspace, setWorkspace] = React.useState({
     projectUpdates: true,
     milestoneReached: true,
@@ -34,12 +46,58 @@ function NotificationsPage() {
     newTeamMembers: false,
   })
 
-  const [isSaving, setIsSaving] = React.useState(false)
+  const handleSave = () => {
+    const savePromise = updateSettings.mutateAsync({
+      projectUpdates: workspace.projectUpdates,
+      milestoneReached: workspace.milestoneReached,
+      taskAssignments: workspace.taskAssignments,
+      newTeamMembers: workspace.newTeamMembers,
+    })
 
-  const handleSave = async () => {
-    setIsSaving(true)
-    await new Promise((r) => setTimeout(r, 1000))
-    setIsSaving(false)
+    gooeyToast.promise(savePromise, {
+      loading: "Updating notification settings...",
+      success: "Notification settings updated!",
+      error: "Failed to update notification settings",
+    })
+  }
+
+  // Initialize state from backend data
+  React.useEffect(() => {
+    if (settings) {
+      setWorkspace({
+        projectUpdates: settings.projectUpdates,
+        milestoneReached: settings.milestoneReached,
+        taskAssignments: settings.taskAssignments,
+        newTeamMembers: settings.newTeamMembers,
+      })
+    }
+  }, [settings])
+
+  if (!settings) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="mt-1 h-4 w-64" />
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
+                  <Skeleton className="h-6 w-10 rounded-full" />
+                </div>
+                {i < 4 && <Separator />}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -89,9 +147,9 @@ function NotificationsPage() {
             }
           />
         </CardContent>
-        <CardFooter className="flex justify-end border-t pt-4">
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save Preferences"}
+        <CardFooter className="flex items-center justify-end border-t pt-4">
+          <Button onClick={handleSave} disabled={updateSettings.isPending}>
+            {updateSettings.isPending ? "Saving..." : "Save Preferences"}
           </Button>
         </CardFooter>
       </Card>

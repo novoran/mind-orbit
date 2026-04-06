@@ -12,6 +12,8 @@ import * as React from "react"
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
 import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
 import appCss from "@mindorbit/ui/globals.css?url"
+import "goey-toast/styles.css"
+import { GooeyToaster } from "goey-toast"
 import getCookie, { deleteCookie, setCookie } from "get-cookie"
 
 import type { ConvexQueryClient } from "@convex-dev/react-query"
@@ -166,7 +168,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider storageKey="vite-ui-theme">
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider>
+            <GooeyToaster />
+            {children}
+          </TooltipProvider>
         </ThemeProvider>
         <Scripts />
       </body>

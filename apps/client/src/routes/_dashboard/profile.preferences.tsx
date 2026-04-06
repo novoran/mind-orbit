@@ -1,3 +1,4 @@
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query"
 import {
   AiChat02Icon,
   Calendar02Icon,
@@ -22,8 +23,13 @@ import {
   SelectValue,
 } from "@mindorbit/ui/components/select"
 import { Switch } from "@mindorbit/ui/components/switch"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import * as React from "react"
+
+import { api } from "@mindorbit/backend/_generated/api"
+import { Skeleton } from "@mindorbit/ui/components/skeleton"
+import { gooeyToast } from "goey-toast"
 
 export const Route = createFileRoute("/_dashboard/profile/preferences")({
   component: PreferencesPage,
@@ -40,6 +46,13 @@ export const Route = createFileRoute("/_dashboard/profile/preferences")({
 })
 
 function PreferencesPage() {
+  const mutate = useConvexMutation(api.settings.update)
+  const { data: settings } = useQuery(convexQuery(api.settings.get, {}))
+
+  const updateSettings = useMutation({
+    mutationFn: mutate,
+  })
+
   // Language & Region
   const [language, setLanguage] = React.useState("en-US")
   const [timezone, setTimezone] = React.useState("Asia/Dhaka")
@@ -51,24 +64,62 @@ function PreferencesPage() {
 
   const [aiSummaries, setAiSummaries] = React.useState(true)
 
-  const [isSaving, setIsSaving] = React.useState(false)
-  const [saved, setSaved] = React.useState(false)
+  // Initialize state from backend data
+  React.useEffect(() => {
+    if (settings) {
+      setLanguage(settings.language)
+      setTimezone(settings.timezone)
+      setDateFormat(settings.dateFormat)
+      setTimeFormat(settings.timeFormat)
+      setWeekStart(settings.weekStart)
+      setAiSummaries(settings.aiSummaries)
+    }
+  }, [settings])
 
-  const handleSave = async () => {
-    setIsSaving(true)
-    await new Promise((r) => setTimeout(r, 1000))
-    setIsSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  const handleSave = () => {
+    const savePromise = updateSettings.mutateAsync({
+      language,
+      timezone,
+      dateFormat,
+      timeFormat,
+      weekStart,
+      aiSummaries,
+    })
+
+    gooeyToast.promise(savePromise, {
+      loading: "Saving preferences...",
+      success: "Preferences saved successfully",
+      error: "Failed to save preferences",
+    })
   }
 
   const handleDiscard = () => {
-    setLanguage("en-US")
-    setTimezone("Asia/Dhaka")
-    setDateFormat("MM/DD/YYYY")
-    setTimeFormat("12h")
-    setWeekStart("monday")
-    setAiSummaries(true)
+    if (settings) {
+      setLanguage(settings.language)
+      setTimezone(settings.timezone)
+      setDateFormat(settings.dateFormat)
+      setTimeFormat(settings.timeFormat)
+      setWeekStart(settings.weekStart)
+      setAiSummaries(settings.aiSummaries)
+    }
+  }
+
+  if (!settings) {
+    return (
+      <div className="flex flex-col gap-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="mt-1 h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-10 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
   }
 
   return (
@@ -269,20 +320,13 @@ function PreferencesPage() {
             padded
           />
         </CardContent>
-        <CardFooter className="flex items-center justify-between border-t pt-4">
-          <div>
-            {saved && (
-              <span className="text-sm text-emerald-600 dark:text-emerald-400">
-                ✓ Preferences saved successfully.
-              </span>
-            )}
-          </div>
+        <CardFooter className="flex items-center justify-end border-t pt-4">
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleDiscard}>
               Discard Changes
             </Button>
-            <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Preferences"}
+            <Button onClick={handleSave} disabled={updateSettings.isPending}>
+              {updateSettings.isPending ? "Saving..." : "Save Preferences"}
             </Button>
           </div>
         </CardFooter>
