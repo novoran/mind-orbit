@@ -8,22 +8,6 @@ import {
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { Header } from "@/components/header"
-import { authClient } from "@/lib/auth-client"
-
-export const Route = createFileRoute("/_dashboard")({
-  beforeLoad: async () => {
-    const session = await authClient.getSession()
-    if (!session.data) {
-      throw redirect({
-        to: "/sign-in",
-      })
-    }
-  },
-  loader: () => {
-    return { sidebarOpen: true }
-  },
-  component: DashboardLayout,
-})
 
 function DashboardLayout() {
   const { sidebarOpen } = Route.useLoaderData()
@@ -43,3 +27,17 @@ function DashboardLayout() {
     </SidebarProvider>
   )
 }
+
+export const Route = createFileRoute("/_dashboard")({
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/sign-in",
+      })
+    }
+  },
+  loader: () => {
+    return { sidebarOpen: true }
+  },
+  component: DashboardLayout,
+})

@@ -14,11 +14,7 @@ import { NavUser } from "./nav-user"
 import { NotificationCenter } from "./notification-center"
 import { TeamSwitcher } from "./team-switcher"
 
-const userData = {
-  name: "Alex Reed",
-  email: "alex@mindorbit.com",
-  avatar: "https://avatar.vercel.sh/alex.png",
-}
+import { authClient } from "@/lib/auth-client"
 
 const teamsData = [
   {
@@ -40,6 +36,9 @@ const teamsData = [
 
 export function Header() {
   const location = useLocation()
+  const session = authClient.useSession()
+  const user = session.data?.user
+
   const pathnames = location.pathname.split("/").filter((x) => x)
 
   return (
@@ -84,7 +83,15 @@ export function Header() {
       <div className="flex items-center gap-2">
         <NotificationCenter />
         <AnimatedThemeToggler className="cursor-pointer" />
-        <NavUser user={userData} />
+        {user && (
+          <NavUser
+            user={{
+              name: user.name,
+              email: user.email,
+              avatar: user.image ?? undefined,
+            }}
+          />
+        )}
       </div>
     </header>
   )

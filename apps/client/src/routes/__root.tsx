@@ -1,3 +1,4 @@
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
 import {
   HeadContent,
   Outlet,
@@ -5,16 +6,16 @@ import {
   createRootRouteWithContext,
   useRouteContext,
 } from "@tanstack/react-router"
-import * as React from "react"
 import { createServerFn } from "@tanstack/react-start"
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
+import * as React from "react"
 
 import appCss from "@mindorbit/ui/globals.css?url"
 
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
 import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
-import type { QueryClient } from "@tanstack/react-query"
+
 import type { ConvexQueryClient } from "@convex-dev/react-query"
+import type { QueryClient } from "@tanstack/react-query"
 
 import { NotFound } from "@/components/not-found"
 import { authClient } from "@/lib/auth-client"
@@ -30,9 +31,23 @@ export const Route = createRootRouteWithContext<{
   convexQueryClient: ConvexQueryClient
   isAuthenticated?: boolean
   token?: string | null
+  user?: {
+    name: string
+    email: string
+    image?: string | null
+  } | null
 }>()({
-  loader: async ({ context }) => {
+  beforeLoad: async () => {
     const token = await getAuth()
+    return {
+      isAuthenticated: !!token,
+      token,
+    }
+  },
+  loader: ({ context }) => {
+    // Access token from context populated in beforeLoad
+    const { token } = context
+
     // all queries, mutations and actions through TanStack Query will be
     // authenticated during SSR if we have a valid token
     if (token) {
@@ -40,15 +55,9 @@ export const Route = createRootRouteWithContext<{
       // set the auth token to make HTTP queries with.
       context.convexQueryClient.serverHttpClient?.setAuth(token)
     }
+
     return {
       sidebarOpen: true,
-      isAuthenticated: !!token,
-      token,
-    }
-  },
-  beforeLoad: async () => {
-    const token = await getAuth()
-    return {
       isAuthenticated: !!token,
       token,
     }

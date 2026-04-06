@@ -17,6 +17,7 @@ import { Route as DashboardTeamChatRouteImport } from "./routes/_dashboard/team-
 import { Route as DashboardTasksRouteImport } from "./routes/_dashboard/tasks"
 import { Route as DashboardSettingsRouteImport } from "./routes/_dashboard/settings"
 import { Route as DashboardProjectsRouteImport } from "./routes/_dashboard/projects"
+import { Route as DashboardProfileRouteImport } from "./routes/_dashboard/profile"
 import { Route as DashboardMilestonesRouteImport } from "./routes/_dashboard/milestones"
 import { Route as DashboardMeetingRouteImport } from "./routes/_dashboard/meeting"
 import { Route as DashboardIdeaHubRouteImport } from "./routes/_dashboard/idea-hub"
@@ -64,6 +65,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
 const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
   id: "/projects",
   path: "/projects",
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProfileRoute = DashboardProfileRouteImport.update({
+  id: "/profile",
+  path: "/profile",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardMilestonesRoute = DashboardMilestonesRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   "/idea-hub": typeof DashboardIdeaHubRoute
   "/meeting": typeof DashboardMeetingRoute
   "/milestones": typeof DashboardMilestonesRoute
+  "/profile": typeof DashboardProfileRoute
   "/projects": typeof DashboardProjectsRoute
   "/settings": typeof DashboardSettingsRoute
   "/tasks": typeof DashboardTasksRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   "/idea-hub": typeof DashboardIdeaHubRoute
   "/meeting": typeof DashboardMeetingRoute
   "/milestones": typeof DashboardMilestonesRoute
+  "/profile": typeof DashboardProfileRoute
   "/projects": typeof DashboardProjectsRoute
   "/settings": typeof DashboardSettingsRoute
   "/tasks": typeof DashboardTasksRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   "/_dashboard/idea-hub": typeof DashboardIdeaHubRoute
   "/_dashboard/meeting": typeof DashboardMeetingRoute
   "/_dashboard/milestones": typeof DashboardMilestonesRoute
+  "/_dashboard/profile": typeof DashboardProfileRoute
   "/_dashboard/projects": typeof DashboardProjectsRoute
   "/_dashboard/settings": typeof DashboardSettingsRoute
   "/_dashboard/tasks": typeof DashboardTasksRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | "/idea-hub"
     | "/meeting"
     | "/milestones"
+    | "/profile"
     | "/projects"
     | "/settings"
     | "/tasks"
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | "/idea-hub"
     | "/meeting"
     | "/milestones"
+    | "/profile"
     | "/projects"
     | "/settings"
     | "/tasks"
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | "/_dashboard/idea-hub"
     | "/_dashboard/meeting"
     | "/_dashboard/milestones"
+    | "/_dashboard/profile"
     | "/_dashboard/projects"
     | "/_dashboard/settings"
     | "/_dashboard/tasks"
@@ -295,6 +307,13 @@ declare module "@tanstack/react-router" {
       path: "/projects"
       fullPath: "/projects"
       preLoaderRoute: typeof DashboardProjectsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    "/_dashboard/profile": {
+      id: "/_dashboard/profile"
+      path: "/profile"
+      fullPath: "/profile"
+      preLoaderRoute: typeof DashboardProfileRouteImport
       parentRoute: typeof DashboardRoute
     }
     "/_dashboard/milestones": {
@@ -390,6 +409,7 @@ interface DashboardRouteChildren {
   DashboardIdeaHubRoute: typeof DashboardIdeaHubRoute
   DashboardMeetingRoute: typeof DashboardMeetingRoute
   DashboardMilestonesRoute: typeof DashboardMilestonesRoute
+  DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardProjectsRoute: typeof DashboardProjectsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTasksRoute: typeof DashboardTasksRoute
@@ -406,6 +426,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIdeaHubRoute: DashboardIdeaHubRoute,
   DashboardMeetingRoute: DashboardMeetingRoute,
   DashboardMilestonesRoute: DashboardMilestonesRoute,
+  DashboardProfileRoute: DashboardProfileRoute,
   DashboardProjectsRoute: DashboardProjectsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTasksRoute: DashboardTasksRoute,
