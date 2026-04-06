@@ -20,7 +20,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
     <div className="flex h-screen w-full items-center justify-center overflow-hidden p-4 lg:p-8">
       <div className="flex h-full w-full max-w-6xl overflow-hidden rounded-2xl">
         {/* Left Sidebar — Rounded card style */}
-        <div className="relative hidden w-[45%] shrink-0 overflow-hidden rounded-2xl lg:flex">
+        <div className="relative hidden w-[40%] shrink-0 overflow-hidden rounded-2xl lg:flex">
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -107,14 +107,18 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               <span className="text-lg font-bold">MindOrbit</span>
             </div>
 
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-                {title}
-              </h2>
-              {subtitle && (
-                <p className="mt-1.5 text-sm text-slate-500">{subtitle}</p>
-              )}
-            </div>
+            {(title || subtitle) && (
+              <div>
+                {title && (
+                  <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+                    {title}
+                  </h2>
+                )}
+                {subtitle && (
+                  <p className="mt-1.5 text-sm text-slate-500">{subtitle}</p>
+                )}
+              </div>
+            )}
 
             {children}
 
@@ -140,7 +144,7 @@ function FeatureItem({
 }) {
   return (
     <div className="flex items-center gap-3.5">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-md">
+      <div className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-white/20">
         {icon}
       </div>
       <div>

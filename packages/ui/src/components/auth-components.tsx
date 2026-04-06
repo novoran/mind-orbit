@@ -52,6 +52,7 @@ interface AuthTextFieldProps extends React.InputHTMLAttributes<HTMLInputElement>
   label: string
   icon?: React.ReactNode
   error?: string
+  onBlur?: () => void
 }
 
 function AuthTextField({
@@ -60,6 +61,7 @@ function AuthTextField({
   error,
   id,
   className,
+  onBlur,
   ...props
 }: AuthTextFieldProps) {
   return (
@@ -80,6 +82,7 @@ function AuthTextField({
             icon ? "pl-10" : "",
             className
           )}
+          onBlur={onBlur}
           {...props}
         />
       </div>
@@ -98,6 +101,7 @@ interface AuthPasswordFieldProps {
   icon?: React.ReactNode
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur?: () => void
   placeholder?: string
   required?: boolean
   error?: string
@@ -111,6 +115,7 @@ function AuthPasswordField({
   icon,
   value,
   onChange,
+  onBlur,
   placeholder = "••••••••",
   required,
   error,
@@ -139,6 +144,7 @@ function AuthPasswordField({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           required={required}
           className={cn(
             "h-11 border-slate-200 pr-10",
