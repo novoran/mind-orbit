@@ -25,7 +25,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@mindorbit/ui/components/sidebar"
-import { Link } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 
 import { authClient } from "@/lib/auth-client"
 
@@ -38,6 +38,7 @@ export function NavUser({
     avatar?: string
   }
 }) {
+  const navigate = useNavigate()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -131,7 +132,7 @@ export function NavUser({
                 await authClient.signOut({
                   fetchOptions: {
                     onSuccess: () => {
-                      window.location.href = "/sign-in"
+                      navigate({ to: "/sign-in" })
                     },
                   },
                 })

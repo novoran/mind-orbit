@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@mindorbit/ui/components/card"
 import { Skeleton } from "@mindorbit/ui/components/skeleton"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import * as React from "react"
 
 import { Separator } from "@mindorbit/ui/components/separator"
@@ -33,6 +33,7 @@ export const Route = createFileRoute("/_dashboard/profile/account")({
 function AccountSettingsPage() {
   const session = authClient.useSession()
   const user = session.data?.user
+  const navigate = useNavigate()
   const [isExporting, setIsExporting] = React.useState(false)
 
   const handleExport = async () => {
@@ -42,7 +43,7 @@ function AccountSettingsPage() {
     setIsExporting(false)
   }
 
-  const handleDeactivate = async () => {
+  const handleDeactivate = () => {
     // placeholder deactivation logic
     alert("Account deactivated (demo only)")
   }
@@ -51,7 +52,7 @@ function AccountSettingsPage() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          window.location.href = "/sign-in"
+          navigate({ to: "/sign-in" })
         },
       },
     })
