@@ -41,6 +41,10 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
         clientId: process.env.APPLE_CLIENT_ID || "PLACEHOLDER",
         clientSecret: process.env.APPLE_CLIENT_SECRET || "PLACEHOLDER",
       },
+      slack: {
+        clientId: process.env.SLACK_CLIENT_ID || "PLACEHOLDER",
+        clientSecret: process.env.SLACK_CLIENT_SECRET || "PLACEHOLDER",
+      },
     },
     trustedOrigins: [
       process.env.SITE_URL,
@@ -48,6 +52,8 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
       process.env.CLIENT_SITE_URL,
       process.env.ADMIN_SITE_URL,
       process.env.DOCS_SITE_URL,
+      "http://localhost:3000",
+      "http://localhost:3001",
     ].filter((origin): origin is string => !!origin),
     advanced: {
       crossSubDomainCookies: {
