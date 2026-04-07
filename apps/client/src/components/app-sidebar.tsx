@@ -4,7 +4,6 @@ import {
   Briefcase02Icon,
   Chatting01Icon,
   DashboardCircleIcon,
-  DashboardSquare02Icon,
   Flag01Icon,
   Folder01Icon,
   Idea01Icon,
@@ -31,26 +30,8 @@ import * as React from "react"
 
 import { Banner } from "@/components/banner"
 import { NavMain } from "@/components/nav-main"
-import { WorkspaceSwitcher } from "@/components/workspace-switcher"
+import { OrbitSwitcher } from "@/components/orbit-switcher"
 import { authClient } from "@/lib/auth-client"
-
-export const teamsData = [
-  {
-    name: "Acme Inc",
-    logo: DashboardSquare02Icon,
-    plan: "Pro",
-  },
-  {
-    name: "Acme Corp.",
-    logo: DashboardCircleIcon,
-    plan: "Team",
-  },
-  {
-    name: "Evil Corp.",
-    logo: DashboardSquare02Icon,
-    plan: "Free",
-  },
-]
 
 export const data = {
   mainNav: [
@@ -126,10 +107,54 @@ export const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: orbitsList } = authClient.useListOrganizations()
+  const { data: activeOrbitNode } = authClient.useActiveOrganization()
+
+  const orbits = (orbitsList || []).map((org) => {
+    let metadata: any = {}
+    try {
+      metadata =
+        typeof org.metadata === "string"
+          ? JSON.parse(org.metadata)
+          : org.metadata || {}
+    } catch {
+      metadata = {}
+    }
+
+    return {
+      name: org.name,
+      logo: org.logo || null,
+      plan: (metadata.plan as string) || "Free",
+      id: org.id,
+      slug: org.slug,
+    }
+  })
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <WorkspaceSwitcher teams={teamsData} />
+        <OrbitSwitcher
+          orbits={orbits}
+          activeOrbit={(() => {
+            if (!activeOrbitNode) return orbits[0]
+            let metadata: any = {}
+            try {
+              metadata =
+                typeof activeOrbitNode.metadata === "string"
+                  ? JSON.parse(activeOrbitNode.metadata)
+                  : activeOrbitNode.metadata || {}
+            } catch {
+              metadata = {}
+            }
+            return {
+              name: activeOrbitNode.name,
+              logo: activeOrbitNode.logo || null,
+              plan: (metadata.plan as string) || "Free",
+              id: activeOrbitNode.id,
+              slug: activeOrbitNode.slug,
+            }
+          })()}
+        />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>

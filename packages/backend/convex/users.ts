@@ -1,5 +1,6 @@
-import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+import type { UserWithSettings } from "./types";
 import { Doc } from "./_generated/dataModel";
 
 /**
@@ -7,7 +8,7 @@ import { Doc } from "./_generated/dataModel";
  */
 export const currentUser = query({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<UserWithSettings | null> => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return null;
 

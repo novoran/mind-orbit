@@ -39,7 +39,7 @@ function NotificationsPage() {
     mutationFn: mutate,
   })
 
-  const [workspace, setWorkspace] = React.useState({
+  const [orbit, setOrbit] = React.useState({
     projectUpdates: true,
     milestoneReached: true,
     taskAssignments: true,
@@ -48,10 +48,10 @@ function NotificationsPage() {
 
   const handleSave = () => {
     const savePromise = updateSettings.mutateAsync({
-      projectUpdates: workspace.projectUpdates,
-      milestoneReached: workspace.milestoneReached,
-      taskAssignments: workspace.taskAssignments,
-      newTeamMembers: workspace.newTeamMembers,
+      projectUpdates: orbit.projectUpdates,
+      milestoneReached: orbit.milestoneReached,
+      taskAssignments: orbit.taskAssignments,
+      newTeamMembers: orbit.newTeamMembers,
     })
 
     gooeyToast.promise(savePromise, {
@@ -64,7 +64,7 @@ function NotificationsPage() {
   // Initialize state from backend data
   React.useEffect(() => {
     if (settings) {
-      setWorkspace({
+      setOrbit({
         projectUpdates: settings.projectUpdates,
         milestoneReached: settings.milestoneReached,
         taskAssignments: settings.taskAssignments,
@@ -102,48 +102,48 @@ function NotificationsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Workspace Notifications */}
+      {/* Orbit Notifications */}
       <Card>
         <CardHeader>
-          <CardTitle>Workspace Notifications</CardTitle>
+          <CardTitle>Orbit Notifications</CardTitle>
           <CardDescription>
-            Control activity alerts from your shared workspaces and projects.
+            Control activity alerts from your shared orbits and projects.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-0">
           <NotifRow
             label="Project Updates"
             description="Receive alerts when comments or changes are made to projects."
-            checked={workspace.projectUpdates}
+            checked={orbit.projectUpdates}
             onCheckedChange={(v) =>
-              setWorkspace((s) => ({ ...s, projectUpdates: v }))
+              setOrbit((s) => ({ ...s, projectUpdates: v }))
             }
           />
           <Separator />
           <NotifRow
             label="Milestone Reached"
             description="Get notified when key project milestones are completed."
-            checked={workspace.milestoneReached}
+            checked={orbit.milestoneReached}
             onCheckedChange={(v) =>
-              setWorkspace((s) => ({ ...s, milestoneReached: v }))
+              setOrbit((s) => ({ ...s, milestoneReached: v }))
             }
           />
           <Separator />
           <NotifRow
             label="Task Assignments"
             description="Receive a notification when you are assigned a new task."
-            checked={workspace.taskAssignments}
+            checked={orbit.taskAssignments}
             onCheckedChange={(v) =>
-              setWorkspace((s) => ({ ...s, taskAssignments: v }))
+              setOrbit((s) => ({ ...s, taskAssignments: v }))
             }
           />
           <Separator />
           <NotifRow
             label="New Team Members"
-            description="Be notified when a new member joins your workspace."
-            checked={workspace.newTeamMembers}
+            description="Be notified when a new member joins your orbit."
+            checked={orbit.newTeamMembers}
             onCheckedChange={(v) =>
-              setWorkspace((s) => ({ ...s, newTeamMembers: v }))
+              setOrbit((s) => ({ ...s, newTeamMembers: v }))
             }
           />
         </CardContent>

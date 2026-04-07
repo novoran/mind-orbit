@@ -102,7 +102,7 @@ const BANNERS: Array<BannerItem> = [
   {
     id: "security",
     header: {
-      title: "Secure Workspace",
+      title: "Secure Orbit",
       subtitle: "Enterprise Grade",
     },
     content: {

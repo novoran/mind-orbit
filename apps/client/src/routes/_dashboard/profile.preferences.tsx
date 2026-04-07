@@ -306,7 +306,7 @@ function PreferencesPage() {
             <div>
               <CardTitle>AI Preferences</CardTitle>
               <CardDescription className="mt-0.5">
-                Control how AI features assist you across the workspace.
+                Control how AI features assist you across the orbits.
               </CardDescription>
             </div>
           </div>

@@ -52,7 +52,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                   Propel your productivity into a new orbit.
                 </h1>
                 <p className="text-base text-slate-300">
-                  AI-first workspace designed for high-performing teams.
+                  AI-first orbit designed for high-performing teams.
                 </p>
               </div>
 
