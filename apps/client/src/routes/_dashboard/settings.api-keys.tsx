@@ -129,7 +129,7 @@ function SettingsApiKeysPage() {
         <div className="flex flex-col gap-1">
           <h3 className="text-sm font-semibold">Keep your API keys secure</h3>
           <p className="text-muted-foreground text-sm">
-            API keys provide full access to your u0045 data. Never share them in
+            API keys provide full access to your orbit data. Never share them in
             public repositories or client-side code. If a key is compromised,
             revoke it immediately.
           </p>

@@ -358,7 +358,7 @@ export function OrbitSwitcher({
                 </Label>
                 <InputGroup>
                   <InputGroupAddon className="bg-muted/30">
-                    orbit.com/
+                    mindorbit.com/
                   </InputGroupAddon>
                   <Input
                     id={field.name}

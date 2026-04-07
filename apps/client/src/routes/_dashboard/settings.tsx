@@ -52,12 +52,12 @@ const navItems = [
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   "/settings": {
-    title: "u0045 Settings",
-    subtitle: "Manage your team's u0045 and general preferences.",
+    title: "Orbit Settings",
+    subtitle: "Manage your team's orbit and general preferences.",
   },
   "/settings/members": {
     title: "Members & Roles",
-    subtitle: "Manage your u0045 members and their permission levels.",
+    subtitle: "Manage your orbit members and their permission levels.",
   },
   "/settings/roles": {
     title: "Roles & Permissions",
@@ -65,19 +65,19 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   },
   "/settings/security": {
     title: "Security",
-    subtitle: "Manage your u0045 security settings and requirements.",
+    subtitle: "Manage your orbit security settings and requirements.",
   },
   "/settings/api-keys": {
     title: "API Keys",
-    subtitle: "Manage API keys for accessing u0045 resources.",
+    subtitle: "Manage API keys for accessing orbit resources.",
   },
   "/settings/integrations": {
     title: "Integrations",
-    subtitle: "Connect your u0045 with third-party tools.",
+    subtitle: "Connect your orbit with third-party tools.",
   },
   "/settings/usage": {
     title: "Usage",
-    subtitle: "Monitor your u0045 resource usage and limits.",
+    subtitle: "Monitor your orbit resource usage and limits.",
   },
   "/settings/billing": {
     title: "Billing",

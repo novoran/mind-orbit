@@ -34,7 +34,7 @@ const MOCK_ROLES = [
   {
     id: "1",
     name: "Admin",
-    description: "Full u0045 access and security settings.",
+    description: "Full orbit access and security settings.",
     type: "SYSTEM",
     status: "Active",
     membersCount: 3,

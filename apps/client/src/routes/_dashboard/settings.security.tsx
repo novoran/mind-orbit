@@ -33,7 +33,7 @@ function SettingsSecurityPage() {
           <div>
             <h2 className="text-lg font-bold tracking-tight">Authentication</h2>
             <p className="text-muted-foreground text-sm">
-              Manage how team members access your u0045.
+              Manage how team members access your orbit.
             </p>
           </div>
         </div>
@@ -44,7 +44,7 @@ function SettingsSecurityPage() {
               Enforce Two-Factor Authentication
             </h3>
             <p className="text-muted-foreground mt-1 text-xs">
-              Require all u0045 members to use 2FA for an additional layer of
+              Require all orbit members to use 2FA for an additional layer of
               security.
             </p>
           </div>
@@ -128,7 +128,7 @@ function SettingsSecurityPage() {
               Allowed Domains
             </h2>
             <p className="text-muted-foreground text-sm">
-              Restrict u0045 invitations to specific email domains.
+              Restrict orbit invitations to specific email domains.
             </p>
           </div>
         </div>
@@ -146,7 +146,7 @@ function SettingsSecurityPage() {
         </div>
         <p className="text-muted-foreground text-[11px]">
           Separate multiple domains with commas. Only users with these email
-          domains can join the u0045 via invites or links.
+          domains can join the orbit via invites or links.
         </p>
       </div>
 
@@ -190,7 +190,7 @@ function SettingsSecurityPage() {
           <div>
             <h3 className="text-sm font-semibold">Export Encryption</h3>
             <p className="text-muted-foreground mt-1 text-xs">
-              Automatically encrypt all data exports with a secure u0045 key.
+              Automatically encrypt all data exports with a secure orbit key.
             </p>
           </div>
           <Switch defaultChecked />

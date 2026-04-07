@@ -10,7 +10,7 @@ function SettingsIntegrationsPage() {
       <div className="border-border/50 bg-background flex h-[400px] flex-col items-center justify-center rounded-xl border p-12 text-center">
         <h2 className="mb-2 text-xl font-semibold">Integrations</h2>
         <p className="text-muted-foreground">
-          Connect your u0045 with Slack, GitHub, Jira, and other tools.
+          Connect your orbit with Slack, GitHub, Jira, and other tools.
         </p>
       </div>
     </div>
