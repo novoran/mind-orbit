@@ -1,7 +1,6 @@
-"use client"
-
 import { PlusSignIcon, UnfoldMoreIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { api } from "@mindorbit/backend/_generated/api"
 import { Badge } from "@mindorbit/ui/components/badge"
 import { Button } from "@mindorbit/ui/components/button"
 import {
@@ -37,10 +36,10 @@ import {
 } from "@mindorbit/ui/components/sidebar"
 import { cn } from "@mindorbit/ui/lib/utils"
 import { useForm } from "@tanstack/react-form"
+import { useMutation } from "convex/react"
 import { gooeyToast } from "goey-toast"
 import * as React from "react"
-import { useMutation } from "convex/react"
-import { api } from "@mindorbit/backend/_generated/api"
+
 import { authClient } from "@/lib/auth-client"
 
 const getPlanBadgeColor = (plan: string) => {
@@ -178,7 +177,7 @@ export function OrbitSwitcher({
                   size="lg"
                   className="cursor-pointer hover:bg-transparent active:bg-transparent aria-expanded:bg-transparent"
                 >
-                  <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <div className="bg-sidebar-primary text-sidebar-primary-foreground ml-0! flex aspect-square size-8 items-center justify-center rounded-lg">
                     {orbitData.logo ? (
                       <img
                         src={orbitData.logo}

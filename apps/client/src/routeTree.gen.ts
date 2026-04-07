@@ -27,8 +27,17 @@ import { Route as DashboardAiToolsRouteImport } from "./routes/_dashboard/ai-too
 import { Route as DashboardAiChatRouteImport } from "./routes/_dashboard/ai-chat"
 import { Route as AuthSignUpRouteImport } from "./routes/_auth/sign-up"
 import { Route as AuthSignInRouteImport } from "./routes/_auth/sign-in"
+import { Route as DashboardSettingsIndexRouteImport } from "./routes/_dashboard/settings.index"
 import { Route as DashboardProfileIndexRouteImport } from "./routes/_dashboard/profile.index"
 import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$"
+import { Route as DashboardSettingsUsageRouteImport } from "./routes/_dashboard/settings.usage"
+import { Route as DashboardSettingsSecurityRouteImport } from "./routes/_dashboard/settings.security"
+import { Route as DashboardSettingsRolesRouteImport } from "./routes/_dashboard/settings.roles"
+import { Route as DashboardSettingsMembersRouteImport } from "./routes/_dashboard/settings.members"
+import { Route as DashboardSettingsInvoicesRouteImport } from "./routes/_dashboard/settings.invoices"
+import { Route as DashboardSettingsIntegrationsRouteImport } from "./routes/_dashboard/settings.integrations"
+import { Route as DashboardSettingsBillingRouteImport } from "./routes/_dashboard/settings.billing"
+import { Route as DashboardSettingsApiKeysRouteImport } from "./routes/_dashboard/settings.api-keys"
 import { Route as DashboardProfileSecurityRouteImport } from "./routes/_dashboard/profile.security"
 import { Route as DashboardProfilePreferencesRouteImport } from "./routes/_dashboard/profile.preferences"
 import { Route as DashboardProfileNotificationsRouteImport } from "./routes/_dashboard/profile.notifications"
@@ -121,6 +130,11 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: "/sign-in",
   getParentRoute: () => AuthRoute,
 } as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
 const DashboardProfileIndexRoute = DashboardProfileIndexRouteImport.update({
   id: "/",
   path: "/",
@@ -131,6 +145,52 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: "/api/auth/$",
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardSettingsUsageRoute = DashboardSettingsUsageRouteImport.update({
+  id: "/usage",
+  path: "/usage",
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsSecurityRoute =
+  DashboardSettingsSecurityRouteImport.update({
+    id: "/security",
+    path: "/security",
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsRolesRoute = DashboardSettingsRolesRouteImport.update({
+  id: "/roles",
+  path: "/roles",
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsMembersRoute =
+  DashboardSettingsMembersRouteImport.update({
+    id: "/members",
+    path: "/members",
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsInvoicesRoute =
+  DashboardSettingsInvoicesRouteImport.update({
+    id: "/invoices",
+    path: "/invoices",
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsIntegrationsRoute =
+  DashboardSettingsIntegrationsRouteImport.update({
+    id: "/integrations",
+    path: "/integrations",
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsBillingRoute =
+  DashboardSettingsBillingRouteImport.update({
+    id: "/billing",
+    path: "/billing",
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsApiKeysRoute =
+  DashboardSettingsApiKeysRouteImport.update({
+    id: "/api-keys",
+    path: "/api-keys",
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
 const DashboardProfileSecurityRoute =
   DashboardProfileSecurityRouteImport.update({
     id: "/security",
@@ -163,15 +223,24 @@ export interface FileRoutesByFullPath {
   "/milestones": typeof DashboardMilestonesRoute
   "/profile": typeof DashboardProfileRouteWithChildren
   "/projects": typeof DashboardProjectsRoute
-  "/settings": typeof DashboardSettingsRoute
+  "/settings": typeof DashboardSettingsRouteWithChildren
   "/tasks": typeof DashboardTasksRoute
   "/team-chat": typeof DashboardTeamChatRoute
   "/teams": typeof DashboardTeamsRoute
   "/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/profile/security": typeof DashboardProfileSecurityRoute
+  "/settings/api-keys": typeof DashboardSettingsApiKeysRoute
+  "/settings/billing": typeof DashboardSettingsBillingRoute
+  "/settings/integrations": typeof DashboardSettingsIntegrationsRoute
+  "/settings/invoices": typeof DashboardSettingsInvoicesRoute
+  "/settings/members": typeof DashboardSettingsMembersRoute
+  "/settings/roles": typeof DashboardSettingsRolesRoute
+  "/settings/security": typeof DashboardSettingsSecurityRoute
+  "/settings/usage": typeof DashboardSettingsUsageRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
   "/profile/": typeof DashboardProfileIndexRoute
+  "/settings/": typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   "/": typeof DashboardIndexRoute
@@ -185,15 +254,23 @@ export interface FileRoutesByTo {
   "/meeting": typeof DashboardMeetingRoute
   "/milestones": typeof DashboardMilestonesRoute
   "/projects": typeof DashboardProjectsRoute
-  "/settings": typeof DashboardSettingsRoute
   "/tasks": typeof DashboardTasksRoute
   "/team-chat": typeof DashboardTeamChatRoute
   "/teams": typeof DashboardTeamsRoute
   "/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/profile/security": typeof DashboardProfileSecurityRoute
+  "/settings/api-keys": typeof DashboardSettingsApiKeysRoute
+  "/settings/billing": typeof DashboardSettingsBillingRoute
+  "/settings/integrations": typeof DashboardSettingsIntegrationsRoute
+  "/settings/invoices": typeof DashboardSettingsInvoicesRoute
+  "/settings/members": typeof DashboardSettingsMembersRoute
+  "/settings/roles": typeof DashboardSettingsRolesRoute
+  "/settings/security": typeof DashboardSettingsSecurityRoute
+  "/settings/usage": typeof DashboardSettingsUsageRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
   "/profile": typeof DashboardProfileIndexRoute
+  "/settings": typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -210,7 +287,7 @@ export interface FileRoutesById {
   "/_dashboard/milestones": typeof DashboardMilestonesRoute
   "/_dashboard/profile": typeof DashboardProfileRouteWithChildren
   "/_dashboard/projects": typeof DashboardProjectsRoute
-  "/_dashboard/settings": typeof DashboardSettingsRoute
+  "/_dashboard/settings": typeof DashboardSettingsRouteWithChildren
   "/_dashboard/tasks": typeof DashboardTasksRoute
   "/_dashboard/team-chat": typeof DashboardTeamChatRoute
   "/_dashboard/teams": typeof DashboardTeamsRoute
@@ -218,8 +295,17 @@ export interface FileRoutesById {
   "/_dashboard/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/_dashboard/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/_dashboard/profile/security": typeof DashboardProfileSecurityRoute
+  "/_dashboard/settings/api-keys": typeof DashboardSettingsApiKeysRoute
+  "/_dashboard/settings/billing": typeof DashboardSettingsBillingRoute
+  "/_dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRoute
+  "/_dashboard/settings/invoices": typeof DashboardSettingsInvoicesRoute
+  "/_dashboard/settings/members": typeof DashboardSettingsMembersRoute
+  "/_dashboard/settings/roles": typeof DashboardSettingsRolesRoute
+  "/_dashboard/settings/security": typeof DashboardSettingsSecurityRoute
+  "/_dashboard/settings/usage": typeof DashboardSettingsUsageRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
   "/_dashboard/profile/": typeof DashboardProfileIndexRoute
+  "/_dashboard/settings/": typeof DashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -243,8 +329,17 @@ export interface FileRouteTypes {
     | "/profile/notifications"
     | "/profile/preferences"
     | "/profile/security"
+    | "/settings/api-keys"
+    | "/settings/billing"
+    | "/settings/integrations"
+    | "/settings/invoices"
+    | "/settings/members"
+    | "/settings/roles"
+    | "/settings/security"
+    | "/settings/usage"
     | "/api/auth/$"
     | "/profile/"
+    | "/settings/"
   fileRoutesByTo: FileRoutesByTo
   to:
     | "/"
@@ -258,15 +353,23 @@ export interface FileRouteTypes {
     | "/meeting"
     | "/milestones"
     | "/projects"
-    | "/settings"
     | "/tasks"
     | "/team-chat"
     | "/teams"
     | "/profile/notifications"
     | "/profile/preferences"
     | "/profile/security"
+    | "/settings/api-keys"
+    | "/settings/billing"
+    | "/settings/integrations"
+    | "/settings/invoices"
+    | "/settings/members"
+    | "/settings/roles"
+    | "/settings/security"
+    | "/settings/usage"
     | "/api/auth/$"
     | "/profile"
+    | "/settings"
   id:
     | "__root__"
     | "/_auth"
@@ -290,8 +393,17 @@ export interface FileRouteTypes {
     | "/_dashboard/profile/notifications"
     | "/_dashboard/profile/preferences"
     | "/_dashboard/profile/security"
+    | "/_dashboard/settings/api-keys"
+    | "/_dashboard/settings/billing"
+    | "/_dashboard/settings/integrations"
+    | "/_dashboard/settings/invoices"
+    | "/_dashboard/settings/members"
+    | "/_dashboard/settings/roles"
+    | "/_dashboard/settings/security"
+    | "/_dashboard/settings/usage"
     | "/api/auth/$"
     | "/_dashboard/profile/"
+    | "/_dashboard/settings/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -428,6 +540,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthRoute
     }
+    "/_dashboard/settings/": {
+      id: "/_dashboard/settings/"
+      path: "/"
+      fullPath: "/settings/"
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
     "/_dashboard/profile/": {
       id: "/_dashboard/profile/"
       path: "/"
@@ -441,6 +560,62 @@ declare module "@tanstack/react-router" {
       fullPath: "/api/auth/$"
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    "/_dashboard/settings/usage": {
+      id: "/_dashboard/settings/usage"
+      path: "/usage"
+      fullPath: "/settings/usage"
+      preLoaderRoute: typeof DashboardSettingsUsageRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    "/_dashboard/settings/security": {
+      id: "/_dashboard/settings/security"
+      path: "/security"
+      fullPath: "/settings/security"
+      preLoaderRoute: typeof DashboardSettingsSecurityRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    "/_dashboard/settings/roles": {
+      id: "/_dashboard/settings/roles"
+      path: "/roles"
+      fullPath: "/settings/roles"
+      preLoaderRoute: typeof DashboardSettingsRolesRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    "/_dashboard/settings/members": {
+      id: "/_dashboard/settings/members"
+      path: "/members"
+      fullPath: "/settings/members"
+      preLoaderRoute: typeof DashboardSettingsMembersRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    "/_dashboard/settings/invoices": {
+      id: "/_dashboard/settings/invoices"
+      path: "/invoices"
+      fullPath: "/settings/invoices"
+      preLoaderRoute: typeof DashboardSettingsInvoicesRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    "/_dashboard/settings/integrations": {
+      id: "/_dashboard/settings/integrations"
+      path: "/integrations"
+      fullPath: "/settings/integrations"
+      preLoaderRoute: typeof DashboardSettingsIntegrationsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    "/_dashboard/settings/billing": {
+      id: "/_dashboard/settings/billing"
+      path: "/billing"
+      fullPath: "/settings/billing"
+      preLoaderRoute: typeof DashboardSettingsBillingRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    "/_dashboard/settings/api-keys": {
+      id: "/_dashboard/settings/api-keys"
+      path: "/api-keys"
+      fullPath: "/settings/api-keys"
+      preLoaderRoute: typeof DashboardSettingsApiKeysRouteImport
+      parentRoute: typeof DashboardSettingsRoute
     }
     "/_dashboard/profile/security": {
       id: "/_dashboard/profile/security"
@@ -495,6 +670,33 @@ const DashboardProfileRouteChildren: DashboardProfileRouteChildren = {
 const DashboardProfileRouteWithChildren =
   DashboardProfileRoute._addFileChildren(DashboardProfileRouteChildren)
 
+interface DashboardSettingsRouteChildren {
+  DashboardSettingsApiKeysRoute: typeof DashboardSettingsApiKeysRoute
+  DashboardSettingsBillingRoute: typeof DashboardSettingsBillingRoute
+  DashboardSettingsIntegrationsRoute: typeof DashboardSettingsIntegrationsRoute
+  DashboardSettingsInvoicesRoute: typeof DashboardSettingsInvoicesRoute
+  DashboardSettingsMembersRoute: typeof DashboardSettingsMembersRoute
+  DashboardSettingsRolesRoute: typeof DashboardSettingsRolesRoute
+  DashboardSettingsSecurityRoute: typeof DashboardSettingsSecurityRoute
+  DashboardSettingsUsageRoute: typeof DashboardSettingsUsageRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
+  DashboardSettingsApiKeysRoute: DashboardSettingsApiKeysRoute,
+  DashboardSettingsBillingRoute: DashboardSettingsBillingRoute,
+  DashboardSettingsIntegrationsRoute: DashboardSettingsIntegrationsRoute,
+  DashboardSettingsInvoicesRoute: DashboardSettingsInvoicesRoute,
+  DashboardSettingsMembersRoute: DashboardSettingsMembersRoute,
+  DashboardSettingsRolesRoute: DashboardSettingsRolesRoute,
+  DashboardSettingsSecurityRoute: DashboardSettingsSecurityRoute,
+  DashboardSettingsUsageRoute: DashboardSettingsUsageRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardSettingsRouteWithChildren =
+  DashboardSettingsRoute._addFileChildren(DashboardSettingsRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardAiChatRoute: typeof DashboardAiChatRoute
   DashboardAiToolsRoute: typeof DashboardAiToolsRoute
@@ -505,7 +707,7 @@ interface DashboardRouteChildren {
   DashboardMilestonesRoute: typeof DashboardMilestonesRoute
   DashboardProfileRoute: typeof DashboardProfileRouteWithChildren
   DashboardProjectsRoute: typeof DashboardProjectsRoute
-  DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRouteWithChildren
   DashboardTasksRoute: typeof DashboardTasksRoute
   DashboardTeamChatRoute: typeof DashboardTeamChatRoute
   DashboardTeamsRoute: typeof DashboardTeamsRoute
@@ -522,7 +724,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardMilestonesRoute: DashboardMilestonesRoute,
   DashboardProfileRoute: DashboardProfileRouteWithChildren,
   DashboardProjectsRoute: DashboardProjectsRoute,
-  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardSettingsRoute: DashboardSettingsRouteWithChildren,
   DashboardTasksRoute: DashboardTasksRoute,
   DashboardTeamChatRoute: DashboardTeamChatRoute,
   DashboardTeamsRoute: DashboardTeamsRoute,

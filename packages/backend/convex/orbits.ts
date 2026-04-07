@@ -1,6 +1,6 @@
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
 import { v } from "convex/values";
-import type { Orbit, OrbitWithRole } from "./types";
+import type { OrbitWithRole } from "./types";
 
 /**
  * Get the active orbit for the current user session.
