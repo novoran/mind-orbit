@@ -13,7 +13,7 @@ export const authComponent = createClient<DataModel, typeof schema>(
   components.betterAuth as any,
   {
     local: { schema },
-    verbose: true,
+    verbose: false,
   },
 );
 
