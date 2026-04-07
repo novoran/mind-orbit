@@ -8,294 +8,492 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/_dashboard'
-import { Route as DashboardIndexRouteImport } from './routes/_dashboard/index'
-import { Route as DashboardTeamsRouteImport } from './routes/_dashboard/teams'
-import { Route as DashboardTeamChatRouteImport } from './routes/_dashboard/team-chat'
-import { Route as DashboardTasksRouteImport } from './routes/_dashboard/tasks'
-import { Route as DashboardSettingsRouteImport } from './routes/_dashboard/settings'
-import { Route as DashboardProjectsRouteImport } from './routes/_dashboard/projects'
-import { Route as DashboardMilestonesRouteImport } from './routes/_dashboard/milestones'
-import { Route as DashboardMeetingRouteImport } from './routes/_dashboard/meeting'
-import { Route as DashboardIdeaHubRouteImport } from './routes/_dashboard/idea-hub'
-import { Route as DashboardFilesRouteImport } from './routes/_dashboard/files'
-import { Route as DashboardAnalyticsRouteImport } from './routes/_dashboard/analytics'
-import { Route as DashboardAiToolsRouteImport } from './routes/_dashboard/ai-tools'
-import { Route as DashboardAiChatRouteImport } from './routes/_dashboard/ai-chat'
+import { Route as rootRouteImport } from "./routes/__root"
+import { Route as DashboardRouteImport } from "./routes/_dashboard"
+import { Route as AuthRouteImport } from "./routes/_auth"
+import { Route as DashboardIndexRouteImport } from "./routes/_dashboard/index"
+import { Route as DashboardTeamsRouteImport } from "./routes/_dashboard/teams"
+import { Route as DashboardTeamChatRouteImport } from "./routes/_dashboard/team-chat"
+import { Route as DashboardTasksRouteImport } from "./routes/_dashboard/tasks"
+import { Route as DashboardSettingsRouteImport } from "./routes/_dashboard/settings"
+import { Route as DashboardProjectsRouteImport } from "./routes/_dashboard/projects"
+import { Route as DashboardProfileRouteImport } from "./routes/_dashboard/profile"
+import { Route as DashboardMilestonesRouteImport } from "./routes/_dashboard/milestones"
+import { Route as DashboardMeetingRouteImport } from "./routes/_dashboard/meeting"
+import { Route as DashboardIdeaHubRouteImport } from "./routes/_dashboard/idea-hub"
+import { Route as DashboardFilesRouteImport } from "./routes/_dashboard/files"
+import { Route as DashboardAnalyticsRouteImport } from "./routes/_dashboard/analytics"
+import { Route as DashboardAiToolsRouteImport } from "./routes/_dashboard/ai-tools"
+import { Route as DashboardAiChatRouteImport } from "./routes/_dashboard/ai-chat"
+import { Route as AuthSignUpRouteImport } from "./routes/_auth/sign-up"
+import { Route as AuthSignInRouteImport } from "./routes/_auth/sign-in"
+import { Route as DashboardProfileIndexRouteImport } from "./routes/_dashboard/profile.index"
+import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$"
+import { Route as DashboardProfileSecurityRouteImport } from "./routes/_dashboard/profile.security"
+import { Route as DashboardProfilePreferencesRouteImport } from "./routes/_dashboard/profile.preferences"
+import { Route as DashboardProfileNotificationsRouteImport } from "./routes/_dashboard/profile.notifications"
 
 const DashboardRoute = DashboardRouteImport.update({
-  id: '/_dashboard',
+  id: "/_dashboard",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: "/_auth",
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardTeamsRoute = DashboardTeamsRouteImport.update({
-  id: '/teams',
-  path: '/teams',
+  id: "/teams",
+  path: "/teams",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardTeamChatRoute = DashboardTeamChatRouteImport.update({
-  id: '/team-chat',
-  path: '/team-chat',
+  id: "/team-chat",
+  path: "/team-chat",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardTasksRoute = DashboardTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
+  id: "/tasks",
+  path: "/tasks",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+  id: "/settings",
+  path: "/settings",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
+  id: "/projects",
+  path: "/projects",
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProfileRoute = DashboardProfileRouteImport.update({
+  id: "/profile",
+  path: "/profile",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardMilestonesRoute = DashboardMilestonesRouteImport.update({
-  id: '/milestones',
-  path: '/milestones',
+  id: "/milestones",
+  path: "/milestones",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardMeetingRoute = DashboardMeetingRouteImport.update({
-  id: '/meeting',
-  path: '/meeting',
+  id: "/meeting",
+  path: "/meeting",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardIdeaHubRoute = DashboardIdeaHubRouteImport.update({
-  id: '/idea-hub',
-  path: '/idea-hub',
+  id: "/idea-hub",
+  path: "/idea-hub",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardFilesRoute = DashboardFilesRouteImport.update({
-  id: '/files',
-  path: '/files',
+  id: "/files",
+  path: "/files",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+  id: "/analytics",
+  path: "/analytics",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAiToolsRoute = DashboardAiToolsRouteImport.update({
-  id: '/ai-tools',
-  path: '/ai-tools',
+  id: "/ai-tools",
+  path: "/ai-tools",
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAiChatRoute = DashboardAiChatRouteImport.update({
-  id: '/ai-chat',
-  path: '/ai-chat',
+  id: "/ai-chat",
+  path: "/ai-chat",
   getParentRoute: () => DashboardRoute,
 } as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: "/sign-up",
+  path: "/sign-up",
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: "/sign-in",
+  path: "/sign-in",
+  getParentRoute: () => AuthRoute,
+} as any)
+const DashboardProfileIndexRoute = DashboardProfileIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardProfileRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: "/api/auth/$",
+  path: "/api/auth/$",
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardProfileSecurityRoute =
+  DashboardProfileSecurityRouteImport.update({
+    id: "/security",
+    path: "/security",
+    getParentRoute: () => DashboardProfileRoute,
+  } as any)
+const DashboardProfilePreferencesRoute =
+  DashboardProfilePreferencesRouteImport.update({
+    id: "/preferences",
+    path: "/preferences",
+    getParentRoute: () => DashboardProfileRoute,
+  } as any)
+const DashboardProfileNotificationsRoute =
+  DashboardProfileNotificationsRouteImport.update({
+    id: "/notifications",
+    path: "/notifications",
+    getParentRoute: () => DashboardProfileRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof DashboardIndexRoute
-  '/ai-chat': typeof DashboardAiChatRoute
-  '/ai-tools': typeof DashboardAiToolsRoute
-  '/analytics': typeof DashboardAnalyticsRoute
-  '/files': typeof DashboardFilesRoute
-  '/idea-hub': typeof DashboardIdeaHubRoute
-  '/meeting': typeof DashboardMeetingRoute
-  '/milestones': typeof DashboardMilestonesRoute
-  '/projects': typeof DashboardProjectsRoute
-  '/settings': typeof DashboardSettingsRoute
-  '/tasks': typeof DashboardTasksRoute
-  '/team-chat': typeof DashboardTeamChatRoute
-  '/teams': typeof DashboardTeamsRoute
+  "/": typeof DashboardIndexRoute
+  "/sign-in": typeof AuthSignInRoute
+  "/sign-up": typeof AuthSignUpRoute
+  "/ai-chat": typeof DashboardAiChatRoute
+  "/ai-tools": typeof DashboardAiToolsRoute
+  "/analytics": typeof DashboardAnalyticsRoute
+  "/files": typeof DashboardFilesRoute
+  "/idea-hub": typeof DashboardIdeaHubRoute
+  "/meeting": typeof DashboardMeetingRoute
+  "/milestones": typeof DashboardMilestonesRoute
+  "/profile": typeof DashboardProfileRouteWithChildren
+  "/projects": typeof DashboardProjectsRoute
+  "/settings": typeof DashboardSettingsRoute
+  "/tasks": typeof DashboardTasksRoute
+  "/team-chat": typeof DashboardTeamChatRoute
+  "/teams": typeof DashboardTeamsRoute
+  "/profile/notifications": typeof DashboardProfileNotificationsRoute
+  "/profile/preferences": typeof DashboardProfilePreferencesRoute
+  "/profile/security": typeof DashboardProfileSecurityRoute
+  "/api/auth/$": typeof ApiAuthSplatRoute
+  "/profile/": typeof DashboardProfileIndexRoute
 }
 export interface FileRoutesByTo {
-  '/ai-chat': typeof DashboardAiChatRoute
-  '/ai-tools': typeof DashboardAiToolsRoute
-  '/analytics': typeof DashboardAnalyticsRoute
-  '/files': typeof DashboardFilesRoute
-  '/idea-hub': typeof DashboardIdeaHubRoute
-  '/meeting': typeof DashboardMeetingRoute
-  '/milestones': typeof DashboardMilestonesRoute
-  '/projects': typeof DashboardProjectsRoute
-  '/settings': typeof DashboardSettingsRoute
-  '/tasks': typeof DashboardTasksRoute
-  '/team-chat': typeof DashboardTeamChatRoute
-  '/teams': typeof DashboardTeamsRoute
-  '/': typeof DashboardIndexRoute
+  "/": typeof DashboardIndexRoute
+  "/sign-in": typeof AuthSignInRoute
+  "/sign-up": typeof AuthSignUpRoute
+  "/ai-chat": typeof DashboardAiChatRoute
+  "/ai-tools": typeof DashboardAiToolsRoute
+  "/analytics": typeof DashboardAnalyticsRoute
+  "/files": typeof DashboardFilesRoute
+  "/idea-hub": typeof DashboardIdeaHubRoute
+  "/meeting": typeof DashboardMeetingRoute
+  "/milestones": typeof DashboardMilestonesRoute
+  "/projects": typeof DashboardProjectsRoute
+  "/settings": typeof DashboardSettingsRoute
+  "/tasks": typeof DashboardTasksRoute
+  "/team-chat": typeof DashboardTeamChatRoute
+  "/teams": typeof DashboardTeamsRoute
+  "/profile/notifications": typeof DashboardProfileNotificationsRoute
+  "/profile/preferences": typeof DashboardProfilePreferencesRoute
+  "/profile/security": typeof DashboardProfileSecurityRoute
+  "/api/auth/$": typeof ApiAuthSplatRoute
+  "/profile": typeof DashboardProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_dashboard': typeof DashboardRouteWithChildren
-  '/_dashboard/ai-chat': typeof DashboardAiChatRoute
-  '/_dashboard/ai-tools': typeof DashboardAiToolsRoute
-  '/_dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/_dashboard/files': typeof DashboardFilesRoute
-  '/_dashboard/idea-hub': typeof DashboardIdeaHubRoute
-  '/_dashboard/meeting': typeof DashboardMeetingRoute
-  '/_dashboard/milestones': typeof DashboardMilestonesRoute
-  '/_dashboard/projects': typeof DashboardProjectsRoute
-  '/_dashboard/settings': typeof DashboardSettingsRoute
-  '/_dashboard/tasks': typeof DashboardTasksRoute
-  '/_dashboard/team-chat': typeof DashboardTeamChatRoute
-  '/_dashboard/teams': typeof DashboardTeamsRoute
-  '/_dashboard/': typeof DashboardIndexRoute
+  "/_auth": typeof AuthRouteWithChildren
+  "/_dashboard": typeof DashboardRouteWithChildren
+  "/_auth/sign-in": typeof AuthSignInRoute
+  "/_auth/sign-up": typeof AuthSignUpRoute
+  "/_dashboard/ai-chat": typeof DashboardAiChatRoute
+  "/_dashboard/ai-tools": typeof DashboardAiToolsRoute
+  "/_dashboard/analytics": typeof DashboardAnalyticsRoute
+  "/_dashboard/files": typeof DashboardFilesRoute
+  "/_dashboard/idea-hub": typeof DashboardIdeaHubRoute
+  "/_dashboard/meeting": typeof DashboardMeetingRoute
+  "/_dashboard/milestones": typeof DashboardMilestonesRoute
+  "/_dashboard/profile": typeof DashboardProfileRouteWithChildren
+  "/_dashboard/projects": typeof DashboardProjectsRoute
+  "/_dashboard/settings": typeof DashboardSettingsRoute
+  "/_dashboard/tasks": typeof DashboardTasksRoute
+  "/_dashboard/team-chat": typeof DashboardTeamChatRoute
+  "/_dashboard/teams": typeof DashboardTeamsRoute
+  "/_dashboard/": typeof DashboardIndexRoute
+  "/_dashboard/profile/notifications": typeof DashboardProfileNotificationsRoute
+  "/_dashboard/profile/preferences": typeof DashboardProfilePreferencesRoute
+  "/_dashboard/profile/security": typeof DashboardProfileSecurityRoute
+  "/api/auth/$": typeof ApiAuthSplatRoute
+  "/_dashboard/profile/": typeof DashboardProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/ai-chat'
-    | '/ai-tools'
-    | '/analytics'
-    | '/files'
-    | '/idea-hub'
-    | '/meeting'
-    | '/milestones'
-    | '/projects'
-    | '/settings'
-    | '/tasks'
-    | '/team-chat'
-    | '/teams'
+    | "/"
+    | "/sign-in"
+    | "/sign-up"
+    | "/ai-chat"
+    | "/ai-tools"
+    | "/analytics"
+    | "/files"
+    | "/idea-hub"
+    | "/meeting"
+    | "/milestones"
+    | "/profile"
+    | "/projects"
+    | "/settings"
+    | "/tasks"
+    | "/team-chat"
+    | "/teams"
+    | "/profile/notifications"
+    | "/profile/preferences"
+    | "/profile/security"
+    | "/api/auth/$"
+    | "/profile/"
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/ai-chat'
-    | '/ai-tools'
-    | '/analytics'
-    | '/files'
-    | '/idea-hub'
-    | '/meeting'
-    | '/milestones'
-    | '/projects'
-    | '/settings'
-    | '/tasks'
-    | '/team-chat'
-    | '/teams'
-    | '/'
+    | "/"
+    | "/sign-in"
+    | "/sign-up"
+    | "/ai-chat"
+    | "/ai-tools"
+    | "/analytics"
+    | "/files"
+    | "/idea-hub"
+    | "/meeting"
+    | "/milestones"
+    | "/projects"
+    | "/settings"
+    | "/tasks"
+    | "/team-chat"
+    | "/teams"
+    | "/profile/notifications"
+    | "/profile/preferences"
+    | "/profile/security"
+    | "/api/auth/$"
+    | "/profile"
   id:
-    | '__root__'
-    | '/_dashboard'
-    | '/_dashboard/ai-chat'
-    | '/_dashboard/ai-tools'
-    | '/_dashboard/analytics'
-    | '/_dashboard/files'
-    | '/_dashboard/idea-hub'
-    | '/_dashboard/meeting'
-    | '/_dashboard/milestones'
-    | '/_dashboard/projects'
-    | '/_dashboard/settings'
-    | '/_dashboard/tasks'
-    | '/_dashboard/team-chat'
-    | '/_dashboard/teams'
-    | '/_dashboard/'
+    | "__root__"
+    | "/_auth"
+    | "/_dashboard"
+    | "/_auth/sign-in"
+    | "/_auth/sign-up"
+    | "/_dashboard/ai-chat"
+    | "/_dashboard/ai-tools"
+    | "/_dashboard/analytics"
+    | "/_dashboard/files"
+    | "/_dashboard/idea-hub"
+    | "/_dashboard/meeting"
+    | "/_dashboard/milestones"
+    | "/_dashboard/profile"
+    | "/_dashboard/projects"
+    | "/_dashboard/settings"
+    | "/_dashboard/tasks"
+    | "/_dashboard/team-chat"
+    | "/_dashboard/teams"
+    | "/_dashboard/"
+    | "/_dashboard/profile/notifications"
+    | "/_dashboard/profile/preferences"
+    | "/_dashboard/profile/security"
+    | "/api/auth/$"
+    | "/_dashboard/profile/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthRoute: typeof AuthRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/_dashboard': {
-      id: '/_dashboard'
-      path: ''
-      fullPath: '/'
+    "/_dashboard": {
+      id: "/_dashboard"
+      path: ""
+      fullPath: "/"
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_dashboard/': {
-      id: '/_dashboard/'
-      path: '/'
-      fullPath: '/'
+    "/_auth": {
+      id: "/_auth"
+      path: ""
+      fullPath: "/"
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/_dashboard/": {
+      id: "/_dashboard/"
+      path: "/"
+      fullPath: "/"
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/teams': {
-      id: '/_dashboard/teams'
-      path: '/teams'
-      fullPath: '/teams'
+    "/_dashboard/teams": {
+      id: "/_dashboard/teams"
+      path: "/teams"
+      fullPath: "/teams"
       preLoaderRoute: typeof DashboardTeamsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/team-chat': {
-      id: '/_dashboard/team-chat'
-      path: '/team-chat'
-      fullPath: '/team-chat'
+    "/_dashboard/team-chat": {
+      id: "/_dashboard/team-chat"
+      path: "/team-chat"
+      fullPath: "/team-chat"
       preLoaderRoute: typeof DashboardTeamChatRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/tasks': {
-      id: '/_dashboard/tasks'
-      path: '/tasks'
-      fullPath: '/tasks'
+    "/_dashboard/tasks": {
+      id: "/_dashboard/tasks"
+      path: "/tasks"
+      fullPath: "/tasks"
       preLoaderRoute: typeof DashboardTasksRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/settings': {
-      id: '/_dashboard/settings'
-      path: '/settings'
-      fullPath: '/settings'
+    "/_dashboard/settings": {
+      id: "/_dashboard/settings"
+      path: "/settings"
+      fullPath: "/settings"
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/projects': {
-      id: '/_dashboard/projects'
-      path: '/projects'
-      fullPath: '/projects'
+    "/_dashboard/projects": {
+      id: "/_dashboard/projects"
+      path: "/projects"
+      fullPath: "/projects"
       preLoaderRoute: typeof DashboardProjectsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/milestones': {
-      id: '/_dashboard/milestones'
-      path: '/milestones'
-      fullPath: '/milestones'
+    "/_dashboard/profile": {
+      id: "/_dashboard/profile"
+      path: "/profile"
+      fullPath: "/profile"
+      preLoaderRoute: typeof DashboardProfileRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    "/_dashboard/milestones": {
+      id: "/_dashboard/milestones"
+      path: "/milestones"
+      fullPath: "/milestones"
       preLoaderRoute: typeof DashboardMilestonesRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/meeting': {
-      id: '/_dashboard/meeting'
-      path: '/meeting'
-      fullPath: '/meeting'
+    "/_dashboard/meeting": {
+      id: "/_dashboard/meeting"
+      path: "/meeting"
+      fullPath: "/meeting"
       preLoaderRoute: typeof DashboardMeetingRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/idea-hub': {
-      id: '/_dashboard/idea-hub'
-      path: '/idea-hub'
-      fullPath: '/idea-hub'
+    "/_dashboard/idea-hub": {
+      id: "/_dashboard/idea-hub"
+      path: "/idea-hub"
+      fullPath: "/idea-hub"
       preLoaderRoute: typeof DashboardIdeaHubRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/files': {
-      id: '/_dashboard/files'
-      path: '/files'
-      fullPath: '/files'
+    "/_dashboard/files": {
+      id: "/_dashboard/files"
+      path: "/files"
+      fullPath: "/files"
       preLoaderRoute: typeof DashboardFilesRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/analytics': {
-      id: '/_dashboard/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
+    "/_dashboard/analytics": {
+      id: "/_dashboard/analytics"
+      path: "/analytics"
+      fullPath: "/analytics"
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/ai-tools': {
-      id: '/_dashboard/ai-tools'
-      path: '/ai-tools'
-      fullPath: '/ai-tools'
+    "/_dashboard/ai-tools": {
+      id: "/_dashboard/ai-tools"
+      path: "/ai-tools"
+      fullPath: "/ai-tools"
       preLoaderRoute: typeof DashboardAiToolsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/ai-chat': {
-      id: '/_dashboard/ai-chat'
-      path: '/ai-chat'
-      fullPath: '/ai-chat'
+    "/_dashboard/ai-chat": {
+      id: "/_dashboard/ai-chat"
+      path: "/ai-chat"
+      fullPath: "/ai-chat"
       preLoaderRoute: typeof DashboardAiChatRouteImport
       parentRoute: typeof DashboardRoute
     }
+    "/_auth/sign-up": {
+      id: "/_auth/sign-up"
+      path: "/sign-up"
+      fullPath: "/sign-up"
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    "/_auth/sign-in": {
+      id: "/_auth/sign-in"
+      path: "/sign-in"
+      fullPath: "/sign-in"
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    "/_dashboard/profile/": {
+      id: "/_dashboard/profile/"
+      path: "/"
+      fullPath: "/profile/"
+      preLoaderRoute: typeof DashboardProfileIndexRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
+    "/api/auth/$": {
+      id: "/api/auth/$"
+      path: "/api/auth/$"
+      fullPath: "/api/auth/$"
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    "/_dashboard/profile/security": {
+      id: "/_dashboard/profile/security"
+      path: "/security"
+      fullPath: "/profile/security"
+      preLoaderRoute: typeof DashboardProfileSecurityRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
+    "/_dashboard/profile/preferences": {
+      id: "/_dashboard/profile/preferences"
+      path: "/preferences"
+      fullPath: "/profile/preferences"
+      preLoaderRoute: typeof DashboardProfilePreferencesRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
+    "/_dashboard/profile/notifications": {
+      id: "/_dashboard/profile/notifications"
+      path: "/notifications"
+      fullPath: "/profile/notifications"
+      preLoaderRoute: typeof DashboardProfileNotificationsRouteImport
+      parentRoute: typeof DashboardProfileRoute
+    }
   }
 }
+
+interface AuthRouteChildren {
+  AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface DashboardProfileRouteChildren {
+  DashboardProfileNotificationsRoute: typeof DashboardProfileNotificationsRoute
+  DashboardProfilePreferencesRoute: typeof DashboardProfilePreferencesRoute
+  DashboardProfileSecurityRoute: typeof DashboardProfileSecurityRoute
+  DashboardProfileIndexRoute: typeof DashboardProfileIndexRoute
+}
+
+const DashboardProfileRouteChildren: DashboardProfileRouteChildren = {
+  DashboardProfileNotificationsRoute: DashboardProfileNotificationsRoute,
+  DashboardProfilePreferencesRoute: DashboardProfilePreferencesRoute,
+  DashboardProfileSecurityRoute: DashboardProfileSecurityRoute,
+  DashboardProfileIndexRoute: DashboardProfileIndexRoute,
+}
+
+const DashboardProfileRouteWithChildren =
+  DashboardProfileRoute._addFileChildren(DashboardProfileRouteChildren)
 
 interface DashboardRouteChildren {
   DashboardAiChatRoute: typeof DashboardAiChatRoute
@@ -305,6 +503,7 @@ interface DashboardRouteChildren {
   DashboardIdeaHubRoute: typeof DashboardIdeaHubRoute
   DashboardMeetingRoute: typeof DashboardMeetingRoute
   DashboardMilestonesRoute: typeof DashboardMilestonesRoute
+  DashboardProfileRoute: typeof DashboardProfileRouteWithChildren
   DashboardProjectsRoute: typeof DashboardProjectsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTasksRoute: typeof DashboardTasksRoute
@@ -321,6 +520,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIdeaHubRoute: DashboardIdeaHubRoute,
   DashboardMeetingRoute: DashboardMeetingRoute,
   DashboardMilestonesRoute: DashboardMilestonesRoute,
+  DashboardProfileRoute: DashboardProfileRouteWithChildren,
   DashboardProjectsRoute: DashboardProjectsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTasksRoute: DashboardTasksRoute,
@@ -330,19 +530,21 @@ const DashboardRouteChildren: DashboardRouteChildren = {
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
-  DashboardRouteChildren,
+  DashboardRouteChildren
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AuthRoute: AuthRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { getRouter } from "./router.tsx"
+import type { createStart } from "@tanstack/react-start"
+declare module "@tanstack/react-start" {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>

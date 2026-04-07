@@ -32,6 +32,7 @@ import * as React from "react"
 import { Banner } from "@/components/banner"
 import { NavMain } from "@/components/nav-main"
 import { WorkspaceSwitcher } from "@/components/workspace-switcher"
+import { authClient } from "@/lib/auth-client"
 
 export const teamsData = [
   {
@@ -157,6 +158,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
+              onClick={async () => {
+                window.location.href = "/sign-in"
+                await authClient.signOut()
+              }}
               tooltip="Logout"
               className="group/logout cursor-pointer bg-red-600 text-white transition-all duration-250 hover:bg-red-700 hover:text-white!"
             >

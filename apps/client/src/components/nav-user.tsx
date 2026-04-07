@@ -1,9 +1,8 @@
 import {
-  CheckmarkBadgeIcon,
-  CreditCardIcon,
   LogoutIcon,
   NotificationIcon,
   SparklesIcon,
+  UserSquareIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -25,6 +24,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@mindorbit/ui/components/sidebar"
+import { Link } from "@tanstack/react-router"
+
+import { authClient } from "@/lib/auth-client"
 
 export function NavUser({
   user,
@@ -32,7 +34,7 @@ export function NavUser({
   user: {
     name: string
     email: string
-    avatar: string
+    avatar?: string
   }
 }) {
   return (
@@ -104,21 +106,37 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer">
-                <HugeiconsIcon icon={CheckmarkBadgeIcon} strokeWidth={2} />
-                Account
+              <DropdownMenuItem
+                render={
+                  <Link to="/profile" className="flex items-center gap-2" />
+                }
+                className="cursor-pointer"
+              >
+                <HugeiconsIcon icon={UserSquareIcon} strokeWidth={2} />
+                Profile
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <HugeiconsIcon icon={CreditCardIcon} strokeWidth={2} />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                render={
+                  <Link
+                    to="/profile/notifications"
+                    className="flex items-center gap-2"
+                  />
+                }
+                className="cursor-pointer"
+              >
                 <HugeiconsIcon icon={NotificationIcon} strokeWidth={2} />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600 dark:text-red-400 dark:focus:bg-red-950/20 dark:focus:text-red-400">
+            <DropdownMenuItem
+              onClick={async () => {
+                window.location.href = "/sign-in"
+                await authClient.signOut()
+              }}
+              variant="destructive"
+              className="cursor-pointer"
+            >
               <HugeiconsIcon icon={LogoutIcon} strokeWidth={2} />
               Log out
             </DropdownMenuItem>

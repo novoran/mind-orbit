@@ -1,16 +1,13 @@
-import { Outlet, createFileRoute, useLocation } from "@tanstack/react-router"
-
 import { SidebarInset, SidebarProvider } from "@mindorbit/ui/components/sidebar"
+import {
+  Outlet,
+  createFileRoute,
+  redirect,
+  useLocation,
+} from "@tanstack/react-router"
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { Header } from "@/components/header"
-
-export const Route = createFileRoute("/_dashboard")({
-  loader: () => {
-    return { sidebarOpen: true }
-  },
-  component: DashboardLayout,
-})
 
 function DashboardLayout() {
   const { sidebarOpen } = Route.useLoaderData()
@@ -22,7 +19,10 @@ function DashboardLayout() {
       <SidebarInset>
         <Header />
         <div className="p-4">
-          <div key={location.pathname} className="animate-fade-in-up">
+          <div
+            key={location.pathname.split("/")[1]}
+            className="animate-fade-in-up"
+          >
             <Outlet />
           </div>
         </div>
@@ -30,3 +30,17 @@ function DashboardLayout() {
     </SidebarProvider>
   )
 }
+
+export const Route = createFileRoute("/_dashboard")({
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({
+        to: "/sign-in",
+      })
+    }
+  },
+  loader: () => {
+    return { sidebarOpen: true }
+  },
+  component: DashboardLayout,
+})
