@@ -6,11 +6,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@mindorbit/ui/components/sidebar"
+import { cn } from "@mindorbit/ui/lib/utils"
 import { Link } from "@tanstack/react-router"
 import { AnimatePresence, motion } from "framer-motion"
 import * as React from "react"
 
 import { authClient } from "@/lib/auth-client"
+import { semanticColors } from "@/lib/color-system"
 
 interface BannerItem {
   id: string
@@ -50,12 +52,12 @@ const BANNERS: Array<BannerItem> = [
     footer: {
       label: "Upgrade Plan",
       href: "/billing",
-      buttonStyle: "bg-primary text-primary-foreground hover:bg-primary/90",
+      buttonStyle: semanticColors.action.primary,
     },
     background: {
       type: "gradient",
       value:
-        "linear-gradient(135deg, rgba(var(--primary), 0.15) 0%, rgba(var(--primary), 0.05) 100%)",
+        "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, transparent) 0%, color-mix(in oklch, var(--primary) 5%, transparent) 100%)",
     },
   },
   {
@@ -70,8 +72,7 @@ const BANNERS: Array<BannerItem> = [
     footer: {
       label: "Explore Features",
       href: "/",
-      buttonStyle:
-        "bg-background/90 text-foreground hover:bg-background dark:bg-background/20 dark:text-foreground dark:hover:bg-background/30 backdrop-blur-sm",
+      buttonStyle: cn(semanticColors.action.secondary, "backdrop-blur-sm"),
     },
     background: {
       type: "image",
@@ -91,12 +92,12 @@ const BANNERS: Array<BannerItem> = [
     footer: {
       label: "Learn More",
       href: "/teams",
-      buttonStyle: "bg-primary text-primary-foreground hover:bg-primary/90",
+      buttonStyle: semanticColors.action.primary,
     },
     background: {
       type: "gradient",
       value:
-        "linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(79, 70, 229, 0.05) 100%)",
+        "linear-gradient(135deg, color-mix(in oklch, var(--primary) 18%, transparent) 0%, color-mix(in oklch, var(--primary) 6%, transparent) 100%)",
     },
   },
   {
@@ -111,12 +112,12 @@ const BANNERS: Array<BannerItem> = [
     footer: {
       label: "View Security",
       href: "/settings",
-      buttonStyle: "bg-primary text-primary-foreground hover:bg-primary/90",
+      buttonStyle: semanticColors.action.primary,
     },
     background: {
       type: "gradient",
       value:
-        "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.05) 100%)",
+        "linear-gradient(135deg, color-mix(in oklch, var(--primary) 14%, transparent) 0%, color-mix(in oklch, var(--primary) 5%, transparent) 100%)",
     },
   },
 ]
@@ -194,13 +195,13 @@ export function Banner() {
                         {/* Header */}
                         <div className="flex flex-col">
                           <h4
-                            className={`text-base font-bold tracking-tight ${banner.background?.type === "image" ? "text-white" : "text-foreground"}`}
+                            className={`text-base font-bold tracking-tight ${banner.background?.type === "image" ? "text-primary-foreground" : "text-foreground"}`}
                           >
                             {banner.header.title}
                           </h4>
                           {banner.header.subtitle && (
                             <p
-                              className={`text-xs font-medium ${banner.background?.type === "image" ? "text-white/70" : "text-muted-foreground"}`}
+                              className={`text-xs font-medium ${banner.background?.type === "image" ? "text-primary-foreground/70" : "text-muted-foreground"}`}
                             >
                               {banner.header.subtitle}
                             </p>
@@ -217,10 +218,10 @@ export function Banner() {
                                   className="flex items-center gap-2.5"
                                 >
                                   <div
-                                    className={`size-1.5 rounded-full ${banner.background?.type === "image" ? "bg-gray-400" : "bg-primary/40"}`}
+                                    className={`size-1.5 rounded-full ${banner.background?.type === "image" ? "bg-muted-foreground/50" : "bg-primary/40"}`}
                                   />
                                   <span
-                                    className={`text-xs leading-tight font-medium ${banner.background?.type === "image" ? "text-white" : "text-foreground"}`}
+                                    className={`text-xs leading-tight font-medium ${banner.background?.type === "image" ? "text-primary-foreground" : "text-foreground"}`}
                                   >
                                     {feature}
                                   </span>
@@ -229,7 +230,7 @@ export function Banner() {
                             </div>
                           ) : (
                             <p
-                              className={`text-xs leading-tight font-medium ${banner.background?.type === "image" ? "text-white/80" : "text-muted-foreground"}`}
+                              className={`text-xs leading-tight font-medium ${banner.background?.type === "image" ? "text-primary-foreground/80" : "text-muted-foreground"}`}
                             >
                               {banner.content.text}
                             </p>
@@ -239,7 +240,7 @@ export function Banner() {
                         {/* Footer */}
                         <Button
                           size="sm"
-                          className={`h-8 w-full cursor-pointer rounded-lg text-xs font-semibold shadow-sm transition-all duration-300 active:scale-95 ${banner.footer.buttonStyle ?? "bg-background/80 text-foreground hover:bg-background dark:bg-muted/80 dark:text-foreground dark:hover:bg-muted"}`}
+                          className={`h-8 w-full cursor-pointer rounded-lg text-xs font-semibold shadow-sm transition-all duration-300 active:scale-95 ${banner.footer.buttonStyle ?? semanticColors.action.secondary}`}
                           render={
                             banner.footer.href ? (
                               banner.footer.href.startsWith("http") ||

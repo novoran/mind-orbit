@@ -50,7 +50,7 @@ type ApiKey = (typeof MOCK_API_KEYS)[0]
 const columns: Array<ColumnDef<ApiKey>> = [
   {
     accessorKey: "name",
-    header: () => <div className="w-[200px]">NAME</div>,
+    header: () => <div className="w-50">NAME</div>,
     cell: ({ row }) => (
       <span className="font-semibold">{row.original.name}</span>
     ),
@@ -92,12 +92,12 @@ const columns: Array<ColumnDef<ApiKey>> = [
   },
   {
     id: "actions",
-    header: () => <div className="w-[80px]">ACTIONS</div>,
+    header: () => <div className="w-20">ACTIONS</div>,
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger
           render={(props) => (
-            <Button variant="ghost" size="icon" className="h-8 w-8" {...props}>
+            <Button variant="ghost" size="icon" className="size-8" {...props}>
               <HugeiconsIcon
                 icon={MoreVerticalIcon}
                 size={16}

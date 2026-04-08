@@ -19,7 +19,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     <div className="grid min-h-screen lg:grid-cols-3">
       {/* Left Sidebar — Title, Logo, Features */}
       <div className="relative hidden flex-col justify-between p-6 lg:flex">
-        <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-3xl bg-zinc-950 p-12 shadow-2xl">
+        <div className="bg-card relative flex h-full flex-col justify-between overflow-hidden rounded-3xl p-12 shadow-2xl">
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center opacity-30"
@@ -31,13 +31,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           <div className="bg-primary/20 absolute inset-0 mix-blend-multiply" />
 
           {/* Content on top of background */}
-          <div className="relative z-10 flex h-full flex-col justify-between text-white">
+          <div className="text-card-foreground relative z-10 flex h-full flex-col justify-between">
             {/* Logo */}
             <div className="flex items-center gap-2.5">
-              <div className="bg-primary flex h-9 w-9 items-center justify-center rounded-lg shadow-lg">
+              <div className="bg-primary flex size-9 items-center justify-center rounded-lg shadow-lg">
                 <HugeiconsIcon
                   icon={Rocket01Icon}
-                  className="h-5 w-5 text-white"
+                  className="text-primary-foreground h-5 w-5"
                 />
               </div>
               <span className="text-xl font-bold tracking-tight">
@@ -51,7 +51,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 <h1 className="mb-3 text-4xl leading-tight font-bold tracking-tight">
                   Propel your productivity into a new orbit.
                 </h1>
-                <p className="text-base text-zinc-300">
+                <p className="text-muted-foreground text-base">
                   AI-first orbit designed for high-performing teams.
                 </p>
               </div>
@@ -98,7 +98,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           {children}
 
           {/* Footer Links */}
-          <div className="mt-8 flex items-center justify-center gap-6 text-xs font-medium text-slate-400">
+          <div className="text-muted-foreground mt-8 flex items-center justify-center gap-6 text-xs font-medium">
             <Link
               to="/"
               hash="privacy"
@@ -138,12 +138,12 @@ function FeatureItem({
 }) {
   return (
     <div className="flex items-center gap-3.5">
-      <div className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-md transition-all hover:bg-white/20">
+      <div className="bg-background/10 ring-background/20 hover:bg-background/20 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full ring-1 backdrop-blur-md transition-all">
         {icon}
       </div>
       <div>
         <h3 className="text-sm font-semibold">{title}</h3>
-        <p className="text-xs text-zinc-300">{description}</p>
+        <p className="text-muted-foreground text-xs">{description}</p>
       </div>
     </div>
   )

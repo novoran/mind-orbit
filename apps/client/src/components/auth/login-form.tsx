@@ -9,11 +9,13 @@ import { Button } from "@mindorbit/ui/components/button"
 import { Checkbox } from "@mindorbit/ui/components/checkbox"
 import { Input } from "@mindorbit/ui/components/input"
 import { Label } from "@mindorbit/ui/components/label"
+import { cn } from "@mindorbit/ui/lib/utils"
 import { useForm } from "@tanstack/react-form"
 import { Link } from "@tanstack/react-router"
 import * as React from "react"
 
 import { authClient } from "@/lib/auth-client"
+import { semanticColors } from "@/lib/color-system"
 
 export function LoginForm() {
   const [error, setError] = React.useState<string | null>(null)
@@ -43,9 +45,9 @@ export function LoginForm() {
   })
 
   return (
-    <div className="flex w-full flex-col space-y-6">
+    <div className="flex w-full flex-col gap-6">
       {/* Header */}
-      <div className="space-y-1.5 text-center">
+      <div className="flex flex-col gap-1.5 text-center">
         <h1 className="text-foreground text-2xl font-bold tracking-tight">
           Welcome Back
         </h1>
@@ -58,7 +60,10 @@ export function LoginForm() {
       <div className="grid grid-cols-2 gap-4">
         <Button
           variant="outline"
-          className="bg-background text-foreground hover:bg-muted ring-border h-10 w-full cursor-pointer justify-center gap-3 border-transparent font-semibold shadow-sm ring-1 transition-all active:scale-[0.98]"
+          className={cn(
+            semanticColors.action.secondary,
+            "h-10 w-full cursor-pointer justify-center gap-3 border-transparent font-semibold shadow-sm ring-1 transition-all active:scale-[0.98]"
+          )}
           onClick={() =>
             authClient.signIn.social({ provider: "google", callbackURL: "/" })
           }
@@ -68,7 +73,10 @@ export function LoginForm() {
         </Button>
         <Button
           variant="outline"
-          className="h-10 w-full cursor-pointer justify-center gap-3 border-transparent bg-white font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:ring-slate-300 active:scale-[0.98]"
+          className={cn(
+            semanticColors.action.secondary,
+            "h-10 w-full cursor-pointer justify-center gap-3 border-transparent font-semibold shadow-sm ring-1 transition-all active:scale-[0.98]"
+          )}
           onClick={() =>
             authClient.signIn.social({ provider: "slack", callbackURL: "/" })
           }
@@ -101,12 +109,12 @@ export function LoginForm() {
           e.stopPropagation()
           void form.handleSubmit()
         }}
-        className="space-y-4"
+        className="flex flex-col gap-4"
       >
         <form.Field
           name="email"
           children={(field) => (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label
                 htmlFor={field.name}
                 className="text-foreground text-sm font-bold"
@@ -135,7 +143,7 @@ export function LoginForm() {
         <form.Field
           name="password"
           children={(field) => (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <Label
                   htmlFor={field.name}
@@ -182,7 +190,7 @@ export function LoginForm() {
         <form.Field
           name="remember"
           children={(field) => (
-            <div className="flex items-center space-x-2.5">
+            <div className="flex items-center gap-2.5">
               <Checkbox
                 id={field.name}
                 checked={field.state.value}

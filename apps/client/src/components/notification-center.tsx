@@ -25,6 +25,8 @@ import { formatDistanceToNow, subHours, subMinutes } from "date-fns"
 import { AnimatePresence, motion } from "framer-motion"
 import * as React from "react"
 
+import { semanticColors } from "@/lib/color-system"
+
 interface Notification {
   id: string
   type: "access" | "insight" | "mention" | "file" | "system"
@@ -107,11 +109,11 @@ const notificationIcon = {
 }
 
 const iconBg = {
-  access: "bg-destructive/10 text-destructive",
-  insight: "bg-primary/10 text-primary",
-  mention: "bg-primary/10 text-primary",
-  file: "bg-muted text-muted-foreground",
-  system: "bg-muted text-zinc-500/10",
+  access: semanticColors.badge.destructive,
+  insight: semanticColors.badge.primary,
+  mention: semanticColors.badge.primary,
+  file: semanticColors.badge.muted,
+  system: semanticColors.badge.muted,
 }
 
 export function NotificationCenter() {
@@ -147,7 +149,7 @@ export function NotificationCenter() {
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="border-border w-[380px] gap-0 overflow-hidden border p-0 shadow-xl"
+        className="border-border w-95 gap-0 overflow-hidden border p-0 shadow-xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5">
@@ -158,14 +160,14 @@ export function NotificationCenter() {
           </div>
           <button
             onClick={markAllRead}
-            className="text-primary hover:text-primary/90 cursor-pointer text-xs font-semibold"
+            className="text-primary hover:text-primary/90 cursor-pointer text-xs font-semibold transition-colors"
           >
             Mark all as read
           </button>
         </div>
 
         {/* List */}
-        <div className="bg-background flex max-h-[450px] flex-col overflow-y-auto border-t">
+        <div className="bg-background border-border flex max-h-112.5 flex-col overflow-y-auto border-t">
           <AnimatePresence mode="popLayout" initial={false}>
             {filtered.length === 0 ? (
               <motion.div
@@ -243,12 +245,20 @@ export function NotificationCenter() {
                       {/* Meta/Actions Section */}
                       {notification.hasActions && (
                         <div className="mt-4 flex items-center gap-3">
-                          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 cursor-pointer rounded-lg px-6 text-[13px] font-bold shadow-sm">
+                          <Button
+                            className={cn(
+                              "h-9 cursor-pointer rounded-lg px-6 text-[13px] font-bold shadow-sm",
+                              semanticColors.action.primary
+                            )}
+                          >
                             Renew Access
                           </Button>
                           <Button
                             variant="secondary"
-                            className="bg-muted text-foreground hover:bg-muted/80 h-9 cursor-pointer rounded-lg border-none px-6 text-[13px] font-bold"
+                            className={cn(
+                              "h-9 cursor-pointer rounded-lg border-none px-6 text-[13px] font-bold",
+                              semanticColors.action.muted
+                            )}
                           >
                             Manage
                           </Button>
@@ -267,7 +277,7 @@ export function NotificationCenter() {
 
                     {/* Status Indicator Icon Badge */}
                     {notification.type === "access" && (
-                      <div className="bg-destructive ring-background absolute bottom-2.5 left-8.5 flex h-[18px] w-[18px] items-center justify-center rounded-full shadow-sm ring-2">
+                      <div className="bg-destructive ring-background absolute bottom-2.5 left-8.5 flex h-4.5 w-4.5 items-center justify-center rounded-full shadow-sm ring-2">
                         <HugeiconsIcon
                           icon={Alert01Icon}
                           size={10}
@@ -287,7 +297,7 @@ export function NotificationCenter() {
         </div>
 
         {/* Footer */}
-        <div className="bg-muted/20 border-t px-3 py-2 text-center">
+        <div className="border-border bg-muted/20 border-t px-3 py-2 text-center">
           <button className="text-muted-foreground hover:bg-muted hover:text-foreground w-full cursor-pointer rounded-lg py-2 text-sm font-bold transition-colors duration-300">
             View all notifications
           </button>

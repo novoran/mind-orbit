@@ -60,8 +60,7 @@ export function NavMain({
                           )}
                           activeOptions={{ exact: item.url === "/" }}
                           activeProps={{
-                            className:
-                              "bg-primary/10 text-primary! dark:bg-white/10 dark:text-white!",
+                            className: "bg-primary/10 text-primary",
                           }}
                           {...props}
                         >
@@ -71,7 +70,7 @@ export function NavMain({
                                 <div
                                   className={cn(
                                     "flex size-4 shrink-0 items-center justify-center transition-colors duration-250",
-                                    isActive && "text-primary dark:text-white"
+                                    isActive && "text-primary"
                                   )}
                                 >
                                   <HugeiconsIcon
@@ -99,7 +98,7 @@ export function NavMain({
                                       duration: 0.2,
                                       ease: "easeInOut",
                                     }}
-                                    className="bg-primary absolute right-2 size-1.5 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                                    className="bg-primary absolute right-2 size-1.5 rounded-full shadow-sm group-data-[collapsible=icon]:hidden"
                                   />
                                 )}
                               </AnimatePresence>
@@ -151,8 +150,7 @@ export function NavMain({
                                   "transition-all duration-200"
                                 )}
                                 activeProps={{
-                                  className:
-                                    "bg-primary/10 text-primary dark:bg-white/10 dark:text-white!",
+                                  className: "bg-primary/10 text-primary",
                                 }}
                                 {...props}
                               >
@@ -161,8 +159,7 @@ export function NavMain({
                                     <span
                                       className={cn(
                                         "transition-colors duration-250",
-                                        isActive &&
-                                          "text-primary font-semibold dark:text-white"
+                                        isActive && "text-primary font-semibold"
                                       )}
                                     >
                                       {subItem.title}
@@ -177,7 +174,7 @@ export function NavMain({
                                             duration: 0.2,
                                             ease: "easeInOut",
                                           }}
-                                          className="bg-primary absolute right-2 size-1 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] group-data-[collapsible=icon]:hidden dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                                          className="bg-primary absolute right-2 size-1 rounded-full shadow-sm group-data-[collapsible=icon]:hidden"
                                         />
                                       )}
                                     </AnimatePresence>
