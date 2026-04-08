@@ -12,35 +12,36 @@ import { Route as rootRouteImport } from "./routes/__root"
 import { Route as DashboardRouteImport } from "./routes/_dashboard"
 import { Route as AuthRouteImport } from "./routes/_auth"
 import { Route as DashboardIndexRouteImport } from "./routes/_dashboard/index"
-import { Route as DashboardTeamsRouteImport } from "./routes/_dashboard/teams"
-import { Route as DashboardTeamChatRouteImport } from "./routes/_dashboard/team-chat"
-import { Route as DashboardTasksRouteImport } from "./routes/_dashboard/tasks"
-import { Route as DashboardSettingsRouteImport } from "./routes/_dashboard/settings"
-import { Route as DashboardProjectsRouteImport } from "./routes/_dashboard/projects"
-import { Route as DashboardProfileRouteImport } from "./routes/_dashboard/profile"
-import { Route as DashboardMilestonesRouteImport } from "./routes/_dashboard/milestones"
-import { Route as DashboardMeetingRouteImport } from "./routes/_dashboard/meeting"
-import { Route as DashboardIdeaHubRouteImport } from "./routes/_dashboard/idea-hub"
-import { Route as DashboardFilesRouteImport } from "./routes/_dashboard/files"
-import { Route as DashboardAnalyticsRouteImport } from "./routes/_dashboard/analytics"
-import { Route as DashboardAiToolsRouteImport } from "./routes/_dashboard/ai-tools"
-import { Route as DashboardAiChatRouteImport } from "./routes/_dashboard/ai-chat"
 import { Route as AuthSignUpRouteImport } from "./routes/_auth/sign-up"
 import { Route as AuthSignInRouteImport } from "./routes/_auth/sign-in"
-import { Route as DashboardSettingsIndexRouteImport } from "./routes/_dashboard/settings.index"
-import { Route as DashboardProfileIndexRouteImport } from "./routes/_dashboard/profile.index"
+import { Route as DashboardProfileRouteRouteImport } from "./routes/_dashboard/profile/route"
+import { Route as DashboardspacesRouteRouteImport } from "./routes/_dashboard/(spaces)/route"
+import { Route as DashboardProfileIndexRouteImport } from "./routes/_dashboard/profile/index"
+import { Route as DashboardIdeaHubIndexRouteImport } from "./routes/_dashboard/idea-hub/index"
+import { Route as DashboardAiChatIndexRouteImport } from "./routes/_dashboard/ai-chat/index"
 import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$"
-import { Route as DashboardSettingsUsageRouteImport } from "./routes/_dashboard/settings.usage"
-import { Route as DashboardSettingsSecurityRouteImport } from "./routes/_dashboard/settings.security"
-import { Route as DashboardSettingsRolesRouteImport } from "./routes/_dashboard/settings.roles"
-import { Route as DashboardSettingsMembersRouteImport } from "./routes/_dashboard/settings.members"
-import { Route as DashboardSettingsInvoicesRouteImport } from "./routes/_dashboard/settings.invoices"
-import { Route as DashboardSettingsIntegrationsRouteImport } from "./routes/_dashboard/settings.integrations"
-import { Route as DashboardSettingsBillingRouteImport } from "./routes/_dashboard/settings.billing"
-import { Route as DashboardSettingsApiKeysRouteImport } from "./routes/_dashboard/settings.api-keys"
-import { Route as DashboardProfileSecurityRouteImport } from "./routes/_dashboard/profile.security"
-import { Route as DashboardProfilePreferencesRouteImport } from "./routes/_dashboard/profile.preferences"
-import { Route as DashboardProfileNotificationsRouteImport } from "./routes/_dashboard/profile.notifications"
+import { Route as DashboardProfileSecurityRouteImport } from "./routes/_dashboard/profile/security"
+import { Route as DashboardProfilePreferencesRouteImport } from "./routes/_dashboard/profile/preferences"
+import { Route as DashboardProfileNotificationsRouteImport } from "./routes/_dashboard/profile/notifications"
+import { Route as DashboardspacesSettingsRouteRouteImport } from "./routes/_dashboard/(spaces)/settings/route"
+import { Route as DashboardspacesTeamsIndexRouteImport } from "./routes/_dashboard/(spaces)/teams/index"
+import { Route as DashboardspacesTeamChatIndexRouteImport } from "./routes/_dashboard/(spaces)/team-chat/index"
+import { Route as DashboardspacesTasksIndexRouteImport } from "./routes/_dashboard/(spaces)/tasks/index"
+import { Route as DashboardspacesSettingsIndexRouteImport } from "./routes/_dashboard/(spaces)/settings/index"
+import { Route as DashboardspacesProjectsIndexRouteImport } from "./routes/_dashboard/(spaces)/projects/index"
+import { Route as DashboardspacesMilestonesIndexRouteImport } from "./routes/_dashboard/(spaces)/milestones/index"
+import { Route as DashboardspacesMeetingIndexRouteImport } from "./routes/_dashboard/(spaces)/meeting/index"
+import { Route as DashboardspacesFilesIndexRouteImport } from "./routes/_dashboard/(spaces)/files/index"
+import { Route as DashboardspacesAnalyticsIndexRouteImport } from "./routes/_dashboard/(spaces)/analytics/index"
+import { Route as DashboardspacesAiToolsIndexRouteImport } from "./routes/_dashboard/(spaces)/ai-tools/index"
+import { Route as DashboardspacesSettingsUsageRouteImport } from "./routes/_dashboard/(spaces)/settings/usage"
+import { Route as DashboardspacesSettingsSecurityRouteImport } from "./routes/_dashboard/(spaces)/settings/security"
+import { Route as DashboardspacesSettingsRolesRouteImport } from "./routes/_dashboard/(spaces)/settings/roles"
+import { Route as DashboardspacesSettingsMembersRouteImport } from "./routes/_dashboard/(spaces)/settings/members"
+import { Route as DashboardspacesSettingsInvoicesRouteImport } from "./routes/_dashboard/(spaces)/settings/invoices"
+import { Route as DashboardspacesSettingsIntegrationsRouteImport } from "./routes/_dashboard/(spaces)/settings/integrations"
+import { Route as DashboardspacesSettingsBillingRouteImport } from "./routes/_dashboard/(spaces)/settings/billing"
+import { Route as DashboardspacesSettingsApiKeysRouteImport } from "./routes/_dashboard/(spaces)/settings/api-keys"
 
 const DashboardRoute = DashboardRouteImport.update({
   id: "/_dashboard",
@@ -55,71 +56,6 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: "/",
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardTeamsRoute = DashboardTeamsRouteImport.update({
-  id: "/teams",
-  path: "/teams",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardTeamChatRoute = DashboardTeamChatRouteImport.update({
-  id: "/team-chat",
-  path: "/team-chat",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardTasksRoute = DashboardTasksRouteImport.update({
-  id: "/tasks",
-  path: "/tasks",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
-  id: "/settings",
-  path: "/settings",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
-  id: "/projects",
-  path: "/projects",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardProfileRoute = DashboardProfileRouteImport.update({
-  id: "/profile",
-  path: "/profile",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardMilestonesRoute = DashboardMilestonesRouteImport.update({
-  id: "/milestones",
-  path: "/milestones",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardMeetingRoute = DashboardMeetingRouteImport.update({
-  id: "/meeting",
-  path: "/meeting",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardIdeaHubRoute = DashboardIdeaHubRouteImport.update({
-  id: "/idea-hub",
-  path: "/idea-hub",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardFilesRoute = DashboardFilesRouteImport.update({
-  id: "/files",
-  path: "/files",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
-  id: "/analytics",
-  path: "/analytics",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardAiToolsRoute = DashboardAiToolsRouteImport.update({
-  id: "/ai-tools",
-  path: "/ai-tools",
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardAiChatRoute = DashboardAiChatRouteImport.update({
-  id: "/ai-chat",
-  path: "/ai-chat",
-  getParentRoute: () => DashboardRoute,
-} as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: "/sign-up",
   path: "/sign-up",
@@ -130,205 +66,281 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: "/sign-in",
   getParentRoute: () => AuthRoute,
 } as any)
-const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
-  id: "/",
-  path: "/",
-  getParentRoute: () => DashboardSettingsRoute,
+const DashboardProfileRouteRoute = DashboardProfileRouteRouteImport.update({
+  id: "/profile",
+  path: "/profile",
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardspacesRouteRoute = DashboardspacesRouteRouteImport.update({
+  id: "/(spaces)",
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProfileIndexRoute = DashboardProfileIndexRouteImport.update({
   id: "/",
   path: "/",
-  getParentRoute: () => DashboardProfileRoute,
+  getParentRoute: () => DashboardProfileRouteRoute,
+} as any)
+const DashboardIdeaHubIndexRoute = DashboardIdeaHubIndexRouteImport.update({
+  id: "/idea-hub/",
+  path: "/idea-hub/",
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAiChatIndexRoute = DashboardAiChatIndexRouteImport.update({
+  id: "/ai-chat/",
+  path: "/ai-chat/",
+  getParentRoute: () => DashboardRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: "/api/auth/$",
   path: "/api/auth/$",
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardSettingsUsageRoute = DashboardSettingsUsageRouteImport.update({
-  id: "/usage",
-  path: "/usage",
-  getParentRoute: () => DashboardSettingsRoute,
-} as any)
-const DashboardSettingsSecurityRoute =
-  DashboardSettingsSecurityRouteImport.update({
-    id: "/security",
-    path: "/security",
-    getParentRoute: () => DashboardSettingsRoute,
-  } as any)
-const DashboardSettingsRolesRoute = DashboardSettingsRolesRouteImport.update({
-  id: "/roles",
-  path: "/roles",
-  getParentRoute: () => DashboardSettingsRoute,
-} as any)
-const DashboardSettingsMembersRoute =
-  DashboardSettingsMembersRouteImport.update({
-    id: "/members",
-    path: "/members",
-    getParentRoute: () => DashboardSettingsRoute,
-  } as any)
-const DashboardSettingsInvoicesRoute =
-  DashboardSettingsInvoicesRouteImport.update({
-    id: "/invoices",
-    path: "/invoices",
-    getParentRoute: () => DashboardSettingsRoute,
-  } as any)
-const DashboardSettingsIntegrationsRoute =
-  DashboardSettingsIntegrationsRouteImport.update({
-    id: "/integrations",
-    path: "/integrations",
-    getParentRoute: () => DashboardSettingsRoute,
-  } as any)
-const DashboardSettingsBillingRoute =
-  DashboardSettingsBillingRouteImport.update({
-    id: "/billing",
-    path: "/billing",
-    getParentRoute: () => DashboardSettingsRoute,
-  } as any)
-const DashboardSettingsApiKeysRoute =
-  DashboardSettingsApiKeysRouteImport.update({
-    id: "/api-keys",
-    path: "/api-keys",
-    getParentRoute: () => DashboardSettingsRoute,
-  } as any)
 const DashboardProfileSecurityRoute =
   DashboardProfileSecurityRouteImport.update({
     id: "/security",
     path: "/security",
-    getParentRoute: () => DashboardProfileRoute,
+    getParentRoute: () => DashboardProfileRouteRoute,
   } as any)
 const DashboardProfilePreferencesRoute =
   DashboardProfilePreferencesRouteImport.update({
     id: "/preferences",
     path: "/preferences",
-    getParentRoute: () => DashboardProfileRoute,
+    getParentRoute: () => DashboardProfileRouteRoute,
   } as any)
 const DashboardProfileNotificationsRoute =
   DashboardProfileNotificationsRouteImport.update({
     id: "/notifications",
     path: "/notifications",
-    getParentRoute: () => DashboardProfileRoute,
+    getParentRoute: () => DashboardProfileRouteRoute,
+  } as any)
+const DashboardspacesSettingsRouteRoute =
+  DashboardspacesSettingsRouteRouteImport.update({
+    id: "/settings",
+    path: "/settings",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesTeamsIndexRoute =
+  DashboardspacesTeamsIndexRouteImport.update({
+    id: "/teams/",
+    path: "/teams/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesTeamChatIndexRoute =
+  DashboardspacesTeamChatIndexRouteImport.update({
+    id: "/team-chat/",
+    path: "/team-chat/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesTasksIndexRoute =
+  DashboardspacesTasksIndexRouteImport.update({
+    id: "/tasks/",
+    path: "/tasks/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesSettingsIndexRoute =
+  DashboardspacesSettingsIndexRouteImport.update({
+    id: "/",
+    path: "/",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesProjectsIndexRoute =
+  DashboardspacesProjectsIndexRouteImport.update({
+    id: "/projects/",
+    path: "/projects/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesMilestonesIndexRoute =
+  DashboardspacesMilestonesIndexRouteImport.update({
+    id: "/milestones/",
+    path: "/milestones/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesMeetingIndexRoute =
+  DashboardspacesMeetingIndexRouteImport.update({
+    id: "/meeting/",
+    path: "/meeting/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesFilesIndexRoute =
+  DashboardspacesFilesIndexRouteImport.update({
+    id: "/files/",
+    path: "/files/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesAnalyticsIndexRoute =
+  DashboardspacesAnalyticsIndexRouteImport.update({
+    id: "/analytics/",
+    path: "/analytics/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesAiToolsIndexRoute =
+  DashboardspacesAiToolsIndexRouteImport.update({
+    id: "/ai-tools/",
+    path: "/ai-tools/",
+    getParentRoute: () => DashboardspacesRouteRoute,
+  } as any)
+const DashboardspacesSettingsUsageRoute =
+  DashboardspacesSettingsUsageRouteImport.update({
+    id: "/usage",
+    path: "/usage",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesSettingsSecurityRoute =
+  DashboardspacesSettingsSecurityRouteImport.update({
+    id: "/security",
+    path: "/security",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesSettingsRolesRoute =
+  DashboardspacesSettingsRolesRouteImport.update({
+    id: "/roles",
+    path: "/roles",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesSettingsMembersRoute =
+  DashboardspacesSettingsMembersRouteImport.update({
+    id: "/members",
+    path: "/members",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesSettingsInvoicesRoute =
+  DashboardspacesSettingsInvoicesRouteImport.update({
+    id: "/invoices",
+    path: "/invoices",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesSettingsIntegrationsRoute =
+  DashboardspacesSettingsIntegrationsRouteImport.update({
+    id: "/integrations",
+    path: "/integrations",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesSettingsBillingRoute =
+  DashboardspacesSettingsBillingRouteImport.update({
+    id: "/billing",
+    path: "/billing",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
+  } as any)
+const DashboardspacesSettingsApiKeysRoute =
+  DashboardspacesSettingsApiKeysRouteImport.update({
+    id: "/api-keys",
+    path: "/api-keys",
+    getParentRoute: () => DashboardspacesSettingsRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   "/": typeof DashboardIndexRoute
+  "/profile": typeof DashboardProfileRouteRouteWithChildren
   "/sign-in": typeof AuthSignInRoute
   "/sign-up": typeof AuthSignUpRoute
-  "/ai-chat": typeof DashboardAiChatRoute
-  "/ai-tools": typeof DashboardAiToolsRoute
-  "/analytics": typeof DashboardAnalyticsRoute
-  "/files": typeof DashboardFilesRoute
-  "/idea-hub": typeof DashboardIdeaHubRoute
-  "/meeting": typeof DashboardMeetingRoute
-  "/milestones": typeof DashboardMilestonesRoute
-  "/profile": typeof DashboardProfileRouteWithChildren
-  "/projects": typeof DashboardProjectsRoute
-  "/settings": typeof DashboardSettingsRouteWithChildren
-  "/tasks": typeof DashboardTasksRoute
-  "/team-chat": typeof DashboardTeamChatRoute
-  "/teams": typeof DashboardTeamsRoute
+  "/settings": typeof DashboardspacesSettingsRouteRouteWithChildren
   "/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/profile/security": typeof DashboardProfileSecurityRoute
-  "/settings/api-keys": typeof DashboardSettingsApiKeysRoute
-  "/settings/billing": typeof DashboardSettingsBillingRoute
-  "/settings/integrations": typeof DashboardSettingsIntegrationsRoute
-  "/settings/invoices": typeof DashboardSettingsInvoicesRoute
-  "/settings/members": typeof DashboardSettingsMembersRoute
-  "/settings/roles": typeof DashboardSettingsRolesRoute
-  "/settings/security": typeof DashboardSettingsSecurityRoute
-  "/settings/usage": typeof DashboardSettingsUsageRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
+  "/ai-chat/": typeof DashboardAiChatIndexRoute
+  "/idea-hub/": typeof DashboardIdeaHubIndexRoute
   "/profile/": typeof DashboardProfileIndexRoute
-  "/settings/": typeof DashboardSettingsIndexRoute
+  "/settings/api-keys": typeof DashboardspacesSettingsApiKeysRoute
+  "/settings/billing": typeof DashboardspacesSettingsBillingRoute
+  "/settings/integrations": typeof DashboardspacesSettingsIntegrationsRoute
+  "/settings/invoices": typeof DashboardspacesSettingsInvoicesRoute
+  "/settings/members": typeof DashboardspacesSettingsMembersRoute
+  "/settings/roles": typeof DashboardspacesSettingsRolesRoute
+  "/settings/security": typeof DashboardspacesSettingsSecurityRoute
+  "/settings/usage": typeof DashboardspacesSettingsUsageRoute
+  "/ai-tools/": typeof DashboardspacesAiToolsIndexRoute
+  "/analytics/": typeof DashboardspacesAnalyticsIndexRoute
+  "/files/": typeof DashboardspacesFilesIndexRoute
+  "/meeting/": typeof DashboardspacesMeetingIndexRoute
+  "/milestones/": typeof DashboardspacesMilestonesIndexRoute
+  "/projects/": typeof DashboardspacesProjectsIndexRoute
+  "/settings/": typeof DashboardspacesSettingsIndexRoute
+  "/tasks/": typeof DashboardspacesTasksIndexRoute
+  "/team-chat/": typeof DashboardspacesTeamChatIndexRoute
+  "/teams/": typeof DashboardspacesTeamsIndexRoute
 }
 export interface FileRoutesByTo {
   "/": typeof DashboardIndexRoute
   "/sign-in": typeof AuthSignInRoute
   "/sign-up": typeof AuthSignUpRoute
-  "/ai-chat": typeof DashboardAiChatRoute
-  "/ai-tools": typeof DashboardAiToolsRoute
-  "/analytics": typeof DashboardAnalyticsRoute
-  "/files": typeof DashboardFilesRoute
-  "/idea-hub": typeof DashboardIdeaHubRoute
-  "/meeting": typeof DashboardMeetingRoute
-  "/milestones": typeof DashboardMilestonesRoute
-  "/projects": typeof DashboardProjectsRoute
-  "/tasks": typeof DashboardTasksRoute
-  "/team-chat": typeof DashboardTeamChatRoute
-  "/teams": typeof DashboardTeamsRoute
   "/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/profile/security": typeof DashboardProfileSecurityRoute
-  "/settings/api-keys": typeof DashboardSettingsApiKeysRoute
-  "/settings/billing": typeof DashboardSettingsBillingRoute
-  "/settings/integrations": typeof DashboardSettingsIntegrationsRoute
-  "/settings/invoices": typeof DashboardSettingsInvoicesRoute
-  "/settings/members": typeof DashboardSettingsMembersRoute
-  "/settings/roles": typeof DashboardSettingsRolesRoute
-  "/settings/security": typeof DashboardSettingsSecurityRoute
-  "/settings/usage": typeof DashboardSettingsUsageRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
+  "/ai-chat": typeof DashboardAiChatIndexRoute
+  "/idea-hub": typeof DashboardIdeaHubIndexRoute
   "/profile": typeof DashboardProfileIndexRoute
-  "/settings": typeof DashboardSettingsIndexRoute
+  "/settings/api-keys": typeof DashboardspacesSettingsApiKeysRoute
+  "/settings/billing": typeof DashboardspacesSettingsBillingRoute
+  "/settings/integrations": typeof DashboardspacesSettingsIntegrationsRoute
+  "/settings/invoices": typeof DashboardspacesSettingsInvoicesRoute
+  "/settings/members": typeof DashboardspacesSettingsMembersRoute
+  "/settings/roles": typeof DashboardspacesSettingsRolesRoute
+  "/settings/security": typeof DashboardspacesSettingsSecurityRoute
+  "/settings/usage": typeof DashboardspacesSettingsUsageRoute
+  "/ai-tools": typeof DashboardspacesAiToolsIndexRoute
+  "/analytics": typeof DashboardspacesAnalyticsIndexRoute
+  "/files": typeof DashboardspacesFilesIndexRoute
+  "/meeting": typeof DashboardspacesMeetingIndexRoute
+  "/milestones": typeof DashboardspacesMilestonesIndexRoute
+  "/projects": typeof DashboardspacesProjectsIndexRoute
+  "/settings": typeof DashboardspacesSettingsIndexRoute
+  "/tasks": typeof DashboardspacesTasksIndexRoute
+  "/team-chat": typeof DashboardspacesTeamChatIndexRoute
+  "/teams": typeof DashboardspacesTeamsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   "/_auth": typeof AuthRouteWithChildren
   "/_dashboard": typeof DashboardRouteWithChildren
+  "/_dashboard/(spaces)": typeof DashboardspacesRouteRouteWithChildren
+  "/_dashboard/profile": typeof DashboardProfileRouteRouteWithChildren
   "/_auth/sign-in": typeof AuthSignInRoute
   "/_auth/sign-up": typeof AuthSignUpRoute
-  "/_dashboard/ai-chat": typeof DashboardAiChatRoute
-  "/_dashboard/ai-tools": typeof DashboardAiToolsRoute
-  "/_dashboard/analytics": typeof DashboardAnalyticsRoute
-  "/_dashboard/files": typeof DashboardFilesRoute
-  "/_dashboard/idea-hub": typeof DashboardIdeaHubRoute
-  "/_dashboard/meeting": typeof DashboardMeetingRoute
-  "/_dashboard/milestones": typeof DashboardMilestonesRoute
-  "/_dashboard/profile": typeof DashboardProfileRouteWithChildren
-  "/_dashboard/projects": typeof DashboardProjectsRoute
-  "/_dashboard/settings": typeof DashboardSettingsRouteWithChildren
-  "/_dashboard/tasks": typeof DashboardTasksRoute
-  "/_dashboard/team-chat": typeof DashboardTeamChatRoute
-  "/_dashboard/teams": typeof DashboardTeamsRoute
   "/_dashboard/": typeof DashboardIndexRoute
+  "/_dashboard/(spaces)/settings": typeof DashboardspacesSettingsRouteRouteWithChildren
   "/_dashboard/profile/notifications": typeof DashboardProfileNotificationsRoute
   "/_dashboard/profile/preferences": typeof DashboardProfilePreferencesRoute
   "/_dashboard/profile/security": typeof DashboardProfileSecurityRoute
-  "/_dashboard/settings/api-keys": typeof DashboardSettingsApiKeysRoute
-  "/_dashboard/settings/billing": typeof DashboardSettingsBillingRoute
-  "/_dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRoute
-  "/_dashboard/settings/invoices": typeof DashboardSettingsInvoicesRoute
-  "/_dashboard/settings/members": typeof DashboardSettingsMembersRoute
-  "/_dashboard/settings/roles": typeof DashboardSettingsRolesRoute
-  "/_dashboard/settings/security": typeof DashboardSettingsSecurityRoute
-  "/_dashboard/settings/usage": typeof DashboardSettingsUsageRoute
   "/api/auth/$": typeof ApiAuthSplatRoute
+  "/_dashboard/ai-chat/": typeof DashboardAiChatIndexRoute
+  "/_dashboard/idea-hub/": typeof DashboardIdeaHubIndexRoute
   "/_dashboard/profile/": typeof DashboardProfileIndexRoute
-  "/_dashboard/settings/": typeof DashboardSettingsIndexRoute
+  "/_dashboard/(spaces)/settings/api-keys": typeof DashboardspacesSettingsApiKeysRoute
+  "/_dashboard/(spaces)/settings/billing": typeof DashboardspacesSettingsBillingRoute
+  "/_dashboard/(spaces)/settings/integrations": typeof DashboardspacesSettingsIntegrationsRoute
+  "/_dashboard/(spaces)/settings/invoices": typeof DashboardspacesSettingsInvoicesRoute
+  "/_dashboard/(spaces)/settings/members": typeof DashboardspacesSettingsMembersRoute
+  "/_dashboard/(spaces)/settings/roles": typeof DashboardspacesSettingsRolesRoute
+  "/_dashboard/(spaces)/settings/security": typeof DashboardspacesSettingsSecurityRoute
+  "/_dashboard/(spaces)/settings/usage": typeof DashboardspacesSettingsUsageRoute
+  "/_dashboard/(spaces)/ai-tools/": typeof DashboardspacesAiToolsIndexRoute
+  "/_dashboard/(spaces)/analytics/": typeof DashboardspacesAnalyticsIndexRoute
+  "/_dashboard/(spaces)/files/": typeof DashboardspacesFilesIndexRoute
+  "/_dashboard/(spaces)/meeting/": typeof DashboardspacesMeetingIndexRoute
+  "/_dashboard/(spaces)/milestones/": typeof DashboardspacesMilestonesIndexRoute
+  "/_dashboard/(spaces)/projects/": typeof DashboardspacesProjectsIndexRoute
+  "/_dashboard/(spaces)/settings/": typeof DashboardspacesSettingsIndexRoute
+  "/_dashboard/(spaces)/tasks/": typeof DashboardspacesTasksIndexRoute
+  "/_dashboard/(spaces)/team-chat/": typeof DashboardspacesTeamChatIndexRoute
+  "/_dashboard/(spaces)/teams/": typeof DashboardspacesTeamsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | "/"
+    | "/profile"
     | "/sign-in"
     | "/sign-up"
-    | "/ai-chat"
-    | "/ai-tools"
-    | "/analytics"
-    | "/files"
-    | "/idea-hub"
-    | "/meeting"
-    | "/milestones"
-    | "/profile"
-    | "/projects"
     | "/settings"
-    | "/tasks"
-    | "/team-chat"
-    | "/teams"
     | "/profile/notifications"
     | "/profile/preferences"
     | "/profile/security"
+    | "/api/auth/$"
+    | "/ai-chat/"
+    | "/idea-hub/"
+    | "/profile/"
     | "/settings/api-keys"
     | "/settings/billing"
     | "/settings/integrations"
@@ -337,28 +349,28 @@ export interface FileRouteTypes {
     | "/settings/roles"
     | "/settings/security"
     | "/settings/usage"
-    | "/api/auth/$"
-    | "/profile/"
+    | "/ai-tools/"
+    | "/analytics/"
+    | "/files/"
+    | "/meeting/"
+    | "/milestones/"
+    | "/projects/"
     | "/settings/"
+    | "/tasks/"
+    | "/team-chat/"
+    | "/teams/"
   fileRoutesByTo: FileRoutesByTo
   to:
     | "/"
     | "/sign-in"
     | "/sign-up"
-    | "/ai-chat"
-    | "/ai-tools"
-    | "/analytics"
-    | "/files"
-    | "/idea-hub"
-    | "/meeting"
-    | "/milestones"
-    | "/projects"
-    | "/tasks"
-    | "/team-chat"
-    | "/teams"
     | "/profile/notifications"
     | "/profile/preferences"
     | "/profile/security"
+    | "/api/auth/$"
+    | "/ai-chat"
+    | "/idea-hub"
+    | "/profile"
     | "/settings/api-keys"
     | "/settings/billing"
     | "/settings/integrations"
@@ -367,43 +379,51 @@ export interface FileRouteTypes {
     | "/settings/roles"
     | "/settings/security"
     | "/settings/usage"
-    | "/api/auth/$"
-    | "/profile"
+    | "/ai-tools"
+    | "/analytics"
+    | "/files"
+    | "/meeting"
+    | "/milestones"
+    | "/projects"
     | "/settings"
+    | "/tasks"
+    | "/team-chat"
+    | "/teams"
   id:
     | "__root__"
     | "/_auth"
     | "/_dashboard"
+    | "/_dashboard/(spaces)"
+    | "/_dashboard/profile"
     | "/_auth/sign-in"
     | "/_auth/sign-up"
-    | "/_dashboard/ai-chat"
-    | "/_dashboard/ai-tools"
-    | "/_dashboard/analytics"
-    | "/_dashboard/files"
-    | "/_dashboard/idea-hub"
-    | "/_dashboard/meeting"
-    | "/_dashboard/milestones"
-    | "/_dashboard/profile"
-    | "/_dashboard/projects"
-    | "/_dashboard/settings"
-    | "/_dashboard/tasks"
-    | "/_dashboard/team-chat"
-    | "/_dashboard/teams"
     | "/_dashboard/"
+    | "/_dashboard/(spaces)/settings"
     | "/_dashboard/profile/notifications"
     | "/_dashboard/profile/preferences"
     | "/_dashboard/profile/security"
-    | "/_dashboard/settings/api-keys"
-    | "/_dashboard/settings/billing"
-    | "/_dashboard/settings/integrations"
-    | "/_dashboard/settings/invoices"
-    | "/_dashboard/settings/members"
-    | "/_dashboard/settings/roles"
-    | "/_dashboard/settings/security"
-    | "/_dashboard/settings/usage"
     | "/api/auth/$"
+    | "/_dashboard/ai-chat/"
+    | "/_dashboard/idea-hub/"
     | "/_dashboard/profile/"
-    | "/_dashboard/settings/"
+    | "/_dashboard/(spaces)/settings/api-keys"
+    | "/_dashboard/(spaces)/settings/billing"
+    | "/_dashboard/(spaces)/settings/integrations"
+    | "/_dashboard/(spaces)/settings/invoices"
+    | "/_dashboard/(spaces)/settings/members"
+    | "/_dashboard/(spaces)/settings/roles"
+    | "/_dashboard/(spaces)/settings/security"
+    | "/_dashboard/(spaces)/settings/usage"
+    | "/_dashboard/(spaces)/ai-tools/"
+    | "/_dashboard/(spaces)/analytics/"
+    | "/_dashboard/(spaces)/files/"
+    | "/_dashboard/(spaces)/meeting/"
+    | "/_dashboard/(spaces)/milestones/"
+    | "/_dashboard/(spaces)/projects/"
+    | "/_dashboard/(spaces)/settings/"
+    | "/_dashboard/(spaces)/tasks/"
+    | "/_dashboard/(spaces)/team-chat/"
+    | "/_dashboard/(spaces)/teams/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -435,97 +455,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
-    "/_dashboard/teams": {
-      id: "/_dashboard/teams"
-      path: "/teams"
-      fullPath: "/teams"
-      preLoaderRoute: typeof DashboardTeamsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/team-chat": {
-      id: "/_dashboard/team-chat"
-      path: "/team-chat"
-      fullPath: "/team-chat"
-      preLoaderRoute: typeof DashboardTeamChatRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/tasks": {
-      id: "/_dashboard/tasks"
-      path: "/tasks"
-      fullPath: "/tasks"
-      preLoaderRoute: typeof DashboardTasksRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/settings": {
-      id: "/_dashboard/settings"
-      path: "/settings"
-      fullPath: "/settings"
-      preLoaderRoute: typeof DashboardSettingsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/projects": {
-      id: "/_dashboard/projects"
-      path: "/projects"
-      fullPath: "/projects"
-      preLoaderRoute: typeof DashboardProjectsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/profile": {
-      id: "/_dashboard/profile"
-      path: "/profile"
-      fullPath: "/profile"
-      preLoaderRoute: typeof DashboardProfileRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/milestones": {
-      id: "/_dashboard/milestones"
-      path: "/milestones"
-      fullPath: "/milestones"
-      preLoaderRoute: typeof DashboardMilestonesRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/meeting": {
-      id: "/_dashboard/meeting"
-      path: "/meeting"
-      fullPath: "/meeting"
-      preLoaderRoute: typeof DashboardMeetingRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/idea-hub": {
-      id: "/_dashboard/idea-hub"
-      path: "/idea-hub"
-      fullPath: "/idea-hub"
-      preLoaderRoute: typeof DashboardIdeaHubRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/files": {
-      id: "/_dashboard/files"
-      path: "/files"
-      fullPath: "/files"
-      preLoaderRoute: typeof DashboardFilesRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/analytics": {
-      id: "/_dashboard/analytics"
-      path: "/analytics"
-      fullPath: "/analytics"
-      preLoaderRoute: typeof DashboardAnalyticsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/ai-tools": {
-      id: "/_dashboard/ai-tools"
-      path: "/ai-tools"
-      fullPath: "/ai-tools"
-      preLoaderRoute: typeof DashboardAiToolsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    "/_dashboard/ai-chat": {
-      id: "/_dashboard/ai-chat"
-      path: "/ai-chat"
-      fullPath: "/ai-chat"
-      preLoaderRoute: typeof DashboardAiChatRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     "/_auth/sign-up": {
       id: "/_auth/sign-up"
       path: "/sign-up"
@@ -540,19 +469,40 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthRoute
     }
-    "/_dashboard/settings/": {
-      id: "/_dashboard/settings/"
-      path: "/"
-      fullPath: "/settings/"
-      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
-      parentRoute: typeof DashboardSettingsRoute
+    "/_dashboard/profile": {
+      id: "/_dashboard/profile"
+      path: "/profile"
+      fullPath: "/profile"
+      preLoaderRoute: typeof DashboardProfileRouteRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    "/_dashboard/(spaces)": {
+      id: "/_dashboard/(spaces)"
+      path: ""
+      fullPath: ""
+      preLoaderRoute: typeof DashboardspacesRouteRouteImport
+      parentRoute: typeof DashboardRoute
     }
     "/_dashboard/profile/": {
       id: "/_dashboard/profile/"
       path: "/"
       fullPath: "/profile/"
       preLoaderRoute: typeof DashboardProfileIndexRouteImport
-      parentRoute: typeof DashboardProfileRoute
+      parentRoute: typeof DashboardProfileRouteRoute
+    }
+    "/_dashboard/idea-hub/": {
+      id: "/_dashboard/idea-hub/"
+      path: "/idea-hub"
+      fullPath: "/idea-hub/"
+      preLoaderRoute: typeof DashboardIdeaHubIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    "/_dashboard/ai-chat/": {
+      id: "/_dashboard/ai-chat/"
+      path: "/ai-chat"
+      fullPath: "/ai-chat/"
+      preLoaderRoute: typeof DashboardAiChatIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
     "/api/auth/$": {
       id: "/api/auth/$"
@@ -561,82 +511,159 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    "/_dashboard/settings/usage": {
-      id: "/_dashboard/settings/usage"
-      path: "/usage"
-      fullPath: "/settings/usage"
-      preLoaderRoute: typeof DashboardSettingsUsageRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
-    "/_dashboard/settings/security": {
-      id: "/_dashboard/settings/security"
-      path: "/security"
-      fullPath: "/settings/security"
-      preLoaderRoute: typeof DashboardSettingsSecurityRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
-    "/_dashboard/settings/roles": {
-      id: "/_dashboard/settings/roles"
-      path: "/roles"
-      fullPath: "/settings/roles"
-      preLoaderRoute: typeof DashboardSettingsRolesRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
-    "/_dashboard/settings/members": {
-      id: "/_dashboard/settings/members"
-      path: "/members"
-      fullPath: "/settings/members"
-      preLoaderRoute: typeof DashboardSettingsMembersRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
-    "/_dashboard/settings/invoices": {
-      id: "/_dashboard/settings/invoices"
-      path: "/invoices"
-      fullPath: "/settings/invoices"
-      preLoaderRoute: typeof DashboardSettingsInvoicesRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
-    "/_dashboard/settings/integrations": {
-      id: "/_dashboard/settings/integrations"
-      path: "/integrations"
-      fullPath: "/settings/integrations"
-      preLoaderRoute: typeof DashboardSettingsIntegrationsRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
-    "/_dashboard/settings/billing": {
-      id: "/_dashboard/settings/billing"
-      path: "/billing"
-      fullPath: "/settings/billing"
-      preLoaderRoute: typeof DashboardSettingsBillingRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
-    "/_dashboard/settings/api-keys": {
-      id: "/_dashboard/settings/api-keys"
-      path: "/api-keys"
-      fullPath: "/settings/api-keys"
-      preLoaderRoute: typeof DashboardSettingsApiKeysRouteImport
-      parentRoute: typeof DashboardSettingsRoute
-    }
     "/_dashboard/profile/security": {
       id: "/_dashboard/profile/security"
       path: "/security"
       fullPath: "/profile/security"
       preLoaderRoute: typeof DashboardProfileSecurityRouteImport
-      parentRoute: typeof DashboardProfileRoute
+      parentRoute: typeof DashboardProfileRouteRoute
     }
     "/_dashboard/profile/preferences": {
       id: "/_dashboard/profile/preferences"
       path: "/preferences"
       fullPath: "/profile/preferences"
       preLoaderRoute: typeof DashboardProfilePreferencesRouteImport
-      parentRoute: typeof DashboardProfileRoute
+      parentRoute: typeof DashboardProfileRouteRoute
     }
     "/_dashboard/profile/notifications": {
       id: "/_dashboard/profile/notifications"
       path: "/notifications"
       fullPath: "/profile/notifications"
       preLoaderRoute: typeof DashboardProfileNotificationsRouteImport
-      parentRoute: typeof DashboardProfileRoute
+      parentRoute: typeof DashboardProfileRouteRoute
+    }
+    "/_dashboard/(spaces)/settings": {
+      id: "/_dashboard/(spaces)/settings"
+      path: "/settings"
+      fullPath: "/settings"
+      preLoaderRoute: typeof DashboardspacesSettingsRouteRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/teams/": {
+      id: "/_dashboard/(spaces)/teams/"
+      path: "/teams"
+      fullPath: "/teams/"
+      preLoaderRoute: typeof DashboardspacesTeamsIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/team-chat/": {
+      id: "/_dashboard/(spaces)/team-chat/"
+      path: "/team-chat"
+      fullPath: "/team-chat/"
+      preLoaderRoute: typeof DashboardspacesTeamChatIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/tasks/": {
+      id: "/_dashboard/(spaces)/tasks/"
+      path: "/tasks"
+      fullPath: "/tasks/"
+      preLoaderRoute: typeof DashboardspacesTasksIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/": {
+      id: "/_dashboard/(spaces)/settings/"
+      path: "/"
+      fullPath: "/settings/"
+      preLoaderRoute: typeof DashboardspacesSettingsIndexRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/projects/": {
+      id: "/_dashboard/(spaces)/projects/"
+      path: "/projects"
+      fullPath: "/projects/"
+      preLoaderRoute: typeof DashboardspacesProjectsIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/milestones/": {
+      id: "/_dashboard/(spaces)/milestones/"
+      path: "/milestones"
+      fullPath: "/milestones/"
+      preLoaderRoute: typeof DashboardspacesMilestonesIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/meeting/": {
+      id: "/_dashboard/(spaces)/meeting/"
+      path: "/meeting"
+      fullPath: "/meeting/"
+      preLoaderRoute: typeof DashboardspacesMeetingIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/files/": {
+      id: "/_dashboard/(spaces)/files/"
+      path: "/files"
+      fullPath: "/files/"
+      preLoaderRoute: typeof DashboardspacesFilesIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/analytics/": {
+      id: "/_dashboard/(spaces)/analytics/"
+      path: "/analytics"
+      fullPath: "/analytics/"
+      preLoaderRoute: typeof DashboardspacesAnalyticsIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/ai-tools/": {
+      id: "/_dashboard/(spaces)/ai-tools/"
+      path: "/ai-tools"
+      fullPath: "/ai-tools/"
+      preLoaderRoute: typeof DashboardspacesAiToolsIndexRouteImport
+      parentRoute: typeof DashboardspacesRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/usage": {
+      id: "/_dashboard/(spaces)/settings/usage"
+      path: "/usage"
+      fullPath: "/settings/usage"
+      preLoaderRoute: typeof DashboardspacesSettingsUsageRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/security": {
+      id: "/_dashboard/(spaces)/settings/security"
+      path: "/security"
+      fullPath: "/settings/security"
+      preLoaderRoute: typeof DashboardspacesSettingsSecurityRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/roles": {
+      id: "/_dashboard/(spaces)/settings/roles"
+      path: "/roles"
+      fullPath: "/settings/roles"
+      preLoaderRoute: typeof DashboardspacesSettingsRolesRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/members": {
+      id: "/_dashboard/(spaces)/settings/members"
+      path: "/members"
+      fullPath: "/settings/members"
+      preLoaderRoute: typeof DashboardspacesSettingsMembersRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/invoices": {
+      id: "/_dashboard/(spaces)/settings/invoices"
+      path: "/invoices"
+      fullPath: "/settings/invoices"
+      preLoaderRoute: typeof DashboardspacesSettingsInvoicesRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/integrations": {
+      id: "/_dashboard/(spaces)/settings/integrations"
+      path: "/integrations"
+      fullPath: "/settings/integrations"
+      preLoaderRoute: typeof DashboardspacesSettingsIntegrationsRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/billing": {
+      id: "/_dashboard/(spaces)/settings/billing"
+      path: "/billing"
+      fullPath: "/settings/billing"
+      preLoaderRoute: typeof DashboardspacesSettingsBillingRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
+    }
+    "/_dashboard/(spaces)/settings/api-keys": {
+      id: "/_dashboard/(spaces)/settings/api-keys"
+      path: "/api-keys"
+      fullPath: "/settings/api-keys"
+      preLoaderRoute: typeof DashboardspacesSettingsApiKeysRouteImport
+      parentRoute: typeof DashboardspacesSettingsRouteRoute
     }
   }
 }
@@ -653,82 +680,100 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
-interface DashboardProfileRouteChildren {
+interface DashboardspacesSettingsRouteRouteChildren {
+  DashboardspacesSettingsApiKeysRoute: typeof DashboardspacesSettingsApiKeysRoute
+  DashboardspacesSettingsBillingRoute: typeof DashboardspacesSettingsBillingRoute
+  DashboardspacesSettingsIntegrationsRoute: typeof DashboardspacesSettingsIntegrationsRoute
+  DashboardspacesSettingsInvoicesRoute: typeof DashboardspacesSettingsInvoicesRoute
+  DashboardspacesSettingsMembersRoute: typeof DashboardspacesSettingsMembersRoute
+  DashboardspacesSettingsRolesRoute: typeof DashboardspacesSettingsRolesRoute
+  DashboardspacesSettingsSecurityRoute: typeof DashboardspacesSettingsSecurityRoute
+  DashboardspacesSettingsUsageRoute: typeof DashboardspacesSettingsUsageRoute
+  DashboardspacesSettingsIndexRoute: typeof DashboardspacesSettingsIndexRoute
+}
+
+const DashboardspacesSettingsRouteRouteChildren: DashboardspacesSettingsRouteRouteChildren =
+  {
+    DashboardspacesSettingsApiKeysRoute: DashboardspacesSettingsApiKeysRoute,
+    DashboardspacesSettingsBillingRoute: DashboardspacesSettingsBillingRoute,
+    DashboardspacesSettingsIntegrationsRoute:
+      DashboardspacesSettingsIntegrationsRoute,
+    DashboardspacesSettingsInvoicesRoute: DashboardspacesSettingsInvoicesRoute,
+    DashboardspacesSettingsMembersRoute: DashboardspacesSettingsMembersRoute,
+    DashboardspacesSettingsRolesRoute: DashboardspacesSettingsRolesRoute,
+    DashboardspacesSettingsSecurityRoute: DashboardspacesSettingsSecurityRoute,
+    DashboardspacesSettingsUsageRoute: DashboardspacesSettingsUsageRoute,
+    DashboardspacesSettingsIndexRoute: DashboardspacesSettingsIndexRoute,
+  }
+
+const DashboardspacesSettingsRouteRouteWithChildren =
+  DashboardspacesSettingsRouteRoute._addFileChildren(
+    DashboardspacesSettingsRouteRouteChildren
+  )
+
+interface DashboardspacesRouteRouteChildren {
+  DashboardspacesSettingsRouteRoute: typeof DashboardspacesSettingsRouteRouteWithChildren
+  DashboardspacesAiToolsIndexRoute: typeof DashboardspacesAiToolsIndexRoute
+  DashboardspacesAnalyticsIndexRoute: typeof DashboardspacesAnalyticsIndexRoute
+  DashboardspacesFilesIndexRoute: typeof DashboardspacesFilesIndexRoute
+  DashboardspacesMeetingIndexRoute: typeof DashboardspacesMeetingIndexRoute
+  DashboardspacesMilestonesIndexRoute: typeof DashboardspacesMilestonesIndexRoute
+  DashboardspacesProjectsIndexRoute: typeof DashboardspacesProjectsIndexRoute
+  DashboardspacesTasksIndexRoute: typeof DashboardspacesTasksIndexRoute
+  DashboardspacesTeamChatIndexRoute: typeof DashboardspacesTeamChatIndexRoute
+  DashboardspacesTeamsIndexRoute: typeof DashboardspacesTeamsIndexRoute
+}
+
+const DashboardspacesRouteRouteChildren: DashboardspacesRouteRouteChildren = {
+  DashboardspacesSettingsRouteRoute:
+    DashboardspacesSettingsRouteRouteWithChildren,
+  DashboardspacesAiToolsIndexRoute: DashboardspacesAiToolsIndexRoute,
+  DashboardspacesAnalyticsIndexRoute: DashboardspacesAnalyticsIndexRoute,
+  DashboardspacesFilesIndexRoute: DashboardspacesFilesIndexRoute,
+  DashboardspacesMeetingIndexRoute: DashboardspacesMeetingIndexRoute,
+  DashboardspacesMilestonesIndexRoute: DashboardspacesMilestonesIndexRoute,
+  DashboardspacesProjectsIndexRoute: DashboardspacesProjectsIndexRoute,
+  DashboardspacesTasksIndexRoute: DashboardspacesTasksIndexRoute,
+  DashboardspacesTeamChatIndexRoute: DashboardspacesTeamChatIndexRoute,
+  DashboardspacesTeamsIndexRoute: DashboardspacesTeamsIndexRoute,
+}
+
+const DashboardspacesRouteRouteWithChildren =
+  DashboardspacesRouteRoute._addFileChildren(DashboardspacesRouteRouteChildren)
+
+interface DashboardProfileRouteRouteChildren {
   DashboardProfileNotificationsRoute: typeof DashboardProfileNotificationsRoute
   DashboardProfilePreferencesRoute: typeof DashboardProfilePreferencesRoute
   DashboardProfileSecurityRoute: typeof DashboardProfileSecurityRoute
   DashboardProfileIndexRoute: typeof DashboardProfileIndexRoute
 }
 
-const DashboardProfileRouteChildren: DashboardProfileRouteChildren = {
+const DashboardProfileRouteRouteChildren: DashboardProfileRouteRouteChildren = {
   DashboardProfileNotificationsRoute: DashboardProfileNotificationsRoute,
   DashboardProfilePreferencesRoute: DashboardProfilePreferencesRoute,
   DashboardProfileSecurityRoute: DashboardProfileSecurityRoute,
   DashboardProfileIndexRoute: DashboardProfileIndexRoute,
 }
 
-const DashboardProfileRouteWithChildren =
-  DashboardProfileRoute._addFileChildren(DashboardProfileRouteChildren)
-
-interface DashboardSettingsRouteChildren {
-  DashboardSettingsApiKeysRoute: typeof DashboardSettingsApiKeysRoute
-  DashboardSettingsBillingRoute: typeof DashboardSettingsBillingRoute
-  DashboardSettingsIntegrationsRoute: typeof DashboardSettingsIntegrationsRoute
-  DashboardSettingsInvoicesRoute: typeof DashboardSettingsInvoicesRoute
-  DashboardSettingsMembersRoute: typeof DashboardSettingsMembersRoute
-  DashboardSettingsRolesRoute: typeof DashboardSettingsRolesRoute
-  DashboardSettingsSecurityRoute: typeof DashboardSettingsSecurityRoute
-  DashboardSettingsUsageRoute: typeof DashboardSettingsUsageRoute
-  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
-}
-
-const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
-  DashboardSettingsApiKeysRoute: DashboardSettingsApiKeysRoute,
-  DashboardSettingsBillingRoute: DashboardSettingsBillingRoute,
-  DashboardSettingsIntegrationsRoute: DashboardSettingsIntegrationsRoute,
-  DashboardSettingsInvoicesRoute: DashboardSettingsInvoicesRoute,
-  DashboardSettingsMembersRoute: DashboardSettingsMembersRoute,
-  DashboardSettingsRolesRoute: DashboardSettingsRolesRoute,
-  DashboardSettingsSecurityRoute: DashboardSettingsSecurityRoute,
-  DashboardSettingsUsageRoute: DashboardSettingsUsageRoute,
-  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
-}
-
-const DashboardSettingsRouteWithChildren =
-  DashboardSettingsRoute._addFileChildren(DashboardSettingsRouteChildren)
+const DashboardProfileRouteRouteWithChildren =
+  DashboardProfileRouteRoute._addFileChildren(
+    DashboardProfileRouteRouteChildren
+  )
 
 interface DashboardRouteChildren {
-  DashboardAiChatRoute: typeof DashboardAiChatRoute
-  DashboardAiToolsRoute: typeof DashboardAiToolsRoute
-  DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
-  DashboardFilesRoute: typeof DashboardFilesRoute
-  DashboardIdeaHubRoute: typeof DashboardIdeaHubRoute
-  DashboardMeetingRoute: typeof DashboardMeetingRoute
-  DashboardMilestonesRoute: typeof DashboardMilestonesRoute
-  DashboardProfileRoute: typeof DashboardProfileRouteWithChildren
-  DashboardProjectsRoute: typeof DashboardProjectsRoute
-  DashboardSettingsRoute: typeof DashboardSettingsRouteWithChildren
-  DashboardTasksRoute: typeof DashboardTasksRoute
-  DashboardTeamChatRoute: typeof DashboardTeamChatRoute
-  DashboardTeamsRoute: typeof DashboardTeamsRoute
+  DashboardspacesRouteRoute: typeof DashboardspacesRouteRouteWithChildren
+  DashboardProfileRouteRoute: typeof DashboardProfileRouteRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardAiChatIndexRoute: typeof DashboardAiChatIndexRoute
+  DashboardIdeaHubIndexRoute: typeof DashboardIdeaHubIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardAiChatRoute: DashboardAiChatRoute,
-  DashboardAiToolsRoute: DashboardAiToolsRoute,
-  DashboardAnalyticsRoute: DashboardAnalyticsRoute,
-  DashboardFilesRoute: DashboardFilesRoute,
-  DashboardIdeaHubRoute: DashboardIdeaHubRoute,
-  DashboardMeetingRoute: DashboardMeetingRoute,
-  DashboardMilestonesRoute: DashboardMilestonesRoute,
-  DashboardProfileRoute: DashboardProfileRouteWithChildren,
-  DashboardProjectsRoute: DashboardProjectsRoute,
-  DashboardSettingsRoute: DashboardSettingsRouteWithChildren,
-  DashboardTasksRoute: DashboardTasksRoute,
-  DashboardTeamChatRoute: DashboardTeamChatRoute,
-  DashboardTeamsRoute: DashboardTeamsRoute,
+  DashboardspacesRouteRoute: DashboardspacesRouteRouteWithChildren,
+  DashboardProfileRouteRoute: DashboardProfileRouteRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardAiChatIndexRoute: DashboardAiChatIndexRoute,
+  DashboardIdeaHubIndexRoute: DashboardIdeaHubIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(

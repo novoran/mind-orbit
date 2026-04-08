@@ -46,17 +46,19 @@ export function LoginForm() {
     <div className="flex w-full flex-col space-y-6">
       {/* Header */}
       <div className="space-y-1.5 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-foreground text-2xl font-bold tracking-tight">
           Welcome Back
         </h1>
-        <p className="text-sm text-slate-500">Please login to your account</p>
+        <p className="text-muted-foreground text-sm">
+          Please login to your account
+        </p>
       </div>
 
       {/* Social Logins */}
       <div className="grid grid-cols-2 gap-4">
         <Button
           variant="outline"
-          className="h-10 w-full cursor-pointer justify-center gap-3 border-transparent bg-white font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:ring-slate-300 active:scale-[0.98]"
+          className="bg-background text-foreground hover:bg-muted ring-border h-10 w-full cursor-pointer justify-center gap-3 border-transparent font-semibold shadow-sm ring-1 transition-all active:scale-[0.98]"
           onClick={() =>
             authClient.signIn.social({ provider: "google", callbackURL: "/" })
           }
@@ -78,16 +80,16 @@ export function LoginForm() {
 
       {/* Divider */}
       <div className="flex items-center gap-4 py-2">
-        <div className="h-px grow bg-slate-100" />
-        <span className="text-xs font-bold tracking-widest text-slate-400 uppercase">
+        <div className="bg-border/50 h-px grow" />
+        <span className="text-muted-foreground/60 text-xs font-bold tracking-widest uppercase">
           or
         </span>
-        <div className="h-px grow bg-slate-100" />
+        <div className="bg-border/50 h-px grow" />
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="rounded-xl bg-red-50 p-3.5 text-sm font-semibold text-red-600 ring-1 ring-red-100 ring-inset">
+        <div className="bg-destructive/10 text-destructive ring-destructive/20 rounded-xl p-3.5 text-sm font-semibold ring-1 ring-inset">
           {error}
         </div>
       )}
@@ -107,19 +109,19 @@ export function LoginForm() {
             <div className="space-y-2">
               <Label
                 htmlFor={field.name}
-                className="text-sm font-bold text-slate-700"
+                className="text-foreground text-sm font-bold"
               >
                 Email
               </Label>
               <div className="relative">
-                <div className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400">
+                <div className="text-muted-foreground/60 absolute top-1/2 left-3.5 -translate-y-1/2">
                   <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4" />
                 </div>
                 <Input
                   id={field.name}
                   type="email"
                   placeholder="name@company.com"
-                  className="h-11 rounded-xl border-transparent bg-slate-50 pl-11 text-slate-900 shadow-none ring-1 ring-slate-200 transition-all placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-indigo-600"
+                  className="bg-muted text-foreground ring-border placeholder:text-muted-foreground/50 focus-visible:bg-background focus-visible:ring-primary h-11 rounded-xl border-transparent pl-11 shadow-none ring-1 transition-all focus-visible:ring-2"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
@@ -137,26 +139,26 @@ export function LoginForm() {
               <div className="flex items-center justify-between">
                 <Label
                   htmlFor={field.name}
-                  className="text-sm font-bold text-slate-700"
+                  className="text-foreground text-sm font-bold"
                 >
                   Password
                 </Label>
                 <Link
                   to="/sign-in"
-                  className="text-xs font-bold text-indigo-600 transition-colors hover:text-indigo-700"
+                  className="text-primary hover:text-primary/90 text-xs font-bold transition-colors"
                 >
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
-                <div className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400">
+                <div className="text-muted-foreground/60 absolute top-1/2 left-3.5 -translate-y-1/2">
                   <HugeiconsIcon icon={LockPasswordIcon} className="h-4 w-4" />
                 </div>
                 <Input
                   id={field.name}
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="h-11 rounded-xl border-transparent bg-slate-50 pr-11 pl-11 text-slate-900 shadow-none ring-1 ring-slate-200 transition-all placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-indigo-600"
+                  className="bg-muted text-foreground ring-border placeholder:text-muted-foreground/50 focus-visible:bg-background focus-visible:ring-primary h-11 rounded-xl border-transparent pr-11 pl-11 shadow-none ring-1 transition-all focus-visible:ring-2"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
@@ -165,7 +167,7 @@ export function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute top-1/2 right-3.5 -translate-y-1/2 cursor-pointer text-slate-400 transition-colors outline-none hover:text-slate-600"
+                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3.5 -translate-y-1/2 cursor-pointer transition-colors outline-none"
                 >
                   <HugeiconsIcon
                     icon={showPassword ? ViewOffIcon : ViewIcon}
@@ -185,11 +187,11 @@ export function LoginForm() {
                 id={field.name}
                 checked={field.state.value}
                 onCheckedChange={(checked) => field.handleChange(!!checked)}
-                className="rounded-md border-slate-200 text-indigo-600 focus:ring-indigo-600"
+                className="border-border text-primary focus:ring-primary rounded-md"
               />
               <Label
                 htmlFor={field.name}
-                className="cursor-pointer text-sm font-semibold text-slate-500 transition-colors hover:text-slate-700"
+                className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-semibold transition-colors"
               >
                 Keep me signed in
               </Label>
@@ -202,7 +204,7 @@ export function LoginForm() {
           children={([canSubmit, isSubmitting]) => (
             <Button
               type="submit"
-              className="h-11 w-full cursor-pointer rounded-xl bg-indigo-600 font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-[0.98] disabled:opacity-50"
+              className="bg-primary text-primary-foreground shadow-primary/20 hover:bg-primary/90 hover:shadow-primary/30 h-11 w-full cursor-pointer rounded-xl font-bold transition-all active:scale-[0.98] disabled:opacity-50"
               loading={isSubmitting}
               disabled={!canSubmit}
             >
@@ -212,11 +214,11 @@ export function LoginForm() {
         />
       </form>
 
-      <div className="text-center text-sm text-slate-500">
+      <div className="text-muted-foreground text-center text-sm">
         Don&apos;t have an account?{" "}
         <Link
           to="/sign-up"
-          className="font-bold text-indigo-600 underline-offset-4 hover:text-indigo-700 hover:underline"
+          className="text-primary hover:text-primary/90 font-bold underline-offset-4 hover:underline"
         >
           Sign Up
         </Link>

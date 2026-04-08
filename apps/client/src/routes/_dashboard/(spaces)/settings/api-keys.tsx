@@ -17,7 +17,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 
 import { DataTable } from "@/components/data-table"
 
-export const Route = createFileRoute("/_dashboard/settings/api-keys")({
+export const Route = createFileRoute("/_dashboard/(spaces)/settings/api-keys")({
   component: SettingsApiKeysPage,
 })
 

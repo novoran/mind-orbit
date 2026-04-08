@@ -10,7 +10,7 @@ import { Input } from "@mindorbit/ui/components/input"
 import { Textarea } from "@mindorbit/ui/components/textarea"
 import { Link, createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_dashboard/settings/billing")({
+export const Route = createFileRoute("/_dashboard/(spaces)/settings/billing")({
   component: SettingsBillingPage,
 })
 

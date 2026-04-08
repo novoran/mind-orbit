@@ -18,6 +18,7 @@ import {
   Link,
   Outlet,
   createFileRoute,
+  redirect,
   useLocation,
 } from "@tanstack/react-router"
 import { AnimatePresence, motion } from "framer-motion"
@@ -25,7 +26,13 @@ import * as React from "react"
 
 import { authClient } from "@/lib/auth-client"
 
-export const Route = createFileRoute("/_dashboard/settings")({
+export const Route = createFileRoute("/_dashboard/(spaces)/settings")({
+  beforeLoad: ({ context }) => {
+    const { activeMember } = context
+    if (activeMember?.role !== "owner" && activeMember?.role !== "admin") {
+      throw redirect({ to: "/" })
+    }
+  },
   component: SettingsLayout,
 })
 

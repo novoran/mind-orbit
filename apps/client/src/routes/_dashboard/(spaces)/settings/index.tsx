@@ -12,7 +12,7 @@ import {
 } from "@mindorbit/ui/components/select"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_dashboard/settings/")({
+export const Route = createFileRoute("/_dashboard/(spaces)/settings/")({
   component: SettingsGeneralPage,
 })
 

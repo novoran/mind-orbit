@@ -17,7 +17,7 @@ import {
 import { Switch } from "@mindorbit/ui/components/switch"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_dashboard/settings/security")({
+export const Route = createFileRoute("/_dashboard/(spaces)/settings/security")({
   component: SettingsSecurityPage,
 })
 

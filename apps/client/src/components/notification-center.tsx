@@ -107,11 +107,11 @@ const notificationIcon = {
 }
 
 const iconBg = {
-  access: "bg-red-50 text-red-500 dark:bg-red-500/10",
-  insight: "bg-blue-50 text-blue-600 dark:bg-blue-500/10",
-  mention: "bg-amber-50 text-amber-600 dark:bg-amber-500/10",
-  file: "bg-slate-100 text-slate-600 dark:bg-slate-500/10",
-  system: "bg-slate-100 text-slate-600 dark:bg-zinc-500/10",
+  access: "bg-destructive/10 text-destructive",
+  insight: "bg-primary/10 text-primary",
+  mention: "bg-primary/10 text-primary",
+  file: "bg-muted text-muted-foreground",
+  system: "bg-muted text-zinc-500/10",
 }
 
 export function NotificationCenter() {
@@ -139,7 +139,7 @@ export function NotificationCenter() {
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="border-background absolute top-1.5 right-1.5 size-2.5 rounded-full border-2 bg-red-500"
+            className="border-background bg-destructive absolute top-1.5 right-1.5 size-2.5 rounded-full border-2"
           />
         )}
       </PopoverTrigger>
@@ -147,25 +147,25 @@ export function NotificationCenter() {
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-[380px] gap-0 overflow-hidden border border-slate-200 p-0 shadow-xl dark:border-zinc-800"
+        className="border-border w-[380px] gap-0 overflow-hidden border p-0 shadow-xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5">
           <div className="flex items-center gap-3">
-            <h2 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-zinc-100">
+            <h2 className="text-foreground text-[20px] font-bold tracking-tight">
               Notifications
             </h2>
           </div>
           <button
             onClick={markAllRead}
-            className="cursor-pointer text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            className="text-primary hover:text-primary/90 cursor-pointer text-xs font-semibold"
           >
             Mark all as read
           </button>
         </div>
 
         {/* List */}
-        <div className="flex max-h-[450px] flex-col overflow-y-auto border-t bg-white dark:bg-zinc-950">
+        <div className="bg-background flex max-h-[450px] flex-col overflow-y-auto border-t">
           <AnimatePresence mode="popLayout" initial={false}>
             {filtered.length === 0 ? (
               <motion.div
@@ -173,7 +173,7 @@ export function NotificationCenter() {
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center justify-center py-20 text-center"
               >
-                <p className="text-sm font-medium text-slate-400">
+                <p className="text-muted-foreground/60 text-sm font-medium">
                   No notifications yet
                 </p>
               </motion.div>
@@ -187,16 +187,14 @@ export function NotificationCenter() {
                     onClick={() => markRead(notification.id)}
                     className={cn(
                       "group relative flex w-full cursor-pointer items-start gap-4 border-none px-4 py-3 text-left transition-all outline-none",
-                      idx % 2 === 0
-                        ? "bg-white dark:bg-zinc-950"
-                        : "bg-slate-50/40 dark:bg-zinc-900/20",
-                      "hover:bg-slate-100/60 dark:hover:bg-zinc-800/40"
+                      idx % 2 === 0 ? "bg-background" : "bg-muted/30",
+                      "hover:bg-muted/60"
                     )}
                   >
                     {/* Left: Avatar or Icon */}
                     <div className="shrink-0 pt-0.5">
                       {notification.user ? (
-                        <Avatar className="size-9 border border-slate-100 ring-4 ring-slate-50 dark:ring-zinc-900/50">
+                        <Avatar className="border-border ring-muted/50 size-9 border ring-4">
                           <AvatarImage src={notification.user.avatar} />
                           <AvatarFallback>
                             {notification.user.name[0]}
@@ -221,10 +219,10 @@ export function NotificationCenter() {
                     {/* Right: Content */}
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="mb-0.5 flex items-start justify-between">
-                        <h4 className="text-[14px] font-bold tracking-tight text-slate-900 dark:text-zinc-100">
+                        <h4 className="text-foreground text-[14px] font-bold tracking-tight">
                           {notification.title}
                         </h4>
-                        <span className="mt-0.5 text-[11px] font-medium text-slate-400">
+                        <span className="text-muted-foreground/60 mt-0.5 text-[11px] font-medium">
                           {formatDistanceToNow(notification.createdAt, {
                             addSuffix: false,
                           }).replace("about ", "")}{" "}
@@ -232,9 +230,9 @@ export function NotificationCenter() {
                         </span>
                       </div>
 
-                      <p className="mt-0.5 text-[13px] leading-[1.4] text-slate-600 dark:text-zinc-400">
+                      <p className="text-muted-foreground mt-0.5 text-[13px] leading-[1.4]">
                         {notification.user && (
-                          <span className="font-bold text-slate-900 dark:text-zinc-200">
+                          <span className="text-foreground font-bold">
                             {notification.user.name}
                             {"'"}s{" "}
                           </span>
@@ -245,12 +243,12 @@ export function NotificationCenter() {
                       {/* Meta/Actions Section */}
                       {notification.hasActions && (
                         <div className="mt-4 flex items-center gap-3">
-                          <Button className="h-9 cursor-pointer rounded-lg bg-blue-600 px-6 text-[13px] font-bold text-white shadow-sm hover:bg-blue-700">
+                          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 cursor-pointer rounded-lg px-6 text-[13px] font-bold shadow-sm">
                             Renew Access
                           </Button>
                           <Button
                             variant="secondary"
-                            className="h-9 cursor-pointer rounded-lg border-none bg-slate-100 px-6 text-[13px] font-bold text-slate-900 hover:bg-slate-200"
+                            className="bg-muted text-foreground hover:bg-muted/80 h-9 cursor-pointer rounded-lg border-none px-6 text-[13px] font-bold"
                           >
                             Manage
                           </Button>
@@ -260,7 +258,7 @@ export function NotificationCenter() {
                       {/* Secondary Link style meta */}
                       {!notification.hasActions && notification.user && (
                         <div className="mt-1">
-                          <span className="cursor-pointer text-[11px] font-bold text-blue-600/70 hover:underline">
+                          <span className="text-primary/70 cursor-pointer text-[11px] font-bold hover:underline">
                             View project overview
                           </span>
                         </div>
@@ -269,18 +267,18 @@ export function NotificationCenter() {
 
                     {/* Status Indicator Icon Badge */}
                     {notification.type === "access" && (
-                      <div className="absolute bottom-2.5 left-8.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-red-600 shadow-sm ring-2 ring-white dark:ring-zinc-950">
+                      <div className="bg-destructive ring-background absolute bottom-2.5 left-8.5 flex h-[18px] w-[18px] items-center justify-center rounded-full shadow-sm ring-2">
                         <HugeiconsIcon
                           icon={Alert01Icon}
                           size={10}
                           strokeWidth={3}
-                          className="text-white"
+                          className="text-destructive-foreground"
                         />
                       </div>
                     )}
                   </motion.button>
                   {idx !== Math.min(filtered.length, 20) - 1 && (
-                    <Separator className="bg-slate-200/80 dark:bg-zinc-800/50" />
+                    <Separator className="bg-border/60" />
                   )}
                 </React.Fragment>
               ))
@@ -289,8 +287,8 @@ export function NotificationCenter() {
         </div>
 
         {/* Footer */}
-        <div className="border-t bg-slate-50/30 px-3 py-2 text-center dark:bg-zinc-950/30">
-          <button className="w-full cursor-pointer rounded-lg py-2 text-sm font-bold text-slate-700 transition-colors duration-300 hover:bg-slate-100 hover:text-slate-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200">
+        <div className="bg-muted/20 border-t px-3 py-2 text-center">
+          <button className="text-muted-foreground hover:bg-muted hover:text-foreground w-full cursor-pointer rounded-lg py-2 text-sm font-bold transition-colors duration-300">
             View all notifications
           </button>
         </div>

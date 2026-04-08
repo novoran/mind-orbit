@@ -19,7 +19,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     <div className="grid min-h-screen lg:grid-cols-3">
       {/* Left Sidebar — Title, Logo, Features */}
       <div className="relative hidden flex-col justify-between p-6 lg:flex">
-        <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-3xl bg-slate-950 p-12 shadow-2xl">
+        <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-3xl bg-zinc-950 p-12 shadow-2xl">
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center opacity-30"
@@ -28,13 +28,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 "url(https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2022&auto=format&fit=crop)",
             }}
           />
-          <div className="absolute inset-0 bg-indigo-950/80 mix-blend-multiply" />
+          <div className="bg-primary/20 absolute inset-0 mix-blend-multiply" />
 
           {/* Content on top of background */}
           <div className="relative z-10 flex h-full flex-col justify-between text-white">
             {/* Logo */}
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 shadow-lg">
+              <div className="bg-primary flex h-9 w-9 items-center justify-center rounded-lg shadow-lg">
                 <HugeiconsIcon
                   icon={Rocket01Icon}
                   className="h-5 w-5 text-white"
@@ -51,7 +51,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 <h1 className="mb-3 text-4xl leading-tight font-bold tracking-tight">
                   Propel your productivity into a new orbit.
                 </h1>
-                <p className="text-base text-slate-300">
+                <p className="text-base text-zinc-300">
                   AI-first orbit designed for high-performing teams.
                 </p>
               </div>
@@ -85,7 +85,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             </div>
 
             {/* Footer */}
-            <div className="text-xs text-slate-400">
+            <div className="text-muted-foreground/60 text-xs">
               © {year} MindOrbit Inc. All rights reserved.
             </div>
           </div>
@@ -102,21 +102,21 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             <Link
               to="/"
               hash="privacy"
-              className="underline-offset-4 hover:text-indigo-600 hover:underline"
+              className="hover:text-primary underline-offset-4 hover:underline"
             >
               Privacy
             </Link>
             <Link
               to="/"
               hash="terms"
-              className="underline-offset-4 hover:text-indigo-600 hover:underline"
+              className="hover:text-primary underline-offset-4 hover:underline"
             >
               Terms
             </Link>
             <Link
               to="/"
               hash="cookies"
-              className="underline-offset-4 hover:text-indigo-600 hover:underline"
+              className="hover:text-primary underline-offset-4 hover:underline"
             >
               Cookies
             </Link>
@@ -143,7 +143,7 @@ function FeatureItem({
       </div>
       <div>
         <h3 className="text-sm font-semibold">{title}</h3>
-        <p className="text-xs text-slate-300">{description}</p>
+        <p className="text-xs text-zinc-300">{description}</p>
       </div>
     </div>
   )

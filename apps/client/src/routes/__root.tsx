@@ -45,6 +45,8 @@ export const Route = createRootRouteWithContext<{
     email: string
     image?: string | null
   } | null
+  activeOrganizationId?: string | null
+  activeMember?: any // Using any for now to avoid complex type import but could be defined
 }>()({
   beforeLoad: async () => {
     // If we're on the server, perform the server-side check
@@ -71,10 +73,19 @@ export const Route = createRootRouteWithContext<{
     // Fallback for initial load or if the cookie is missing/stale
     const session = await authClient.getSession()
     const token = session.data?.session.token ?? null
+    const activeOrganizationId =
+      session.data?.session.activeOrganizationId ?? null
+
+    // Better Auth organization plugin usually doesn't return full member in getSession session object,
+    // but the session data might have it or we might need to fetch it.
+    // For now let's try getting it if it exists.
+    const activeMember = (session.data as any)?.member ?? null
 
     return {
       isAuthenticated: !!token,
       token,
+      activeOrganizationId,
+      activeMember,
     }
   },
   loader: ({ context }) => {

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_dashboard/ai-tools")({
+export const Route = createFileRoute("/_dashboard/(spaces)/ai-tools/")({
   component: AIToolsPage,
 })
 

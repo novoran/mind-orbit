@@ -7,7 +7,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 
 import { DataTable } from "@/components/data-table"
 
-export const Route = createFileRoute("/_dashboard/settings/invoices")({
+export const Route = createFileRoute("/_dashboard/(spaces)/settings/invoices")({
   component: SettingsInvoicesPage,
 })
 

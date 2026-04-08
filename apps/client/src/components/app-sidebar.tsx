@@ -31,9 +31,21 @@ import * as React from "react"
 import { Banner } from "@/components/banner"
 import { NavMain } from "@/components/nav-main"
 import { OrbitSwitcher } from "@/components/orbit-switcher"
+import { SpacePlaceholder } from "@/components/space-placeholder"
 import { authClient } from "@/lib/auth-client"
 
-export const data = {
+interface NavItem {
+  title: string
+  url: string
+  icon: any
+  isActive?: boolean
+  requiredRole?: Array<string>
+}
+
+export const data: {
+  mainNav: Array<NavItem>
+  spaceNav: Array<NavItem>
+} = {
   mainNav: [
     {
       title: "Dashboard",
@@ -102,6 +114,7 @@ export const data = {
       title: "Settings",
       url: "/settings",
       icon: Settings02Icon,
+      requiredRole: ["admin", "owner"],
     },
   ],
 }
@@ -109,6 +122,9 @@ export const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: orbitsList } = authClient.useListOrganizations()
   const { data: activeOrbitNode } = authClient.useActiveOrganization()
+  const { data: activeMember } = authClient.useActiveMember()
+
+  const userRole = activeMember?.role || null
 
   const orbits = (orbitsList || []).map((org) => {
     let metadata: any = {}
@@ -159,7 +175,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarMenu>
           <NavMain items={data.mainNav} label="Main" />
-          <NavMain items={data.spaceNav} label="Spaces" />
+          <NavMain
+            label="Spaces"
+            items={
+              activeOrbitNode
+                ? data.spaceNav.filter((item) => {
+                    if (!item.requiredRole) return true
+                    return item.requiredRole.includes(userRole || "")
+                  })
+                : []
+            }
+            placeholder={<SpacePlaceholder />}
+          />
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
@@ -188,13 +215,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 await authClient.signOut()
               }}
               tooltip="Logout"
-              className="group/logout cursor-pointer bg-red-600 text-white transition-all duration-250 hover:bg-red-700 hover:text-white!"
+              className="group/logout bg-destructive hover:bg-destructive/90 cursor-pointer text-white transition-all duration-250 hover:text-white!"
             >
               <HugeiconsIcon
                 icon={Logout01Icon}
                 strokeWidth={2}
                 size={18}
-                className="shrink-0 group-hover/logout:text-white!"
+                className="group-hover/logout:text-destructive-foreground! shrink-0"
               />
               <span className="text-sm font-normal group-data-[collapsible=icon]:hidden">
                 Logout

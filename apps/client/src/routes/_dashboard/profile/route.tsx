@@ -1,5 +1,5 @@
 import {
-  FavouriteIcon,
+  ComputerSettingsIcon,
   LockPasswordIcon,
   Notification01Icon,
   UserCircleIcon,
@@ -34,7 +34,11 @@ const navItems = [
     to: "/profile/notifications",
     icon: Notification01Icon,
   },
-  { label: "Preferences", to: "/profile/preferences", icon: FavouriteIcon },
+  {
+    label: "Preferences",
+    to: "/profile/preferences",
+    icon: ComputerSettingsIcon,
+  },
 ]
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
