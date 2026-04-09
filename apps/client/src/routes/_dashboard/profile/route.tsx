@@ -1,7 +1,6 @@
 import {
   ComputerSettingsIcon,
   LockPasswordIcon,
-  Notification01Icon,
   UserCircleIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -29,11 +28,11 @@ const navItems = [
     exact: true,
   },
   { label: "Security", to: "/profile/security", icon: LockPasswordIcon },
-  {
-    label: "Notifications",
-    to: "/profile/notifications",
-    icon: Notification01Icon,
-  },
+  // {
+  //   label: "Notifications",
+  //   to: "/profile/notifications",
+  //   icon: Notification01Icon,
+  // },
   {
     label: "Preferences",
     to: "/profile/preferences",

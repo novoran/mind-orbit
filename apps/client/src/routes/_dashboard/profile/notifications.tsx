@@ -1,16 +1,4 @@
-import { Button } from "@mindorbit/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@mindorbit/ui/components/card"
-
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query"
-import { Separator } from "@mindorbit/ui/components/separator"
-import { Skeleton } from "@mindorbit/ui/components/skeleton"
 import { Switch } from "@mindorbit/ui/components/switch"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
@@ -76,7 +64,7 @@ function NotificationsPage() {
   if (!settings) {
     return (
       <div className="flex flex-col gap-4">
-        <Card>
+        {/* <Card>
           <CardHeader>
             <Skeleton className="h-6 w-32" />
             <Skeleton className="mt-1 h-4 w-64" />
@@ -95,7 +83,7 @@ function NotificationsPage() {
               </div>
             ))}
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     )
   }
@@ -103,7 +91,7 @@ function NotificationsPage() {
   return (
     <div className="flex flex-col gap-4">
       {/* Orbit Notifications */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Orbit Notifications</CardTitle>
           <CardDescription>
@@ -152,7 +140,7 @@ function NotificationsPage() {
             {updateSettings.isPending ? "Saving..." : "Save Preferences"}
           </Button>
         </CardFooter>
-      </Card>
+      </Card> */}
     </div>
   )
 }

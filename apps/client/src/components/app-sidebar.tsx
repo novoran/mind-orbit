@@ -28,10 +28,7 @@ import {
 } from "@mindorbit/ui/components/sidebar"
 import * as React from "react"
 
-import { Banner } from "@/components/banner"
 import { NavMain } from "@/components/nav-main"
-import { OrbitSwitcher } from "@/components/orbit-switcher"
-import { SpacePlaceholder } from "@/components/space-placeholder"
 import { authClient } from "@/lib/auth-client"
 
 interface NavItem {
@@ -149,7 +146,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <OrbitSwitcher
+        {/* <OrbitSwitcher
           orbits={orbits}
           activeOrbit={(() => {
             if (!activeOrbitNode) return orbits[0]
@@ -170,12 +167,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               slug: activeOrbitNode.slug,
             }
           })()}
-        />
+        /> */}
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           <NavMain items={data.mainNav} label="Main" />
-          <NavMain
+          {/* <NavMain
             label="Spaces"
             items={
               activeOrbitNode
@@ -186,11 +183,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 : []
             }
             placeholder={<SpacePlaceholder />}
-          />
+          /> */}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-        <Banner />
+        {/* <Banner /> */}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton

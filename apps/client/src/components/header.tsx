@@ -11,7 +11,6 @@ import { Link, useLocation } from "@tanstack/react-router"
 import * as React from "react"
 import { NavUser } from "./nav-user"
 import { NotificationCenter } from "./notification-center"
-import { TeamSwitcher } from "./team-switcher"
 
 import { authClient } from "@/lib/auth-client"
 
@@ -46,10 +45,10 @@ export function Header() {
         {/* <SidebarTrigger className="-ml-1 cursor-pointer" /> */}
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem>
+            {/* <BreadcrumbItem>
               <TeamSwitcher teams={teamsData} />
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator /> */}
             <BreadcrumbItem>
               {pathnames.length === 0 ? (
                 <BreadcrumbPage>Dashboard</BreadcrumbPage>

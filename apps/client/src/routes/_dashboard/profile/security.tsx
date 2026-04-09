@@ -136,7 +136,7 @@ function SecurityPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="border-t pt-4">
+          <CardFooter className="lex justify-end border-t pt-4">
             <Button type="submit" disabled={isUpdating}>
               {isUpdating ? "Updating..." : "Update Password"}
             </Button>
