@@ -1,6 +1,9 @@
 import mindorbitConfig from "@mindorbit/eslint-config"
 
 export default [
+  {
+    ignores: ["src/routeTree.gen.ts"],
+  },
   ...mindorbitConfig,
   {
     languageOptions: {
