@@ -1,6 +1,6 @@
 import { shallow } from "@liveblocks/react"
 
-import { useOthersMapped, useSelf } from "@/lib/liveblocks.config"
+import { useOthersMapped, useSelf } from "@liveblocks/react/suspense"
 
 function getInitials(name: string) {
   return name
@@ -56,11 +56,11 @@ export function PresenceBar() {
       {/* Self (always last) */}
       {self && (
         <div
-          title={`${self.info?.name ?? "You"} (You)`}
+          title={`${self.info.name ?? "You"} (You)`}
           className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full ring-2 ring-white dark:ring-gray-900"
-          style={{ backgroundColor: self.info?.color ?? "#6366f1" }}
+          style={{ backgroundColor: self.info.color ?? "#6366f1" }}
         >
-          {self.info?.avatar ? (
+          {self.info.avatar ? (
             <img
               src={self.info.avatar}
               alt="You"

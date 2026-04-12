@@ -10,19 +10,20 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { LiveObject } from "@liveblocks/client"
 import { shallow } from "@liveblocks/react"
-import { cn } from "@mindorbit/ui/lib/utils"
-import { nanoid } from "nanoid"
-import * as React from "react"
-
-import type { Layer, ShapeLayer } from "@/lib/liveblocks.config"
 import {
   useMutation,
   useOthersMapped,
   useStorage,
   useUpdateMyPresence,
-} from "@/lib/liveblocks.config"
+} from "@liveblocks/react/suspense"
+import { cn } from "@mindorbit/ui/lib/utils"
+import { nanoid } from "nanoid"
+import * as React from "react"
+
+import type { Layer, ShapeLayer, TextLayer } from "@/lib/liveblocks.config"
+
 // ────────────────────────────────────────────────────────────────────────────
-// Types
+// Types & Constants
 // ────────────────────────────────────────────────────────────────────────────
 
 type CanvasTool =
@@ -61,6 +62,7 @@ const STICKY_COLORS = [
 export function IdeaCanvas() {
   const [activeTool, setActiveTool] = React.useState<CanvasTool>("select")
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
+  const [editingId, setEditingId] = React.useState<string | null>(null)
   const [dragging, setDragging] = React.useState<{
     id: string
     startX: number
@@ -75,13 +77,12 @@ export function IdeaCanvas() {
 
   const updateMyPresence = useUpdateMyPresence()
 
-  // Pull layers from Liveblocks storage with shallow equality to prevent re-renders
+  // Pull layers from Liveblocks storage
   const layers = useStorage((root) => {
-    // In Liveblocks v3 snapshots, layers is a Map-like object
     const map = new Map<string, Layer>()
-    root.layers.forEach((obj, id) => {
+    for (const [id, obj] of Object.entries(root.layers)) {
       map.set(id, obj as Layer)
-    })
+    }
     return map
   }, shallow)
 
@@ -91,8 +92,8 @@ export function IdeaCanvas() {
   const others = useOthersMapped(
     (other) => ({
       cursor: other.presence.cursor,
-      color: other.info?.color ?? "#6366f1",
-      name: other.info?.name ?? "Anonymous",
+      color: other.info.color,
+      name: other.info.name,
     }),
     shallow
   )
@@ -101,8 +102,7 @@ export function IdeaCanvas() {
 
   const insertLayer = useMutation(({ storage }, layer: Layer) => {
     const id = nanoid()
-    // Explicitly cast to ShapeLayer for LiveObject constructor
-    storage.get("layers").set(id, new LiveObject(layer as ShapeLayer))
+    storage.get("layers").set(id, new LiveObject(layer))
     storage.get("layerIds").push(id)
     return id
   }, [])
@@ -111,8 +111,17 @@ export function IdeaCanvas() {
     ({ storage }, id: string, x: number, y: number) => {
       const layer = storage.get("layers").get(id)
       if (layer) {
-        layer.set("x", x)
-        layer.set("y", y)
+        layer.update({ x, y })
+      }
+    },
+    []
+  )
+
+  const updateLayerText = useMutation(
+    ({ storage }, id: string, text: string) => {
+      const layer = storage.get("layers").get(id)
+      if (layer) {
+        layer.update({ text })
       }
     },
     []
@@ -121,14 +130,15 @@ export function IdeaCanvas() {
   const deleteLayer = useMutation(({ storage }, id: string) => {
     storage.get("layers").delete(id)
     const ids = storage.get("layerIds")
-    const idx = ids.toArray().indexOf(id)
+    const idx = ids.indexOf(id)
     if (idx !== -1) ids.delete(idx)
   }, [])
 
-  // ── Pointer events ────────────────────────────────────────────────────────
+  // ── Interaction Handlers ──────────────────────────────────────────────────
 
-  const getCanvasPoint = (e: React.PointerEvent) => {
-    const svg = svgRef.current!
+  const getCanvasPoint = (e: React.PointerEvent | PointerEvent) => {
+    const svg = svgRef.current
+    if (!svg) return { x: 0, y: 0 }
     const rect = svg.getBoundingClientRect()
     return {
       x: e.clientX - rect.left - camera.x,
@@ -138,7 +148,6 @@ export function IdeaCanvas() {
 
   const handlePointerMove = (e: React.PointerEvent) => {
     const pt = getCanvasPoint(e)
-
     updateMyPresence({ cursor: { x: pt.x, y: pt.y } })
 
     if (isPanning) {
@@ -164,6 +173,9 @@ export function IdeaCanvas() {
   }
 
   const handleSvgPointerDown = (e: React.PointerEvent) => {
+    // If we click off an editing element, stop editing
+    if (editingId) setEditingId(null)
+
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       setIsPanning(true)
       setPanStart({ x: e.clientX, y: e.clientY })
@@ -181,21 +193,30 @@ export function IdeaCanvas() {
         ? STICKY_COLORS[Math.floor(Math.random() * STICKY_COLORS.length)]
         : SHAPE_COLORS[Math.floor(Math.random() * SHAPE_COLORS.length)]
 
-    insertLayer({
-      type: activeTool === "text" ? "text" : activeTool,
-      x: pt.x,
-      y: pt.y,
-      width: activeTool === "sticky" ? 180 : activeTool === "text" ? 200 : 120,
-      height: activeTool === "sticky" ? 180 : activeTool === "text" ? 40 : 80,
-      fill,
-      text:
-        activeTool === "sticky"
-          ? "Write here..."
-          : activeTool === "text"
-            ? "Text"
-            : undefined,
-    } as ShapeLayer)
+    const newLayer: Layer =
+      activeTool === "text"
+        ? ({
+            type: "text",
+            x: pt.x,
+            y: pt.y,
+            width: 200,
+            height: 40,
+            text: "Text",
+            fontSize: 18,
+            fill: "#1a1a2e",
+          } as TextLayer)
+        : ({
+            type: activeTool,
+            x: pt.x,
+            y: pt.y,
+            width: activeTool === "sticky" ? 180 : 120,
+            height: activeTool === "sticky" ? 180 : 80,
+            fill,
+            text: activeTool === "sticky" ? "Sticky note" : undefined,
+          } as ShapeLayer)
 
+    const id = insertLayer(newLayer)
+    setSelectedId(id)
     setActiveTool("select")
   }
 
@@ -209,7 +230,7 @@ export function IdeaCanvas() {
     id: string,
     layer: Layer
   ) => {
-    if (activeTool !== "select") return
+    if (activeTool !== "select" || editingId) return
     e.stopPropagation()
     const pt = getCanvasPoint(e)
     setSelectedId(id)
@@ -222,37 +243,48 @@ export function IdeaCanvas() {
     })
   }
 
+  const handleLayerDoubleClick = (id: string, layer: Layer) => {
+    if (layer.type === "sticky" || layer.type === "text") {
+      setEditingId(id)
+    }
+  }
+
   // ── Keyboard ──────────────────────────────────────────────────────────────
 
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === "Delete" || e.key === "Backspace") && selectedId) {
-        // Only if not focused in an input/textarea
+      if (
+        (e.key === "Delete" || e.key === "Backspace") &&
+        selectedId &&
+        !editingId
+      ) {
         const tag = document.activeElement?.tagName.toLowerCase()
         if (
           tag === "input" ||
           tag === "textarea" ||
-          (document.activeElement as HTMLElement)?.isContentEditable
+          (document.activeElement as HTMLElement).isContentEditable
         )
           return
         deleteLayer(selectedId)
         setSelectedId(null)
       }
+      if (e.key === "Escape") {
+        setEditingId(null)
+        setSelectedId(null)
+        setActiveTool("select")
+      }
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [selectedId, deleteLayer])
+  }, [selectedId, editingId, deleteLayer])
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden">
-      {/* Toolbar */}
-      <CanvasToolbar activeTool={activeTool} onToolChange={setActiveTool} />
-
+    <div className="relative flex h-full flex-col overflow-hidden bg-[#f8f9ff] dark:bg-[#0d0e1a]">
       {/* Canvas */}
       <svg
         ref={svgRef}
         className={cn(
-          "flex-1 bg-[#f8f9ff] dark:bg-[#0d0e1a]",
+          "flex-1 outline-none",
           activeTool !== "select" && "cursor-crosshair",
           isPanning && "cursor-grabbing"
         )}
@@ -284,8 +316,8 @@ export function IdeaCanvas() {
 
         {/* Layers */}
         <g transform={`translate(${camera.x}, ${camera.y})`}>
-          {layerIds?.map((id) => {
-            const layer = layers?.get(id)
+          {layerIds.map((id) => {
+            const layer = layers.get(id)
             if (!layer) return null
             return (
               <CanvasLayer
@@ -293,7 +325,10 @@ export function IdeaCanvas() {
                 id={id}
                 layer={layer}
                 isSelected={selectedId === id}
+                isEditing={editingId === id}
                 onPointerDown={handleLayerPointerDown}
+                onDoubleClick={() => handleLayerDoubleClick(id, layer)}
+                onTextChange={(val) => updateLayerText(id, val)}
               />
             )
           })}
@@ -313,11 +348,16 @@ export function IdeaCanvas() {
         </g>
       </svg>
 
+      {/* Floating Toolbar */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+        <CanvasToolbar activeTool={activeTool} onToolChange={setActiveTool} />
+      </div>
+
       {/* Bottom hint */}
-      <div className="bg-background/80 text-muted-foreground border-border absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border px-3 py-1 text-xs backdrop-blur">
+      <div className="text-muted-foreground absolute bottom-20 left-1/2 -translate-x-1/2 text-[10px] font-medium tracking-wider opacity-50 transition-opacity hover:opacity-100">
         {activeTool === "select"
-          ? "Click a shape to select • Delete to remove • Alt+drag to pan"
-          : `Click to place a ${activeTool}`}
+          ? "DRAG TO MOVE • DOUBLE CLICK TEXT TO EDIT • ALT+DRAG TO PAN"
+          : `CLICK TO PLACE ${activeTool.toUpperCase()}`}
       </div>
     </div>
   )
@@ -331,156 +371,145 @@ function CanvasLayer({
   id,
   layer,
   isSelected,
+  isEditing,
   onPointerDown,
+  onDoubleClick,
+  onTextChange,
 }: {
   id: string
   layer: Layer
   isSelected: boolean
+  isEditing: boolean
   onPointerDown: (e: React.PointerEvent, id: string, layer: Layer) => void
+  onDoubleClick: () => void
+  onTextChange: (val: string) => void
 }) {
-  const shape = layer as ShapeLayer
-
-  const selectionProps = {
-    onPointerDown: (e: React.PointerEvent) => onPointerDown(e, id, layer),
-    style: { cursor: "grab" },
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (isEditing) return
+    onPointerDown(e, id, layer)
   }
 
-  if (shape.type === "sticky") {
+  const commonProps = {
+    onPointerDown: handlePointerDown,
+    onDoubleClick,
+    style: { cursor: isEditing ? "text" : "grab" },
+  }
+
+  if (layer.type === "sticky") {
     return (
-      <g {...selectionProps}>
+      <g {...commonProps}>
         <rect
-          x={shape.x}
-          y={shape.y}
-          width={shape.width}
-          height={shape.height}
+          x={layer.x}
+          y={layer.y}
+          width={layer.width}
+          height={layer.height}
           rx={4}
-          fill={shape.fill}
+          fill={layer.fill}
           stroke={isSelected ? "#6366f1" : "transparent"}
-          strokeWidth={isSelected ? 2 : 0}
-          filter={
-            isSelected
-              ? "drop-shadow(0 0 6px rgba(99,102,241,0.5))"
-              : "drop-shadow(0 2px 4px rgba(0,0,0,0.15))"
-          }
+          strokeWidth={2}
+          className="transition-all duration-200"
+          filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
         />
         <foreignObject
-          x={shape.x + 8}
-          y={shape.y + 8}
-          width={shape.width - 16}
-          height={shape.height - 16}
+          x={layer.x + 12}
+          y={layer.y + 12}
+          width={layer.width - 24}
+          height={layer.height - 24}
+          style={{ pointerEvents: isEditing ? "all" : "none" }}
         >
-          <div
-            xmlns="http://www.w3.org/1999/xhtml"
-            style={{
-              fontFamily: "inherit",
-              fontSize: 13,
-              color: "#1a1a2e",
-              wordBreak: "break-word",
-              pointerEvents: "none",
-              userSelect: "none",
-              lineHeight: 1.5,
-            }}
-          >
-            {shape.text || ""}
-          </div>
+          {isEditing ? (
+            <textarea
+              autoFocus
+              className="h-full w-full resize-none border-none bg-transparent p-0 leading-relaxed font-medium text-[#1a1a2e] outline-none"
+              defaultValue={layer.text || ""}
+              onBlur={(e) => onTextChange(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <div className="line-clamp-6 h-full w-full leading-relaxed font-medium text-[#1a1a2e]">
+              {layer.text || ""}
+            </div>
+          )}
         </foreignObject>
       </g>
     )
   }
 
-  if (shape.type === "rectangle") {
+  if (layer.type === "text") {
     return (
-      <rect
-        {...selectionProps}
-        x={shape.x}
-        y={shape.y}
-        width={shape.width}
-        height={shape.height}
-        rx={8}
-        fill={shape.fill + "cc"}
-        stroke={isSelected ? "#6366f1" : shape.fill}
-        strokeWidth={isSelected ? 2 : 1.5}
-        filter={
-          isSelected ? "drop-shadow(0 0 6px rgba(99,102,241,0.5))" : undefined
-        }
-      />
+      <g {...commonProps}>
+        <foreignObject
+          x={layer.x}
+          y={layer.y}
+          width={layer.width}
+          height={layer.height}
+          style={{ pointerEvents: isEditing ? "all" : "none" }}
+        >
+          {isEditing ? (
+            <input
+              autoFocus
+              className="w-full border-none bg-transparent p-0 font-semibold text-[#1a1a2e] outline-none"
+              style={{ fontSize: layer.fontSize }}
+              defaultValue={layer.text || ""}
+              onBlur={(e) => onTextChange(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+            />
+          ) : (
+            <div
+              className={cn(
+                "w-full truncate font-semibold text-[#1a1a2e]",
+                isSelected &&
+                  "bg-primary/5 ring-primary/20 rounded-sm px-1 ring-1"
+              )}
+              style={{ fontSize: layer.fontSize }}
+            >
+              {layer.text || "Text"}
+            </div>
+          )}
+        </foreignObject>
+      </g>
     )
   }
 
-  if (shape.type === "circle") {
-    return (
-      <ellipse
-        {...selectionProps}
-        cx={shape.x + shape.width / 2}
-        cy={shape.y + shape.height / 2}
-        rx={shape.width / 2}
-        ry={shape.height / 2}
-        fill={shape.fill + "cc"}
-        stroke={isSelected ? "#6366f1" : shape.fill}
-        strokeWidth={isSelected ? 2 : 1.5}
-        filter={
-          isSelected ? "drop-shadow(0 0 6px rgba(99,102,241,0.5))" : undefined
-        }
-      />
-    )
+  // Shapes
+  const ShapeTag =
+    layer.type === "circle"
+      ? "ellipse"
+      : layer.type === "rectangle"
+        ? "rect"
+        : "polygon"
+  const shapeProps: any = {
+    ...commonProps,
+    fill: layer.fill + "cc",
+    stroke: isSelected ? "#6366f1" : layer.fill,
+    strokeWidth: isSelected ? 2 : 1.5,
   }
 
-  if (shape.type === "diamond") {
-    const cx = shape.x + shape.width / 2
-    const cy = shape.y + shape.height / 2
-    const points = `${cx},${shape.y} ${shape.x + shape.width},${cy} ${cx},${shape.y + shape.height} ${shape.x},${cy}`
-    return (
-      <polygon
-        {...selectionProps}
-        points={points}
-        fill={shape.fill + "cc"}
-        stroke={isSelected ? "#6366f1" : shape.fill}
-        strokeWidth={isSelected ? 2 : 1.5}
-        filter={
-          isSelected ? "drop-shadow(0 0 6px rgba(99,102,241,0.5))" : undefined
-        }
-      />
-    )
+  if (layer.type === "rectangle") {
+    shapeProps.x = layer.x
+    shapeProps.y = layer.y
+    shapeProps.width = layer.width
+    shapeProps.height = layer.height
+    shapeProps.rx = 8
+  } else if (layer.type === "circle") {
+    shapeProps.cx = layer.x + layer.width / 2
+    shapeProps.cy = layer.y + layer.height / 2
+    shapeProps.rx = layer.width / 2
+    shapeProps.ry = layer.height / 2
+  } else if (layer.type === "diamond") {
+    const cx = layer.x + layer.width / 2
+    const cy = layer.y + layer.height / 2
+    shapeProps.points = `${cx},${layer.y} ${layer.x + layer.width},${cy} ${cx},${layer.y + layer.height} ${layer.x},${cy}`
+  } else {
+    shapeProps.points = `${layer.x + layer.width / 2},${layer.y} ${layer.x + layer.width},${layer.y + layer.height} ${layer.x},${layer.y + layer.height}`
   }
 
-  if (shape.type === "triangle") {
-    const points = `${shape.x + shape.width / 2},${shape.y} ${shape.x + shape.width},${shape.y + shape.height} ${shape.x},${shape.y + shape.height}`
-    return (
-      <polygon
-        {...selectionProps}
-        points={points}
-        fill={shape.fill + "cc"}
-        stroke={isSelected ? "#6366f1" : shape.fill}
-        strokeWidth={isSelected ? 2 : 1.5}
-        filter={
-          isSelected ? "drop-shadow(0 0 6px rgba(99,102,241,0.5))" : undefined
-        }
-      />
-    )
-  }
-
-  if (shape.type === "text") {
-    return (
-      <text
-        {...selectionProps}
-        x={shape.x}
-        y={shape.y + 24}
-        fontFamily="inherit"
-        fontSize={18}
-        fill={isSelected ? "#6366f1" : "#1a1a2e"}
-        strokeWidth={0}
-        style={{ dominantBaseline: "auto" }}
-      >
-        {shape.text ?? "Text"}
-      </text>
-    )
-  }
-
-  return null
+  return <ShapeTag {...shapeProps} />
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// Remote Cursor
+// Components
 // ────────────────────────────────────────────────────────────────────────────
 
 function RemoteCursor({
@@ -496,103 +525,74 @@ function RemoteCursor({
 }) {
   return (
     <g style={{ pointerEvents: "none" }}>
-      {/* Cursor arrow */}
       <path
         d={`M ${x} ${y} L ${x + 7} ${y + 16} L ${x + 13} ${y + 13} L ${x + 16} ${y + 19} L ${x + 19} ${y + 13} L ${x + 13} ${y + 10} L ${x + 19} ${y + 5} Z`}
         fill={color}
         stroke="white"
-        strokeWidth="1.5"
+        strokeWidth="1"
       />
-      {/* Name tag */}
       <rect
-        x={x + 20}
-        y={y - 4}
-        width={name.length * 7 + 12}
-        height={20}
+        x={x + 18}
+        y={y + 12}
+        width={name.length * 7 + 10}
+        height={18}
         rx={4}
         fill={color}
       />
-      <text
-        x={x + 26}
-        y={y + 10}
-        fontSize="11"
-        fill="white"
-        fontFamily="inherit"
-        fontWeight="500"
-      >
+      <text x={x + 23} y={y + 25} fontSize="10" fill="white" fontWeight="600">
         {name}
       </text>
     </g>
   )
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// Canvas Toolbar
-// ────────────────────────────────────────────────────────────────────────────
-
-interface CanvasToolbarProps {
+function CanvasToolbar({
+  activeTool,
+  onToolChange,
+}: {
   activeTool: CanvasTool
-  onToolChange: (tool: CanvasTool) => void
-}
-
-function CanvasToolbar({ activeTool, onToolChange }: CanvasToolbarProps) {
-  const tools: Array<{
-    id: CanvasTool
-    label: string
-    icon: React.ElementType
-    key: string
-  }> = [
-    { id: "select", label: "Select (V)", icon: Cursor02Icon, key: "v" },
-    {
-      id: "rectangle",
-      label: "Rectangle (R)",
-      icon: RectangularIcon,
-      key: "r",
-    },
-    { id: "circle", label: "Circle (C)", icon: CircleIcon, key: "c" },
-    { id: "diamond", label: "Diamond (D)", icon: Square01Icon, key: "d" },
-    { id: "triangle", label: "Triangle (T)", icon: TriangleIcon, key: "t" },
-    {
-      id: "sticky",
-      label: "Sticky Note (S)",
-      icon: StickyNote01Icon,
-      key: "s",
-    },
-    { id: "text", label: "Text (A)", icon: TextIcon, key: "a" },
-  ]
-
-  // Keyboard shortcuts
-  React.useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const tag = document.activeElement?.tagName.toLowerCase()
-      if (
-        tag === "input" ||
-        tag === "textarea" ||
-        (document.activeElement as HTMLElement)?.isContentEditable
-      )
-        return
-      const t = tools.find((t) => t.key === e.key.toLowerCase())
-      if (t) onToolChange(t.id)
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [onToolChange])
+  onToolChange: (t: CanvasTool) => void
+}) {
+  const tools = [
+    { id: "select", icon: Cursor02Icon, color: "#6366f1" },
+    { id: "rectangle", icon: RectangularIcon, color: "#f87171" },
+    { id: "circle", icon: CircleIcon, color: "#34d399" },
+    { id: "diamond", icon: Square01Icon, color: "#fbbf24" },
+    { id: "triangle", icon: TriangleIcon, color: "#a78bfa" },
+    { id: "sticky", icon: StickyNote01Icon, color: "#fb923c" },
+    { id: "text", icon: TextIcon, color: "#64748b" },
+  ] as const
 
   return (
-    <div className="bg-background/95 border-border flex items-center gap-0.5 border-b px-2 py-1.5 backdrop-blur">
+    <div className="flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/70 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/50">
       {tools.map((tool) => (
         <button
           key={tool.id}
           onClick={() => onToolChange(tool.id)}
-          title={tool.label}
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-lg text-sm transition-all",
-            "text-muted-foreground hover:bg-muted hover:text-foreground",
-            activeTool === tool.id &&
-              "bg-primary/10 text-primary ring-primary/30 ring-1"
+            "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300",
+            activeTool === tool.id
+              ? "bg-white shadow-md dark:bg-white/10"
+              : "hover:bg-white/50 dark:hover:bg-white/5"
           )}
         >
-          <HugeiconsIcon icon={tool.icon} size={16} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={tool.icon}
+            size={20}
+            strokeWidth={2}
+            className={cn(
+              "transition-colors duration-300",
+              activeTool === tool.id
+                ? "text-primary"
+                : "text-muted-foreground group-hover:text-foreground"
+            )}
+          />
+          {activeTool === tool.id && (
+            <div
+              className="absolute -bottom-1 h-1 w-1 rounded-full"
+              style={{ backgroundColor: "var(--primary)" }}
+            />
+          )}
         </button>
       ))}
     </div>

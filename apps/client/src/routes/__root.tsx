@@ -9,12 +9,13 @@ import {
 import { createServerFn } from "@tanstack/react-start"
 import * as React from "react"
 
+import { LiveblocksProvider } from "@liveblocks/react"
 import { ThemeProvider } from "@mindorbit/ui/components/theme-provider"
 import { TooltipProvider } from "@mindorbit/ui/components/tooltip"
 import appCss from "@mindorbit/ui/globals.css?url"
-import "goey-toast/styles.css"
-import { GooeyToaster } from "goey-toast"
 import getCookie, { deleteCookie, setCookie } from "get-cookie"
+import { GooeyToaster } from "goey-toast"
+import "goey-toast/styles.css"
 
 import type { ConvexQueryClient } from "@convex-dev/react-query"
 import type { QueryClient } from "@tanstack/react-query"
@@ -27,13 +28,6 @@ import { getToken } from "@/lib/auth-server"
 const getAuth = createServerFn({ method: "GET" }).handler(async () => {
   return await getToken()
 })
-
-// Synchronous client-side cache for the auth session to enable instant transitions
-// const authCache = {
-//   initialized: false,
-//   isAuthenticated: false,
-//   token: null as string | null,
-// }
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -59,26 +53,19 @@ export const Route = createRootRouteWithContext<{
     }
 
     // On the client, we use a synchronous cookie check for "instant" transitions.
-    // This removes the wait for a network promise during internal link clicks.
     const isAuthActive = getCookie("mind-orbit.auth-active") === "true"
 
     if (isAuthActive) {
-      // Optimistically assume authenticated for instant navigation.
-      // The RootComponent's useSession will handle the actual data fetching.
       return {
         isAuthenticated: true,
       }
     }
 
-    // Fallback for initial load or if the cookie is missing/stale
+    // Fallback for initial load
     const session = await authClient.getSession()
     const token = session.data?.session.token ?? null
     const activeOrganizationId =
       session.data?.session.activeOrganizationId ?? null
-
-    // Better Auth organization plugin usually doesn't return full member in getSession session object,
-    // but the session data might have it or we might need to fetch it.
-    // For now let's try getting it if it exists.
     const activeMember = (session.data as any)?.member ?? null
 
     return {
@@ -89,14 +76,8 @@ export const Route = createRootRouteWithContext<{
     }
   },
   loader: ({ context }) => {
-    // Access token from context populated in beforeLoad
     const { token } = context
-
-    // all queries, mutations and actions through TanStack Query will be
-    // authenticated during SSR if we have a valid token
     if (token) {
-      // During SSR only (the only time serverHttpClient exists),
-      // set the auth token to make HTTP queries with.
       context.convexQueryClient.serverHttpClient?.setAuth(token)
     }
 
@@ -123,7 +104,6 @@ export const Route = createRootRouteWithContext<{
         children: `
           (function() {
             try {
-              // Theme
               var theme = localStorage.getItem('vite-ui-theme') || 'system';
               var root = document.documentElement;
               root.classList.remove('light', 'dark');
@@ -148,11 +128,9 @@ function RootComponent() {
   const loaderData = Route.useLoaderData()
   const session = authClient.useSession()
 
-  // Reactive sync to manage the synchronous 'mind-orbit.auth-active' cookie.
-  // This allows future navigations to be 'instant' while staying in sync with the session.
   React.useEffect(() => {
     if (session.data) {
-      setCookie("mind-orbit.auth-active", "true", 30) // 30 days
+      setCookie("mind-orbit.auth-active", "true", 30)
     } else if (session.isPending === false) {
       deleteCookie("mind-orbit.auth-active")
     }
@@ -164,9 +142,11 @@ function RootComponent() {
       authClient={authClient}
       initialToken={loaderData.token}
     >
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
+      <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
+        <RootDocument>
+          <Outlet />
+        </RootDocument>
+      </LiveblocksProvider>
     </ConvexBetterAuthProvider>
   )
 }

@@ -1,6 +1,6 @@
 import { useLiveblocksExtension } from "@liveblocks/react-tiptap"
 import { cn } from "@mindorbit/ui/lib/utils"
-import { EditorContent } from "@tiptap/react"
+import { EditorContent, useEditor } from "@tiptap/react"
 import { getBaseExtensions } from "./editor-extensions"
 import { EditorToolbar } from "./editor-toolbar"
 
@@ -15,7 +15,7 @@ export function CollaborativeEditor({ className }: CollaborativeEditorProps) {
     initialContent: "<p></p>",
   })
 
-  const editor = useEdito({
+  const editor = useEditor({
     // Required: disable SSR hydration issues
     immediatelyRender: false,
 

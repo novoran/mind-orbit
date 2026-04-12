@@ -8,19 +8,20 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { LiveList, LiveMap } from "@liveblocks/client"
-import { ClientSideSuspense } from "@liveblocks/react"
+import { ClientSideSuspense, RoomProvider } from "@liveblocks/react/suspense"
 import { api } from "@mindorbit/backend/_generated/api"
 import { cn } from "@mindorbit/ui/lib/utils"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import * as React from "react"
 
+import type { Layer } from "@/lib/liveblocks.config"
+import type { LiveObject } from "@liveblocks/client"
 import type { Id } from "@mindorbit/backend/_generated/dataModel"
 
 import { CollaborativeEditor } from "@/components/editor/collaborative-editor"
 import { IdeaCanvas } from "@/components/idea-canvas"
 import { PresenceBar } from "@/components/presence-bar"
-import { RoomProvider } from "@/lib/liveblocks.config"
 
 export const Route = createFileRoute("/_dashboard/idea-hub/$ideaId")({
   component: IdeaWorkspacePage,
@@ -32,15 +33,26 @@ function IdeaWorkspacePage() {
   // Use ideaId as the Liveblocks room ID — one room per idea
   const roomId = `idea-${ideaId}`
 
+  // Best Practice: Memoize initialization props to avoid re-creating
+  // LiveMap/LiveList on every component render.
+  const initialPresence = React.useMemo(
+    () => ({ cursor: null, selection: [], pencilColor: null }),
+    []
+  )
+
+  const initialStorage = React.useMemo(
+    () => ({
+      layers: new LiveMap<string, LiveObject<Layer>>(),
+      layerIds: new LiveList<string>([]),
+    }),
+    []
+  )
+
   return (
     <RoomProvider
       id={roomId}
-      initialPresence={{ cursor: null, selection: [], pencilColor: null }}
-      initialStorage={{
-        layers: new LiveMap(),
-        layerIds: new LiveList(),
-      }}
-      preventUnsavedChanges={true}
+      initialPresence={initialPresence}
+      initialStorage={initialStorage}
     >
       <ClientSideSuspense
         fallback={

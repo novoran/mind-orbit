@@ -1,7 +1,8 @@
 import { createClient } from "@liveblocks/client"
-import { createLiveblocksContext, createRoomContext } from "@liveblocks/react"
 
-const client = createClient({
+import type { LiveList, LiveMap, LiveObject } from "@liveblocks/client"
+
+export const client = createClient({
   authEndpoint: "/api/liveblocks-auth",
   throttle: 16, // Optimized for 60fps updates
 })
@@ -45,11 +46,8 @@ declare global {
 
     // The Storage tree for the room, for useMutation, useStorage, etc.
     Storage: {
-      layers: import("@liveblocks/client").LiveMap<
-        string,
-        import("@liveblocks/client").LiveObject<Layer>
-      >
-      layerIds: import("@liveblocks/client").LiveList<string>
+      layers: LiveMap<string, LiveObject<Layer>>
+      layerIds: LiveList<string>
     }
 
     // Custom user info set when authenticating with a secret key
@@ -76,59 +74,30 @@ declare global {
     // Custom metadata set on threads, for useThreads, useCreateThread, etc.
     ThreadMetadata: {
       resolved: boolean
-      x: number
-      y: number
+      x?: number // Canvas position
+      y?: number // Canvas position
+      rangeId?: string // Tiptap selection anchor
+      quote?: string // Tiptap selected text snippet
+    }
+
+    // Custom room info set with resolveRoomsInfo, for useRoomInfo
+    RoomInfo: {
+      title?: string
+      url?: string
+    }
+
+    // Custom group info set with resolveGroupsInfo, for useGroupInfo
+    GroupInfo: {
+      name: string
+      badge: string
+    }
+
+    // Custom activities data for custom notification kinds
+    ActivitiesData: {
+      $alert?: {
+        title: string
+        message: string
+      }
     }
   }
 }
-
-export const {
-  suspense: {
-    RoomProvider,
-    useRoom,
-    useMyPresence,
-    useUpdateMyPresence,
-    useSelf,
-    useOthers,
-    useOthersMapped,
-    useOthersConnectionIds,
-    useOther,
-    useBroadcastEvent,
-    useEventListener,
-    useErrorListener,
-    useStorage,
-    useObject,
-    useMap,
-    useList,
-    useBatch,
-    useHistory,
-    useUndo,
-    useRedo,
-    useCanUndo,
-    useCanRedo,
-    useMutation,
-    useStatus,
-    useLostConnectionListener,
-    useThreads,
-    useCreateThread,
-    useEditThreadMetadata,
-    useRenameThread,
-    useDeleteThread,
-    useCreateComment,
-    useEditComment,
-    useDeleteComment,
-    useAddReaction,
-    useRemoveReaction,
-  },
-} = createRoomContext(client)
-
-export const {
-  suspense: {
-    useInboxNotifications,
-    useUnreadInboxNotificationsCount,
-    useMarkAllInboxNotificationsAsRead,
-    useMarkInboxNotificationAsRead,
-    useUser,
-    useUsers,
-  },
-} = createLiveblocksContext(client)

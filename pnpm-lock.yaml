@@ -147,6 +147,9 @@ importers:
       '@liveblocks/client':
         specifier: ^3.18.0
         version: 3.18.0(@types/json-schema@7.0.15)
+      '@liveblocks/core':
+        specifier: ^3.18.0
+        version: 3.18.0(@types/json-schema@7.0.15)
       '@liveblocks/node':
         specifier: ^3.18.0
         version: 3.18.0(@types/json-schema@7.0.15)
