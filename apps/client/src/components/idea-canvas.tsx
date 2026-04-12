@@ -20,6 +20,8 @@ import { cn } from "@mindorbit/ui/lib/utils"
 import { nanoid } from "nanoid"
 import * as React from "react"
 
+import { Button } from "@mindorbit/ui/components/button"
+
 import type { Layer, ShapeLayer, TextLayer } from "@/lib/liveblocks.config"
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -566,15 +568,14 @@ function CanvasToolbar({
   return (
     <div className="flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/70 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/50">
       {tools.map((tool) => (
-        <button
+        <Button
           key={tool.id}
           onClick={() => onToolChange(tool.id)}
-          className={cn(
-            "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300",
-            activeTool === tool.id
-              ? "bg-white shadow-md dark:bg-white/10"
-              : "hover:bg-white/50 dark:hover:bg-white/5"
-          )}
+          variant={"ghost"}
+          size={"icon"}
+          className={
+            "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300"
+          }
         >
           <HugeiconsIcon
             icon={tool.icon}
@@ -593,7 +594,7 @@ function CanvasToolbar({
               style={{ backgroundColor: "var(--primary)" }}
             />
           )}
-        </button>
+        </Button>
       ))}
     </div>
   )

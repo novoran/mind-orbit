@@ -19,6 +19,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@mindorbit/ui/lib/utils"
 import * as React from "react"
 
+import { Button } from "@mindorbit/ui/components/button"
 import type { Editor } from "@tiptap/react"
 
 // ─── Toolbar button ────────────────────────────────────────────────────────
@@ -36,8 +37,10 @@ export function ToolbarButton({
   ...props
 }: ToolbarButtonProps) {
   return (
-    <button
+    <Button
       type="button"
+      variant={"ghost"}
+      size={"icon"}
       title={tooltip}
       className={cn(
         "flex h-7 w-7 items-center justify-center rounded-md text-sm transition-all",
@@ -48,7 +51,7 @@ export function ToolbarButton({
       {...props}
     >
       {children}
-    </button>
+    </Button>
   )
 }
 
