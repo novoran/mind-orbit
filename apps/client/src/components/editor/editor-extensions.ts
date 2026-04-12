@@ -7,7 +7,7 @@ import { TaskItem } from "@tiptap/extension-task-item"
 import { TaskList } from "@tiptap/extension-task-list"
 import { TextAlign } from "@tiptap/extension-text-align"
 import { TextStyle } from "@tiptap/extension-text-style"
-import Underline from "@tiptap/extension-underline"
+import { Underline } from "@tiptap/extension-underline"
 import { StarterKit } from "@tiptap/starter-kit"
 
 import type { AnyExtension } from "@tiptap/core"
@@ -24,13 +24,13 @@ export const getBaseExtensions = (
     history: false,
   }) as AnyExtension,
   Placeholder.configure({ placeholder }) as AnyExtension,
-  Underline as AnyExtension,
+  Underline.configure() as AnyExtension,
   TextAlign.configure({ types: ["heading", "paragraph"] }) as AnyExtension,
   Link.configure({ openOnClick: false }) as AnyExtension,
   Highlight.configure({ multicolor: true }) as AnyExtension,
-  TextStyle as AnyExtension,
-  Color as AnyExtension,
-  TaskList as AnyExtension,
+  TextStyle.configure() as AnyExtension,
+  Color.configure() as AnyExtension,
+  TaskList.configure() as AnyExtension,
   TaskItem.configure({ nested: true }) as AnyExtension,
   CharacterCount.configure({ limit: 10000 }) as AnyExtension,
 ]

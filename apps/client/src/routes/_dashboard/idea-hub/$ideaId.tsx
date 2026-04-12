@@ -59,9 +59,7 @@ function IdeaWorkspacePage() {
           <div className="flex h-screen items-center justify-center">
             <div className="flex flex-col items-center gap-3">
               <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
-              <p className="text-muted-foreground text-sm">
-                Loading workspace...
-              </p>
+              <p className="text-muted-foreground text-sm">Loading Idea...</p>
             </div>
           </div>
         }
@@ -101,135 +99,163 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
   }
 
   return (
-    <div className="bg-background flex h-screen flex-col overflow-hidden">
-      {/* ── Top header ── */}
-      <header className="border-border bg-background/95 flex h-12 shrink-0 items-center gap-3 border-b px-3 backdrop-blur">
-        {/* Back button */}
-        <button
-          onClick={() => navigate({ to: "/idea-hub" })}
-          className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-7 w-7 items-center justify-center rounded-md transition-colors"
-          title="Back to Idea Hub"
-        >
-          <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-        </button>
+    <div className="bg-background relative flex h-screen w-full overflow-hidden">
+      {/* ── Top Navigation (Floating & Transparent) ── */}
+      <nav className="pointer-events-none absolute top-0 left-0 z-50 flex h-16 w-full items-center justify-between px-6">
+        {/* Left: Back & Title */}
+        <div className="pointer-events-auto flex items-center gap-4">
+          <button
+            onClick={() => navigate({ to: "/idea-hub" })}
+            className="bg-background/80 hover:bg-background border-border text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-xl border shadow-sm backdrop-blur transition-all"
+            title="Back to Idea Hub"
+          >
+            <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
+          </button>
 
-        {/* Title */}
-        <div className="flex flex-1 items-center">
-          {isEditingTitle ? (
-            <input
-              autoFocus
-              value={titleInput}
-              onChange={(e) => setTitleInput(e.target.value)}
-              onBlur={handleTitleSave}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleTitleSave()
-                if (e.key === "Escape") setIsEditingTitle(false)
-              }}
-              className="border-primary w-64 rounded border px-2 py-0.5 text-sm font-semibold focus:outline-none"
+          <div className="flex flex-col">
+            {isEditingTitle ? (
+              <input
+                autoFocus
+                value={titleInput}
+                onChange={(e) => setTitleInput(e.target.value)}
+                onBlur={handleTitleSave}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleTitleSave()
+                  if (e.key === "Escape") setIsEditingTitle(false)
+                }}
+                className="bg-background/80 border-primary w-64 rounded-lg border px-3 py-1 text-sm font-bold shadow-sm backdrop-blur focus:outline-none"
+              />
+            ) : (
+              <button
+                onClick={() => setIsEditingTitle(true)}
+                className="hover:bg-muted/50 group flex items-center gap-2 rounded-lg px-2 py-1 transition-all"
+              >
+                <span className="text-sm font-bold tracking-tight">
+                  {idea?.title ?? "Untitled Idea"}
+                </span>
+                <div className="bg-muted h-1 w-1 rounded-full opacity-0 group-hover:opacity-100" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Center: Spatial Switcher */}
+        <div className="pointer-events-auto flex items-center">
+          <div className="bg-background/80 border-border flex items-center gap-1 rounded-2xl border p-1 shadow-lg backdrop-blur">
+            <SwitcherTab
+              active={activePanel === "canvas"}
+              onClick={() => setActivePanel("canvas")}
+              icon={<HugeiconsIcon icon={GridIcon} size={16} />}
+              label="Canvas"
             />
-          ) : (
-            <button
-              onClick={() => setIsEditingTitle(true)}
-              className="hover:bg-muted rounded px-1.5 py-0.5 text-sm font-semibold transition-colors"
-            >
-              {idea?.title ?? "Untitled"}
-            </button>
+            <SwitcherTab
+              active={activePanel === "notes"}
+              onClick={() => setActivePanel("notes")}
+              icon={<HugeiconsIcon icon={Note01Icon} size={16} />}
+              label="Notes"
+            />
+            <SwitcherTab
+              active={activePanel === "split"}
+              onClick={() => setActivePanel("split")}
+              icon={<HugeiconsIcon icon={SidebarLeftIcon} size={16} />}
+              label="Split"
+            />
+          </div>
+        </div>
+
+        {/* Right: Presence & Share */}
+        <div className="pointer-events-auto flex items-center gap-3">
+          <div className="bg-background/80 border-border flex h-10 items-center rounded-2xl border px-3 shadow-md backdrop-blur">
+            <PresenceBar />
+          </div>
+
+          <button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20 flex h-10 items-center gap-2 rounded-2xl px-5 text-sm font-semibold shadow-lg transition-all active:scale-95">
+            <HugeiconsIcon icon={Share01Icon} size={16} />
+            Share
+          </button>
+        </div>
+      </nav>
+
+      {/* ── Workspace Body ── */}
+      <main className="relative flex h-full w-full overflow-hidden">
+        {/* Canvas Panel */}
+        <div
+          className={cn(
+            "relative h-full transition-all duration-500 ease-in-out",
+            activePanel === "canvas"
+              ? "w-full"
+              : activePanel === "split"
+                ? "w-1/2"
+                : "w-0 opacity-0"
           )}
+        >
+          <IdeaCanvas />
         </div>
 
-        {/* View toggle */}
-        <div className="border-border bg-muted/50 flex items-center rounded-lg border p-0.5">
-          <ViewToggleBtn
-            active={activePanel === "canvas"}
-            onClick={() => setActivePanel("canvas")}
-            title="Canvas only"
-            icon={<HugeiconsIcon icon={GridIcon} size={14} />}
-          />
-          <ViewToggleBtn
-            active={activePanel === "split"}
-            onClick={() => setActivePanel("split")}
-            title="Split view"
-            icon={<HugeiconsIcon icon={SidebarLeftIcon} size={14} />}
-          />
-          <ViewToggleBtn
-            active={activePanel === "notes"}
-            onClick={() => setActivePanel("notes")}
-            title="Notes only"
-            icon={<HugeiconsIcon icon={Note01Icon} size={14} />}
-          />
-        </div>
-
-        {/* Presence */}
-        <PresenceBar />
-
-        {/* Share */}
-        <button className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors">
-          <HugeiconsIcon icon={Share01Icon} size={14} />
-          Share
-        </button>
-      </header>
-
-      {/* ── Workspace body ── */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Canvas panel */}
-        {(activePanel === "canvas" || activePanel === "split") && (
-          <div
-            className={cn(
-              "flex flex-col overflow-hidden",
-              activePanel === "split"
-                ? "border-border w-1/2 border-r"
-                : "w-full"
-            )}
-          >
-            <IdeaCanvas />
-          </div>
-        )}
-
-        {/* Divider handle (split view only) */}
+        {/* Divider (Split view only) */}
         {activePanel === "split" && (
-          <div className="bg-border hover:bg-primary/60 w-1 shrink-0 cursor-col-resize transition-colors" />
-        )}
-
-        {/* Notes panel */}
-        {(activePanel === "notes" || activePanel === "split") && (
-          <div
-            className={cn(
-              "flex flex-col overflow-hidden",
-              activePanel === "split" ? "flex-1" : "w-full"
-            )}
-          >
-            <CollaborativeEditor />
+          <div className="bg-border relative z-10 w-px shrink-0">
+            <div className="bg-primary absolute top-1/2 left-1/2 h-8 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20" />
           </div>
         )}
-      </div>
+
+        {/* Notes Panel */}
+        <div
+          className={cn(
+            "bg-background relative h-full transition-all duration-500 ease-in-out",
+            activePanel === "notes"
+              ? "w-full"
+              : activePanel === "split"
+                ? "flex-1"
+                : "w-0 overflow-hidden opacity-0"
+          )}
+        >
+          <div
+            className={cn(
+              "h-full w-full",
+              activePanel === "split" ? "px-4 py-20" : "px-0 py-0"
+            )}
+          >
+            <div
+              className={cn(
+                "h-full w-full overflow-hidden",
+                activePanel === "split" &&
+                  "border-border rounded-3xl border shadow-2xl"
+              )}
+            >
+              <CollaborativeEditor />
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
 
-// ─── View toggle button ───────────────────────────────────────────────────────
-function ViewToggleBtn({
+// ─── Spatial Switcher Tab ──────────────────────────────────────────────────────
+function SwitcherTab({
   active,
   onClick,
-  title,
   icon,
+  label,
 }: {
   active: boolean
   onClick: () => void
-  title: string
   icon: React.ReactNode
+  label: string
 }) {
   return (
     <button
       onClick={onClick}
-      title={title}
       className={cn(
-        "flex h-6 w-7 items-center justify-center rounded-md transition-all",
+        "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
         active
-          ? "bg-background text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
+          ? "bg-foreground text-background scale-[1.02] shadow-md"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
       )}
     >
       {icon}
+      <span>{label}</span>
     </button>
   )
 }
