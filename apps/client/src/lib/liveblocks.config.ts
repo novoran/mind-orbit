@@ -48,6 +48,7 @@ declare global {
     Storage: {
       layers: LiveMap<string, LiveObject<Layer>>
       layerIds: LiveList<string>
+      notes: LiveList<{ id: string; title: string }>
     }
 
     // Custom user info set when authenticating with a secret key

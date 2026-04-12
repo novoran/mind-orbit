@@ -43,7 +43,7 @@ export function ToolbarButton({
       size={"icon"}
       title={tooltip}
       className={cn(
-        "flex h-7 w-7 items-center justify-center rounded-md text-sm transition-all",
+        "flex h-7 w-7 items-center justify-center rounded-lg text-sm transition-all",
         "text-muted-foreground hover:bg-muted hover:text-foreground",
         active && "bg-muted text-foreground",
         className
@@ -74,7 +74,7 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
   return (
     <div
       className={cn(
-        "bg-background/80 border-border flex flex-wrap items-center gap-1 rounded-2xl border px-3 py-1.5 shadow-2xl backdrop-blur-xl",
+        "bg-background/80 border-border flex flex-wrap items-center gap-1 rounded-lg border px-3 py-1.5 shadow-2xl backdrop-blur-xl",
         className
       )}
     >

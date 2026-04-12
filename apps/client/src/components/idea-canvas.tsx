@@ -1,6 +1,7 @@
-import {
+  ArrowRight02Icon,
   CircleIcon,
   Cursor02Icon,
+  Hold03Icon,
   RectangularIcon,
   Square01Icon,
   StickyNote01Icon,
@@ -280,10 +281,23 @@ export function IdeaCanvas() {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault()
       const zoomDelta = -e.deltaY * 0.001
-      setCamera((prev) => ({
-        ...prev,
-        zoom: Math.min(Math.max(prev.zoom + zoomDelta, 0.1), 5),
-      }))
+
+      setCamera((prev) => {
+        const newZoom = Math.min(Math.max(prev.zoom + zoomDelta, 0.1), 5)
+        const svg = svgRef.current
+        if (!svg) return { ...prev, zoom: newZoom }
+
+        const rect = svg.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+
+        // Zoom relative to mouse position
+        return {
+          zoom: newZoom,
+          x: mouseX - ((mouseX - prev.x) / prev.zoom) * newZoom,
+          y: mouseY - ((mouseY - prev.y) / prev.zoom) * newZoom,
+        }
+      })
     } else {
       setCamera((prev) => ({
         ...prev,
@@ -400,11 +414,11 @@ export function IdeaCanvas() {
 
       {/* ── Left Tool Sidebar (Vertical Floating Pill) ── */}
       <div className="absolute top-1/2 left-6 -translate-y-1/2">
-        <div className="bg-background/80 border-border flex flex-col items-center gap-2 rounded-3xl border p-2 shadow-2xl backdrop-blur-xl">
+        <div className="bg-background/80 border-border flex flex-col items-center gap-2 rounded-lg border p-2 shadow-2xl backdrop-blur-xl">
           <ToolButton
             active={activeTool === "select"}
             onClick={() => setActiveTool("select")}
-            icon={<HugeiconsIcon icon={Cursor02Icon} size={20} />}
+            icon={<HugeiconsIcon icon={ArrowRight02Icon} size={20} />}
             tooltip="Select (V)"
           />
           <div className="bg-border my-1 h-px w-8" />
@@ -444,12 +458,12 @@ export function IdeaCanvas() {
 
       {/* ── Bottom Navigation Bar (Centered Floating Pill) ── */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
-        <div className="bg-background/80 border-border flex items-center gap-4 rounded-2xl border px-4 py-2 shadow-xl backdrop-blur-xl">
+        <div className="bg-background/80 border-border flex items-center gap-4 rounded-lg border px-4 py-2 shadow-xl backdrop-blur-xl">
           <div className="flex items-center gap-1">
             <NavButton
               active={activeTool === "pan"}
               onClick={() => setActiveTool("pan")}
-              icon={<HugeiconsIcon icon={Cursor02Icon} size={18} />}
+              icon={<HugeiconsIcon icon={Hold03Icon} size={18} />}
               tooltip="Pan tool (H)"
             />
             <NavButton
@@ -506,7 +520,7 @@ function ToolButton({
       onClick={onClick}
       title={tooltip}
       className={cn(
-        "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300",
+        "group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300",
         active
           ? "bg-primary text-primary-foreground shadow-primary/20 scale-110 shadow-lg"
           : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -582,7 +596,7 @@ function CanvasLayer({
           y={layer.y}
           width={layer.width}
           height={layer.height}
-          rx={24}
+          rx={8}
           fill="white"
           filter="drop-shadow(0 10px 30px rgba(0,0,0,0.08))"
           className="transition-all duration-300"
@@ -594,7 +608,7 @@ function CanvasLayer({
             y={layer.y - 2}
             width={layer.width + 4}
             height={layer.height + 4}
-            rx={26}
+            rx={10}
             fill="none"
             stroke="var(--primary)"
             strokeWidth={2.5}
@@ -605,7 +619,7 @@ function CanvasLayer({
         {/* Card Header Section */}
         <g transform={`translate(${layer.x + 20}, ${layer.y + 20})`}>
           {/* Category Pill */}
-          <rect width={80} height={24} rx={12} fill="#e0e7ff" />
+          <rect width={80} height={24} rx={4} fill="#e0e7ff" />
           <text
             x={40}
             y={16}
@@ -734,7 +748,7 @@ function CanvasLayer({
     shapeProps.y = layer.y
     shapeProps.width = layer.width
     shapeProps.height = layer.height
-    shapeProps.rx = 16
+    shapeProps.rx = 8
   } else if (layer.type === "circle") {
     shapeProps.cx = layer.x + layer.width / 2
     shapeProps.cy = layer.y + layer.height / 2
@@ -777,7 +791,7 @@ function RemoteCursor({
         <rect
           width={name.length * 7 + 12}
           height={18}
-          rx={9}
+          rx={4}
           fill={color}
           className="shadow-sm"
         />
@@ -807,7 +821,7 @@ function CanvasToolbar({
   ] as const
 
   return (
-    <div className="flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/70 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/50">
+    <div className="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/70 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/50">
       {tools.map((tool) => (
         <Button
           key={tool.id}
@@ -815,7 +829,7 @@ function CanvasToolbar({
           variant={"ghost"}
           size={"icon"}
           className={
-            "group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300"
+            "group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300"
           }
         >
           <HugeiconsIcon

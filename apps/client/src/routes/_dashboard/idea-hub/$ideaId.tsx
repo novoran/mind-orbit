@@ -44,6 +44,7 @@ function IdeaWorkspacePage() {
     () => ({
       layers: new LiveMap<string, LiveObject<Layer>>(),
       layerIds: new LiveList<string>([]),
+      notes: new LiveList<{ id: string; title: string }>([]),
     }),
     []
   )
@@ -106,7 +107,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
         <div className="pointer-events-auto flex items-center gap-4">
           <button
             onClick={() => navigate({ to: "/idea-hub" })}
-            className="bg-background/80 hover:bg-background border-border text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-xl border shadow-sm backdrop-blur transition-all"
+            className="bg-background/80 hover:bg-background border-border text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg border shadow-sm backdrop-blur transition-all"
             title="Back to Idea Hub"
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
@@ -141,7 +142,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
 
         {/* Center: Spatial Switcher */}
         <div className="pointer-events-auto flex items-center">
-          <div className="bg-background/80 border-border flex items-center gap-1 rounded-2xl border p-1 shadow-lg backdrop-blur">
+          <div className="bg-background/80 border-border flex items-center gap-1 rounded-lg border p-1 shadow-lg backdrop-blur">
             <SwitcherTab
               active={activePanel === "canvas"}
               onClick={() => setActivePanel("canvas")}
@@ -165,11 +166,11 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
 
         {/* Right: Presence & Share */}
         <div className="pointer-events-auto flex items-center gap-3">
-          <div className="bg-background/80 border-border flex h-10 items-center rounded-2xl border px-3 shadow-md backdrop-blur">
+          <div className="bg-background/80 border-border flex h-10 items-center rounded-lg border px-3 shadow-md backdrop-blur">
             <PresenceBar />
           </div>
 
-          <button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20 flex h-10 items-center gap-2 rounded-2xl px-5 text-sm font-semibold shadow-lg transition-all active:scale-95">
+          <button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20 flex h-10 items-center gap-2 rounded-lg px-5 text-sm font-semibold shadow-lg transition-all active:scale-95">
             <HugeiconsIcon icon={Share01Icon} size={16} />
             Share
           </button>
@@ -185,7 +186,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
             activePanel === "canvas"
               ? "w-full"
               : activePanel === "split"
-                ? "w-1/2"
+                ? "w-[60%]"
                 : "w-0 opacity-0"
           )}
         >
@@ -202,9 +203,9 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
         {/* Notes Panel */}
         <div
           className={cn(
-            "bg-background relative h-full transition-all duration-500 ease-in-out",
+            "relative h-full transition-all duration-500 ease-in-out",
             activePanel === "notes"
-              ? "w-full"
+              ? "w-full bg-background"
               : activePanel === "split"
                 ? "flex-1"
                 : "w-0 overflow-hidden opacity-0"
@@ -219,8 +220,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
             <div
               className={cn(
                 "h-full w-full overflow-hidden",
-                activePanel === "split" &&
-                  "border-border rounded-3xl border shadow-2xl"
+                activePanel === "split" && "rounded-lg border border-border shadow-2xl bg-background/50 backdrop-blur-xl"
               )}
             >
               <CollaborativeEditor />
@@ -248,9 +248,9 @@ function SwitcherTab({
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
         active
-          ? "bg-foreground text-background scale-[1.02] shadow-md"
+          ? "bg-foreground text-background shadow-md scale-[1.02]"
           : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
       )}
     >
