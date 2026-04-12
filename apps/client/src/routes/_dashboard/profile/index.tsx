@@ -60,7 +60,7 @@ function ProfileIndexPage() {
   const session = authClient.useSession()
   const userSession = session.data?.user
 
-  const { data: userData, isLoading: isConvexLoading } = useQuery(
+  const { data: userData, isPending: isConvexLoading } = useQuery(
     convexQuery(api.users.currentUser, {})
   )
 
@@ -104,7 +104,8 @@ function ProfileIndexPage() {
     gooeyToast.promise(updatePromise, {
       loading: "Updating profile...",
       success: "Profile updated successfully!",
-      error: (err: any) => err.message || "Failed to update profile",
+      error: (err: unknown) =>
+        (err as { message: string }).message || "Failed to update profile",
     })
 
     try {

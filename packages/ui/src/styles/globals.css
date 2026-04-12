@@ -219,3 +219,67 @@ html:not(.hydrated) [data-slot="sidebar-inset"] {
 .animate-fade-in-up {
   animation: fade-in-up 250ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* ─── Tiptap Editor ──────────────────────────────────────────────────── */
+
+.tiptap {
+  outline: none;
+  min-height: 100%;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--muted-foreground);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tiptap ul[data-type="taskList"] > li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.tiptap ul[data-type="taskList"] > li > label {
+  flex: 0 0 auto;
+  margin: 0;
+  user-select: none;
+}
+
+.tiptap ul[data-type="taskList"] > li > div {
+  flex: 1 1 auto;
+}
+
+/* ─── Liveblocks Collaboration Cursors ───────────────────────────────── */
+
+.collaboration-cursor__caret {
+  border-left: 2px solid;
+  border-right: 2px solid;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+.collaboration-cursor__label {
+  border-radius: 3px 3px 3px 0;
+  color: white;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  left: -1px;
+  line-height: normal;
+  padding: 0.1em 0.4em;
+  position: absolute;
+  top: -1.6em;
+  user-select: none;
+  white-space: nowrap;
+}

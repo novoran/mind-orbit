@@ -10,6 +10,7 @@
 
 import type * as files from "../files.js";
 import type * as http from "../http.js";
+import type * as ideas from "../ideas.js";
 import type * as orbits from "../orbits.js";
 import type * as settings from "../settings.js";
 import type * as types from "../types.js";
@@ -24,6 +25,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
+  ideas: typeof ideas;
   orbits: typeof orbits;
   settings: typeof settings;
   types: typeof types;

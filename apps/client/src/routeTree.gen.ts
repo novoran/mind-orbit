@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as DashboardIndexRouteImport } from './routes/_dashboard/index'
+import { Route as ApiLiveblocksAuthRouteImport } from './routes/api/liveblocks-auth'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as DashboardProfileRouteRouteImport } from './routes/_dashboard/profile/route'
@@ -23,6 +24,7 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as DashboardProfileSecurityRouteImport } from './routes/_dashboard/profile/security'
 import { Route as DashboardProfilePreferencesRouteImport } from './routes/_dashboard/profile/preferences'
 import { Route as DashboardProfileNotificationsRouteImport } from './routes/_dashboard/profile/notifications'
+import { Route as DashboardIdeaHubIdeaIdRouteImport } from './routes/_dashboard/idea-hub/$ideaId'
 import { Route as DashboardspacesSettingsRouteRouteImport } from './routes/_dashboard/(spaces)/settings/route'
 import { Route as DashboardspacesTeamsIndexRouteImport } from './routes/_dashboard/(spaces)/teams/index'
 import { Route as DashboardspacesTeamChatIndexRouteImport } from './routes/_dashboard/(spaces)/team-chat/index'
@@ -55,6 +57,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const ApiLiveblocksAuthRoute = ApiLiveblocksAuthRouteImport.update({
+  id: '/api/liveblocks-auth',
+  path: '/api/liveblocks-auth',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
@@ -113,6 +120,11 @@ const DashboardProfileNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => DashboardProfileRouteRoute,
   } as any)
+const DashboardIdeaHubIdeaIdRoute = DashboardIdeaHubIdeaIdRouteImport.update({
+  id: '/idea-hub/$ideaId',
+  path: '/idea-hub/$ideaId',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardspacesSettingsRouteRoute =
   DashboardspacesSettingsRouteRouteImport.update({
     id: '/settings',
@@ -233,7 +245,9 @@ export interface FileRoutesByFullPath {
   '/profile': typeof DashboardProfileRouteRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/api/liveblocks-auth': typeof ApiLiveblocksAuthRoute
   '/settings': typeof DashboardspacesSettingsRouteRouteWithChildren
+  '/idea-hub/$ideaId': typeof DashboardIdeaHubIdeaIdRoute
   '/profile/notifications': typeof DashboardProfileNotificationsRoute
   '/profile/preferences': typeof DashboardProfilePreferencesRoute
   '/profile/security': typeof DashboardProfileSecurityRoute
@@ -264,6 +278,8 @@ export interface FileRoutesByTo {
   '/': typeof DashboardIndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/api/liveblocks-auth': typeof ApiLiveblocksAuthRoute
+  '/idea-hub/$ideaId': typeof DashboardIdeaHubIdeaIdRoute
   '/profile/notifications': typeof DashboardProfileNotificationsRoute
   '/profile/preferences': typeof DashboardProfilePreferencesRoute
   '/profile/security': typeof DashboardProfileSecurityRoute
@@ -298,8 +314,10 @@ export interface FileRoutesById {
   '/_dashboard/profile': typeof DashboardProfileRouteRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
+  '/api/liveblocks-auth': typeof ApiLiveblocksAuthRoute
   '/_dashboard/': typeof DashboardIndexRoute
   '/_dashboard/(spaces)/settings': typeof DashboardspacesSettingsRouteRouteWithChildren
+  '/_dashboard/idea-hub/$ideaId': typeof DashboardIdeaHubIdeaIdRoute
   '/_dashboard/profile/notifications': typeof DashboardProfileNotificationsRoute
   '/_dashboard/profile/preferences': typeof DashboardProfilePreferencesRoute
   '/_dashboard/profile/security': typeof DashboardProfileSecurityRoute
@@ -333,7 +351,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sign-in'
     | '/sign-up'
+    | '/api/liveblocks-auth'
     | '/settings'
+    | '/idea-hub/$ideaId'
     | '/profile/notifications'
     | '/profile/preferences'
     | '/profile/security'
@@ -364,6 +384,8 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
+    | '/api/liveblocks-auth'
+    | '/idea-hub/$ideaId'
     | '/profile/notifications'
     | '/profile/preferences'
     | '/profile/security'
@@ -397,8 +419,10 @@ export interface FileRouteTypes {
     | '/_dashboard/profile'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
+    | '/api/liveblocks-auth'
     | '/_dashboard/'
     | '/_dashboard/(spaces)/settings'
+    | '/_dashboard/idea-hub/$ideaId'
     | '/_dashboard/profile/notifications'
     | '/_dashboard/profile/preferences'
     | '/_dashboard/profile/security'
@@ -429,6 +453,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
+  ApiLiveblocksAuthRoute: typeof ApiLiveblocksAuthRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -454,6 +479,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/api/liveblocks-auth': {
+      id: '/api/liveblocks-auth'
+      path: '/api/liveblocks-auth'
+      fullPath: '/api/liveblocks-auth'
+      preLoaderRoute: typeof ApiLiveblocksAuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/sign-up': {
       id: '/_auth/sign-up'
@@ -531,6 +563,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/profile/notifications'
       preLoaderRoute: typeof DashboardProfileNotificationsRouteImport
       parentRoute: typeof DashboardProfileRouteRoute
+    }
+    '/_dashboard/idea-hub/$ideaId': {
+      id: '/_dashboard/idea-hub/$ideaId'
+      path: '/idea-hub/$ideaId'
+      fullPath: '/idea-hub/$ideaId'
+      preLoaderRoute: typeof DashboardIdeaHubIdeaIdRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/_dashboard/(spaces)/settings': {
       id: '/_dashboard/(spaces)/settings'
@@ -764,6 +803,7 @@ interface DashboardRouteChildren {
   DashboardspacesRouteRoute: typeof DashboardspacesRouteRouteWithChildren
   DashboardProfileRouteRoute: typeof DashboardProfileRouteRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardIdeaHubIdeaIdRoute: typeof DashboardIdeaHubIdeaIdRoute
   DashboardAiChatIndexRoute: typeof DashboardAiChatIndexRoute
   DashboardIdeaHubIndexRoute: typeof DashboardIdeaHubIndexRoute
 }
@@ -772,6 +812,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardspacesRouteRoute: DashboardspacesRouteRouteWithChildren,
   DashboardProfileRouteRoute: DashboardProfileRouteRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardIdeaHubIdeaIdRoute: DashboardIdeaHubIdeaIdRoute,
   DashboardAiChatIndexRoute: DashboardAiChatIndexRoute,
   DashboardIdeaHubIndexRoute: DashboardIdeaHubIndexRoute,
 }
@@ -783,6 +824,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
+  ApiLiveblocksAuthRoute: ApiLiveblocksAuthRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

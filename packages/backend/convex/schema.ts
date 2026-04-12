@@ -29,4 +29,15 @@ export default defineSchema({
     // Onboarding
     onboardingCompleted: v.boolean(),
   }).index("by_user", ["userId"]),
+
+  ideas: defineTable({
+    title: v.string(),
+    userId: v.string(),
+    organizationId: v.optional(v.string()), // For multi-tenancy
+    description: v.optional(v.string()),
+    lastOpenedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_org", ["organizationId"]),
 });

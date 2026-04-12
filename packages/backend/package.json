@@ -6,6 +6,11 @@
     "dev": "convex dev",
     "convex": "convex"
   },
+  "exports": {
+    "./_generated/api": "./convex/_generated/api.js",
+    "./_generated/dataModel": "./convex/_generated/dataModel.d.ts",
+    "./_generated/*": "./convex/_generated/*"
+  },
   "dependencies": {
     "@better-auth/utils": "^0.4.0",
     "@convex-dev/better-auth": "^0.11.4",

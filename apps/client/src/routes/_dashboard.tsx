@@ -13,6 +13,14 @@ function DashboardLayout() {
   const { sidebarOpen } = Route.useLoaderData()
   const location = useLocation()
 
+  // Idea workspace gets a full-screen layout (no sidebar/header)
+  // so it can function like Miro / Figma
+  const isWorkspace = /^\/idea-hub\/.+/.test(location.pathname)
+
+  if (isWorkspace) {
+    return <Outlet />
+  }
+
   return (
     <SidebarProvider defaultOpen={sidebarOpen}>
       <AppSidebar />
@@ -44,3 +52,4 @@ export const Route = createFileRoute("/_dashboard")({
   },
   component: DashboardLayout,
 })
+
