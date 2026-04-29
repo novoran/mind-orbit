@@ -1,7 +1,19 @@
-import { Clock01Icon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import {
+  Clock01Icon,
+  Delete02Icon,
+  MoreVerticalIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { Button } from "@mindorbit/ui/components/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@mindorbit/ui/components/dropdown-menu"
 import { cn } from "@mindorbit/ui/lib/utils"
-import * as React from "react"
+
+import type { Doc, Id } from "@mindorbit/backend/_generated/dataModel"
 
 // ─── Random cover gradients for idea cards ──────────────────────────────────
 const CARD_GRADIENTS = [
@@ -32,35 +44,28 @@ function formatDate(ts: number) {
 }
 
 interface IdeaCardProps {
-  idea: {
-    _id: string
-    title: string
-    description?: string
-    createdAt: number
-    lastOpenedAt?: number
-  }
-  onOpen: () => void
-  onDelete: () => void
+  idea: Doc<"ideas">
+  onOpen: (id: Id<"ideas">) => void
+  onDelete: (id: Id<"ideas">) => void
 }
 
 export function IdeaCard({ idea, onOpen, onDelete }: IdeaCardProps) {
-  const [menuOpen, setMenuOpen] = React.useState(false)
   const gradient = getGradient(idea._id)
 
   return (
     <div
       className={cn(
-        "border-border bg-card group relative flex min-h-[180px] cursor-pointer flex-col rounded-xl border",
-        "overflow-hidden transition-all duration-200 hover:scale-[1.01] hover:shadow-md"
+        "border-border bg-card group relative flex min-h-[180px] cursor-pointer flex-col rounded-lg border",
+        "overflow-hidden transition-all duration-300 hover:shadow-sm"
       )}
-      onClick={onOpen}
+      onClick={() => onOpen(idea._id)}
     >
       {/* Cover gradient */}
       <div className={cn("h-20 w-full bg-linear-to-br", gradient)} />
 
       {/* Content */}
       <div className="flex flex-1 flex-col gap-1 p-4">
-        <h3 className="line-clamp-2 leading-snug font-semibold">
+        <h3 className="line-clamp-2 text-sm leading-snug font-semibold">
           {idea.title}
         </h3>
         {idea.description && (
@@ -75,50 +80,39 @@ export function IdeaCard({ idea, onOpen, onDelete }: IdeaCardProps) {
       </div>
 
       {/* Menu button */}
-      <button
-        className={cn(
-          "absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-md",
-          "bg-black/20 opacity-0 transition-opacity group-hover:opacity-100",
-          "text-white hover:bg-black/40"
-        )}
-        onClick={(e) => {
-          e.stopPropagation()
-          setMenuOpen(!menuOpen)
-        }}
-      >
-        <HugeiconsIcon icon={MoreVerticalIcon} size={14} />
-      </button>
-
-      {menuOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setMenuOpen(false)}
+      <div className="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={(props) => (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 border-none bg-black/20 text-white hover:bg-black/40 hover:text-white"
+                {...props}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  props.onClick?.(e)
+                }}
+              >
+                <HugeiconsIcon icon={MoreVerticalIcon} size={14} />
+              </Button>
+            )}
           />
-          <div className="border-border bg-popover absolute top-9 right-2 z-20 flex min-w-[120px] flex-col overflow-hidden rounded-lg border shadow-lg">
-            <button
+          <DropdownMenuContent align="end" className="w-36">
+
+            <DropdownMenuItem
+              className="text-destructive focus:bg-destructive/10 focus:text-destructive gap-2"
               onClick={(e) => {
                 e.stopPropagation()
-                onOpen()
-                setMenuOpen(false)
+                onDelete(idea._id)
               }}
-              className="hover:bg-muted px-3 py-2 text-left text-sm"
             >
-              Open
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete()
-                setMenuOpen(false)
-              }}
-              className="text-destructive hover:bg-destructive/10 px-3 py-2 text-left text-sm"
-            >
-              Delete
-            </button>
-          </div>
-        </>
-      )}
+              <HugeiconsIcon icon={Delete02Icon} size={14} />
+              Delete Idea
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   )
 }

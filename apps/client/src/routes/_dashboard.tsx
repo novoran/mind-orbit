@@ -26,10 +26,10 @@ function DashboardLayout() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <div className="p-4">
+        <div className="h-full p-4">
           <div
             key={location.pathname.split("/")[1]}
-            className="animate-fade-in-up"
+            className="animate-fade-in-up h-full"
           >
             <Outlet />
           </div>
@@ -52,4 +52,3 @@ export const Route = createFileRoute("/_dashboard")({
   },
   component: DashboardLayout,
 })
-

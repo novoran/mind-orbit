@@ -1,5 +1,9 @@
-import { useConvexMutation } from "@convex-dev/react-query"
-import { PlusSignIcon, Search01Icon } from "@hugeicons/core-free-icons"
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query"
+import {
+  DashboardSquare01Icon,
+  Menu01Icon,
+  PlusSignIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@mindorbit/backend/_generated/api"
 import { cn } from "@mindorbit/ui/lib/utils"
@@ -9,6 +13,11 @@ import * as React from "react"
 import { CreateIdeaDialog } from "@/components/idea-hub/create-idea-dialog"
 import { IdeaCardSkeleton } from "@/components/idea-hub/idea-card-skeleton"
 import { IdeaGrid } from "@/components/idea-hub/idea-grid"
+import { IdeaTable } from "@/components/idea-hub/idea-table"
+import { IdeaTableSkeleton } from "@/components/idea-hub/idea-table-skeleton"
+import { Button } from "@mindorbit/ui/components/button"
+import { SearchInput } from "@mindorbit/ui/components/search-input"
+import { useQuery } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/_dashboard/idea-hub/")({
   component: IdeaHubPage,
@@ -16,12 +25,16 @@ export const Route = createFileRoute("/_dashboard/idea-hub/")({
 
 function IdeaHubPage() {
   const [search, setSearch] = React.useState("")
+  const [viewType, setViewType] = React.useState<"grid" | "list">("list")
   const [showCreateDialog, setShowCreateDialog] = React.useState(false)
   const [newTitle, setNewTitle] = React.useState("")
   const [creating, setCreating] = React.useState(false)
 
   const navigate = useNavigate()
   const createIdea = useConvexMutation(api.ideas.create)
+  const deleteIdea = useConvexMutation(api.ideas.remove)
+
+  const { data: ideas, isLoading } = useQuery(convexQuery(api.ideas.list, {}))
 
   const handleCreate = async () => {
     if (!newTitle.trim()) return
@@ -36,51 +49,92 @@ function IdeaHubPage() {
     }
   }
 
+  const filtered = React.useMemo(() => {
+    if (!ideas) return []
+    if (!search) return ideas
+    return ideas.filter((i) =>
+      i.title.toLowerCase().includes(search.toLowerCase())
+    )
+  }, [ideas, search])
+
   return (
-    <div className="flex flex-1 flex-col gap-6 p-1">
+    <div className="flex flex-1 flex-col gap-6 p-6">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold tracking-tight">Idea Hub</h1>
         <p className="text-muted-foreground text-sm">
-          Your collaborative Miro-style workspaces
+          Brainstorm, organize, and collaborate on your ideas in real-time.
         </p>
       </div>
 
-      {/* Search + New */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1">
-          <HugeiconsIcon
-            icon={Search01Icon}
-            size={16}
-            className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
-          />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search ideas..."
-            className={cn(
-              "border-border bg-background w-full rounded-lg border py-2 pr-4 pl-9 text-sm",
-              "focus:ring-primary/50 focus:border-primary focus:ring-2 focus:outline-none",
-              "transition-all duration-200"
-            )}
-          />
+      {/* Search + View Toggle + New Idea */}
+      <div className="flex items-center justify-between gap-4">
+        <SearchInput
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search ideas..."
+          containerClassName="max-w-sm"
+        />
+
+        <div className="flex items-center gap-3">
+          <div className="bg-muted/50 flex items-center rounded-lg p-1">
+            <button
+              onClick={() => setViewType("list")}
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-md transition-all",
+                viewType === "list"
+                  ? "bg-background text-primary shadow-xs"
+                  : "text-muted-foreground hover:bg-background/50"
+              )}
+              title="List View"
+            >
+              <HugeiconsIcon icon={Menu01Icon} size={14} />
+            </button>
+            <button
+              onClick={() => setViewType("grid")}
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-md transition-all",
+                viewType === "grid"
+                  ? "bg-background text-primary shadow-xs"
+                  : "text-muted-foreground hover:bg-background/50"
+              )}
+              title="Grid View"
+            >
+              <HugeiconsIcon icon={DashboardSquare01Icon} size={14} />
+            </button>
+          </div>
+
+          <Button onClick={() => setShowCreateDialog(true)} className="h-10">
+            <HugeiconsIcon icon={PlusSignIcon} size={16} />
+            <span>New Idea</span>
+          </Button>
         </div>
-        <button
-          onClick={() => setShowCreateDialog(true)}
-          className={cn(
-            "bg-primary text-primary-foreground flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium",
-            "hover:bg-primary/90 transition-colors"
-          )}
-        >
-          <HugeiconsIcon icon={PlusSignIcon} size={16} />
-          New Idea
-        </button>
       </div>
 
-      {/* Grid with Local Suspense */}
-      <React.Suspense fallback={<IdeaCardSkeleton />}>
-        <IdeaGrid search={search} onNewIdea={() => setShowCreateDialog(true)} />
-      </React.Suspense>
+      {/* Content Area */}
+      <div className="flex-1">
+        {isLoading ? (
+          viewType === "list" ? (
+            <IdeaTableSkeleton />
+          ) : (
+            <IdeaCardSkeleton />
+          )
+        ) : viewType === "list" ? (
+          <IdeaTable
+            ideas={filtered}
+            onOpen={(id) => navigate({ to: `/idea-hub/${id}` })}
+            onDelete={(id) => deleteIdea({ id })}
+          />
+        ) : (
+          <IdeaGrid
+            ideas={filtered}
+            search={search}
+            onNewIdea={() => setShowCreateDialog(true)}
+            onOpen={(id) => navigate({ to: `/idea-hub/${id}` })}
+            onDelete={(id) => deleteIdea({ id })}
+          />
+        )}
+      </div>
 
       {/* Create Dialog */}
       {showCreateDialog && (

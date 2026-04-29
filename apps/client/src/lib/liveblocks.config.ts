@@ -9,7 +9,7 @@ export const client = createClient({
 
 // Types for our Miro-style Canvas
 export type ShapeLayer = {
-  type: "rectangle" | "circle" | "diamond" | "triangle" | "sticky"
+  type: "rectangle" | "circle" | "diamond" | "triangle" | "star" | "sticky"
   x: number
   y: number
   height: number
@@ -29,7 +29,32 @@ export type TextLayer = {
   fill: string
 }
 
-export type Layer = ShapeLayer | TextLayer
+export type PathLayer = {
+  type: "path"
+  x: number
+  y: number
+  height: number
+  width: number
+  fill: string
+  points: Array<Array<number>> // For pen
+}
+
+export type LineLayer = {
+  type: "line" | "arrow"
+  x: number
+  y: number
+  height: number
+  width: number
+  fill: string
+  points: Array<{ x: number; y: number }> // [start, control, end]
+}
+
+export type Layer = (ShapeLayer | TextLayer | PathLayer | LineLayer) & {
+  stroke?: string
+  strokeWidth?: number
+  textColor?: string
+  rotation?: number
+}
 
 declare global {
   interface Liveblocks {

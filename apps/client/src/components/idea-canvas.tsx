@@ -1,11 +1,16 @@
-  ArrowRight02Icon,
+import {
+  ArrowUpRight02Icon,
   CircleIcon,
-  Cursor02Icon,
+  CursorMagicSelection04Icon,
+  DiamondIcon,
   Hold03Icon,
+  Layers01Icon,
+  LinerIcon,
+  PaintBrush01Icon,
   RectangularIcon,
-  Square01Icon,
-  StickyNote01Icon,
-  TextIcon,
+  StarIcon,
+  StickyNote02Icon,
+  TextFontIcon,
   TriangleIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -21,9 +26,15 @@ import { cn } from "@mindorbit/ui/lib/utils"
 import { nanoid } from "nanoid"
 import * as React from "react"
 
-import { Button } from "@mindorbit/ui/components/button"
+import { Separator } from "@mindorbit/ui/components/separator"
+import { CanvasLayer } from "./canvas/canvas-layer"
+import { SHAPE_COLORS, STICKY_COLORS } from "./canvas/constants"
+import { ContextToolbar } from "./canvas/context-toolbar"
+import { RemoteCursor } from "./canvas/remote-cursor"
+import { SelectionHandles } from "./canvas/selection-handles"
+import { NavButton, ToolButton } from "./canvas/toolbars"
 
-import type { Layer, TextLayer } from "@/lib/liveblocks.config"
+import type { Layer, LineLayer, PathLayer } from "@/lib/liveblocks.config"
 
 // ────────────────────────────────────────────────────────────────────────────
 // Types & Constants
@@ -35,32 +46,13 @@ type CanvasTool =
   | "circle"
   | "diamond"
   | "triangle"
+  | "star"
   | "sticky"
   | "text"
-
-const SHAPE_COLORS = [
-  "#fbbf24", // amber
-  "#34d399", // emerald
-  "#60a5fa", // blue
-  "#f87171", // red
-  "#a78bfa", // violet
-  "#fb923c", // orange
-  "#2dd4bf", // teal
-  "#e879f9", // fuchsia
-]
-
-const STICKY_COLORS = [
-  "#fef08a", // yellow
-  "#bbf7d0", // green
-  "#bfdbfe", // blue
-  "#fecaca", // red
-  "#e9d5ff", // purple
-  "#fed7aa", // orange
-]
-
-// ────────────────────────────────────────────────────────────────────────────
-// Canvas Component
-// ────────────────────────────────────────────────────────────────────────────
+  | "pan"
+  | "pen"
+  | "line"
+  | "arrow"
 
 // ─── Canvas Component ────────────────────────────────────────────────────────────
 
@@ -78,6 +70,22 @@ export function IdeaCanvas() {
   const [camera, setCamera] = React.useState({ x: 0, y: 0, zoom: 1 })
   const [isPanning, setIsPanning] = React.useState(false)
   const [panStart, setPanStart] = React.useState({ x: 0, y: 0 })
+  const [resizing, setResizing] = React.useState<{
+    id: string
+    handle: "nw" | "ne" | "sw" | "se"
+    startRect: { x: number; y: number; width: number; height: number }
+    startX: number
+    startY: number
+  } | null>(null)
+  const [rotating, setRotating] = React.useState<{
+    id: string
+    startAngle: number
+    initialRotation: number
+  } | null>(null)
+  const [resizingLinePoint, setResizingLinePoint] = React.useState<{
+    id: string
+    index: number
+  } | null>(null)
   const svgRef = React.useRef<SVGSVGElement>(null)
 
   const updateMyPresence = useUpdateMyPresence()
@@ -132,9 +140,41 @@ export function IdeaCanvas() {
 
   const updateLayerText = useMutation(
     ({ storage }, id: string, text: string) => {
+      const layers = storage.get("layers")
+      const layer = layers?.get(id)
+      if (layer) {
+        layer.set("text", text)
+      }
+    },
+    []
+  )
+
+  const duplicateLayer = useMutation(({ storage }, id: string) => {
+    const layers = storage.get("layers")
+    const layerIds = storage.get("layerIds")
+    const layer = layers?.get(id)
+    if (!layer || !layerIds) return
+
+    const newId = nanoid()
+    const data = layer.toObject()
+
+    layers.set(
+      newId,
+      new LiveObject({
+        ...data,
+        x: data.x + 20,
+        y: data.y + 20,
+      })
+    )
+    layerIds.push(newId)
+    setSelectedId(newId)
+  }, [])
+
+  const rotateLayer = useMutation(
+    ({ storage }, id: string, rotation: number) => {
       const layer = storage.get("layers")?.get(id)
       if (layer) {
-        layer.update({ text })
+        layer.update({ rotation })
       }
     },
     []
@@ -148,6 +188,63 @@ export function IdeaCanvas() {
       if (idx !== -1) ids.delete(idx)
     }
   }, [])
+
+  const updatePath = useMutation(
+    ({ storage }, id: string, points: Array<Array<number>>) => {
+      const layer = storage.get("layers")?.get(id) as
+        | LiveObject<PathLayer>
+        | undefined
+      if (layer) {
+        layer.set("points", points)
+      }
+    },
+    []
+  )
+
+  const updateLinePoints = useMutation(
+    ({ storage }, id: string, points: Array<{ x: number; y: number }>) => {
+      const layer = storage.get("layers")?.get(id) as
+        | LiveObject<LineLayer>
+        | undefined
+      if (layer) {
+        layer.set("points", points)
+      }
+    },
+    []
+  )
+
+  const updateLayerDimensions = useMutation(
+    (
+      { storage },
+      id: string,
+      dimensions: Partial<{
+        x: number
+        y: number
+        width: number
+        height: number
+      }>
+    ) => {
+      const layer = storage.get("layers")?.get(id)
+      if (layer) {
+        layer.update(dimensions)
+      }
+    },
+    []
+  )
+
+  const updateLayerStyle = useMutation(
+    (
+      { storage },
+      id: string,
+      style: Partial<{ fill: string; stroke: string; strokeWidth: number }>
+    ) => {
+      const layer = storage.get("layers")?.get(id)
+      if (layer) {
+        layer.update(style)
+      }
+    },
+    []
+  )
 
   // ── Interaction Handlers ──────────────────────────────────────────────────
 
@@ -172,6 +269,83 @@ export function IdeaCanvas() {
         y: prev.y + e.clientY - panStart.y,
       }))
       setPanStart({ x: e.clientX, y: e.clientY })
+      return
+    }
+
+    if (resizingLinePoint) {
+      const { id, index } = resizingLinePoint
+      const layer = layers.get(id) as LineLayer | undefined
+      if (layer) {
+        const newPoints = [...layer.points]
+        newPoints[index] = { x: pt.x, y: pt.y }
+        updateLinePoints(id, newPoints)
+      }
+      return
+    }
+
+    if (activeTool === "pen" && dragging) {
+      const layer = layers.get(dragging.id) as PathLayer | undefined
+      if (layer) {
+        const newPoints = [...layer.points, [pt.x, pt.y]]
+        updatePath(dragging.id, newPoints)
+      }
+      return
+    }
+
+    if ((activeTool === "line" || activeTool === "arrow") && dragging) {
+      const layer = layers.get(dragging.id) as LineLayer | undefined
+      if (layer) {
+        const start = layer.points[0]
+        const end = { x: pt.x, y: pt.y }
+        const control = {
+          x: (start.x + end.x) / 2,
+          y: (start.y + end.y) / 2,
+        }
+        updateLinePoints(dragging.id, [start, control, end])
+      }
+      return
+    }
+
+    if (rotating) {
+      const { id, startAngle, initialRotation } = rotating
+      const layer = layers.get(id)
+      if (!layer) return
+
+      const cx = layer.x + layer.width / 2
+      const cy = layer.y + layer.height / 2
+      const currentAngle = Math.atan2(pt.y - cy, pt.x - cx)
+      const rotation =
+        ((currentAngle - startAngle) * 180) / Math.PI + initialRotation
+      rotateLayer(id, rotation)
+      return
+    }
+
+    if (resizing) {
+      const { id, handle, startRect, startX, startY } = resizing
+      const dx = pt.x - startX
+      const dy = pt.y - startY
+
+      const newRect = { ...startRect }
+
+      if (handle === "se") {
+        newRect.width = Math.max(20, startRect.width + dx)
+        newRect.height = Math.max(20, startRect.height + dy)
+      } else if (handle === "sw") {
+        newRect.x = startRect.x + dx
+        newRect.width = Math.max(20, startRect.width - dx)
+        newRect.height = Math.max(20, startRect.height + dy)
+      } else if (handle === "ne") {
+        newRect.y = startRect.y + dy
+        newRect.width = Math.max(20, startRect.width + dx)
+        newRect.height = Math.max(20, startRect.height - dy)
+      } else {
+        newRect.x = startRect.x + dx
+        newRect.y = startRect.y + dy
+        newRect.width = Math.max(20, startRect.width - dx)
+        newRect.height = Math.max(20, startRect.height - dy)
+      }
+
+      updateLayerDimensions(id, newRect)
       return
     }
 
@@ -207,6 +381,54 @@ export function IdeaCanvas() {
     }
 
     const pt = getCanvasPoint(e)
+    if (activeTool === "pen") {
+      const id = insertLayer({
+        type: "path",
+        x: pt.x,
+        y: pt.y,
+        width: 1,
+        height: 1,
+        fill: "#000000",
+        points: [[pt.x, pt.y]],
+      } as any)
+      setDragging({
+        id,
+        startX: pt.x,
+        startY: pt.y,
+        layerX: pt.x,
+        layerY: pt.y,
+      })
+      setSelectedId(id)
+      return
+    }
+
+    if (activeTool === "line" || activeTool === "arrow") {
+      const id = insertLayer({
+        type: activeTool,
+        x: pt.x,
+        y: pt.y,
+        width: 1,
+        height: 1,
+        fill: "#000000",
+        stroke: "#000000",
+        strokeWidth: 2,
+        points: [
+          { x: pt.x, y: pt.y },
+          { x: pt.x, y: pt.y },
+          { x: pt.x, y: pt.y },
+        ],
+      } as any)
+      setDragging({
+        id,
+        startX: pt.x,
+        startY: pt.y,
+        layerX: pt.x,
+        layerY: pt.y,
+      })
+      setSelectedId(id)
+      return
+    }
+
     const fill =
       activeTool === "sticky"
         ? STICKY_COLORS[Math.floor(Math.random() * STICKY_COLORS.length)]
@@ -223,7 +445,7 @@ export function IdeaCanvas() {
             text: "Text",
             fontSize: 18,
             fill: "#1a1a2e",
-          } as TextLayer)
+          } as any)
         : ({
             type: activeTool === "sticky" ? "sticky" : activeTool,
             x: pt.x,
@@ -231,19 +453,31 @@ export function IdeaCanvas() {
             width: activeTool === "sticky" ? 240 : 120,
             height: activeTool === "sticky" ? 200 : 80,
             fill,
+            stroke: "#000000",
+            strokeWidth: 2,
             text:
               activeTool === "sticky"
                 ? "Write your thoughts here..."
                 : undefined,
           } as any)
 
+    if (activeTool === "star") {
+      ;(newLayer as any).points = 5 // Default to 5-pointed star
+    }
+
     const id = insertLayer(newLayer)
     setSelectedId(id)
+    if (activeTool === "text" || activeTool === "sticky") {
+      setEditingId(id)
+    }
     setActiveTool("select")
   }
 
   const handlePointerUp = () => {
     setDragging(null)
+    setResizing(null)
+    setRotating(null)
+    setResizingLinePoint(null)
     if (activeTool !== "pan") setIsPanning(false)
     else if (isPanning) setIsPanning(false)
   }
@@ -271,10 +505,8 @@ export function IdeaCanvas() {
     })
   }
 
-  const handleLayerDoubleClick = (id: string, layer: Layer) => {
-    if (layer.type === "sticky" || layer.type === "text") {
-      setEditingId(id)
-    }
+  const handleLayerDoubleClick = (id: string, _layer: Layer) => {
+    setEditingId(id)
   }
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -397,6 +629,43 @@ export function IdeaCanvas() {
             )
           })}
 
+          {/* Selection Handles & Box */}
+          {selectedId && !editingId && layers.get(selectedId) && (
+            <SelectionHandles
+              layer={layers.get(selectedId)!}
+              onResizeStart={(handle, e) => {
+                const pt = getCanvasPoint(e)
+                const layer = layers.get(selectedId)!
+                setResizing({
+                  id: selectedId,
+                  handle,
+                  startRect: {
+                    x: layer.x,
+                    y: layer.y,
+                    width: layer.width,
+                    height: layer.height,
+                  },
+                  startX: pt.x,
+                  startY: pt.y,
+                })
+              }}
+              onRotateStart={(e) => {
+                const pt = getCanvasPoint(e)
+                const layer = layers.get(selectedId)!
+                const cx = layer.x + layer.width / 2
+                const cy = layer.y + layer.height / 2
+                setRotating({
+                  id: selectedId,
+                  startAngle: Math.atan2(pt.y - cy, pt.x - cx),
+                  initialRotation: layer.rotation || 0,
+                })
+              }}
+              onLinePointResizeStart={(index, _e) => {
+                setResizingLinePoint({ id: selectedId, index })
+              }}
+            />
+          )}
+
           {/* Remote cursors */}
           {others.map(([connectionId, other]) =>
             other.cursor ? (
@@ -412,46 +681,91 @@ export function IdeaCanvas() {
         </g>
       </svg>
 
+      {/* ── Context Toolbar (Floating near selection) ── */}
+      {selectedId && !editingId && layers.get(selectedId) && (
+        <ContextToolbar
+          layer={layers.get(selectedId)!}
+          onUpdateStyle={(style) => updateLayerStyle(selectedId, style)}
+          onDuplicate={() => duplicateLayer(selectedId)}
+          onDelete={() => {
+            deleteLayer(selectedId)
+            setSelectedId(null)
+          }}
+          camera={camera}
+        />
+      )}
+
       {/* ── Left Tool Sidebar (Vertical Floating Pill) ── */}
       <div className="absolute top-1/2 left-6 -translate-y-1/2">
-        <div className="bg-background/80 border-border flex flex-col items-center gap-2 rounded-lg border p-2 shadow-2xl backdrop-blur-xl">
-          <ToolButton
-            active={activeTool === "select"}
-            onClick={() => setActiveTool("select")}
-            icon={<HugeiconsIcon icon={ArrowRight02Icon} size={20} />}
-            tooltip="Select (V)"
-          />
-          <div className="bg-border my-1 h-px w-8" />
+        <div className="bg-background/80 border-border flex flex-col items-center gap-1.5 rounded-lg border p-2 shadow-lg backdrop-blur-lg">
           <ToolButton
             active={activeTool === "rectangle"}
             onClick={() => setActiveTool("rectangle")}
-            icon={<HugeiconsIcon icon={RectangularIcon} size={20} />}
+            icon={<HugeiconsIcon icon={RectangularIcon} size={18} />}
             tooltip="Rectangle (R)"
           />
           <ToolButton
             active={activeTool === "circle"}
             onClick={() => setActiveTool("circle")}
-            icon={<HugeiconsIcon icon={CircleIcon} size={20} />}
+            icon={<HugeiconsIcon icon={CircleIcon} size={18} />}
             tooltip="Circle (O)"
           />
           <ToolButton
+            active={activeTool === "triangle"}
+            onClick={() => setActiveTool("triangle")}
+            icon={<HugeiconsIcon icon={TriangleIcon} size={18} />}
+            tooltip="Triangle (L)"
+          />
+          <ToolButton
+            active={activeTool === "diamond"}
+            onClick={() => setActiveTool("diamond")}
+            icon={<HugeiconsIcon icon={DiamondIcon} size={18} />}
+            tooltip="Diamond (D)"
+          />
+          <ToolButton
+            active={activeTool === "star"}
+            onClick={() => setActiveTool("star")}
+            icon={<HugeiconsIcon icon={StarIcon} size={18} />}
+            tooltip="Star (P)"
+          />
+          <Separator />
+          <ToolButton
             active={activeTool === "sticky"}
             onClick={() => setActiveTool("sticky")}
-            icon={<HugeiconsIcon icon={StickyNote01Icon} size={20} />}
+            icon={<HugeiconsIcon icon={StickyNote02Icon} size={18} />}
             tooltip="Sticky Note (S)"
           />
           <ToolButton
             active={activeTool === "text"}
             onClick={() => setActiveTool("text")}
-            icon={<HugeiconsIcon icon={TextIcon} size={20} />}
+            icon={<HugeiconsIcon icon={TextFontIcon} size={18} />}
             tooltip="Text (T)"
           />
-          <div className="bg-border my-1 h-px w-8" />
+          <Separator />
+
           <ToolButton
-            active={false}
-            onClick={() => {}}
-            icon={<div className="text-xs font-bold">+</div>}
-            tooltip="Add more"
+            active={activeTool === "pen"}
+            onClick={() => setActiveTool("pen")}
+            icon={<HugeiconsIcon icon={PaintBrush01Icon} size={18} />}
+            tooltip="Pen (P)"
+          />
+          <ToolButton
+            active={activeTool === "line"}
+            onClick={() => setActiveTool("line")}
+            icon={<HugeiconsIcon icon={LinerIcon} size={18} />}
+            tooltip="Line (L)"
+          />
+          <ToolButton
+            active={activeTool === "arrow"}
+            onClick={() => setActiveTool("arrow")}
+            icon={
+              <HugeiconsIcon
+                icon={ArrowUpRight02Icon}
+                size={18}
+                className="rotate-45"
+              />
+            }
+            tooltip="Arrow (A)"
           />
         </div>
       </div>
@@ -461,22 +775,19 @@ export function IdeaCanvas() {
         <div className="bg-background/80 border-border flex items-center gap-4 rounded-lg border px-4 py-2 shadow-xl backdrop-blur-xl">
           <div className="flex items-center gap-1">
             <NavButton
+              active={activeTool === "select"}
+              onClick={() => setActiveTool("select")}
+              icon={
+                <HugeiconsIcon icon={CursorMagicSelection04Icon} size={18} />
+              }
+              tooltip="Select (V)"
+            />
+
+            <NavButton
               active={activeTool === "pan"}
               onClick={() => setActiveTool("pan")}
               icon={<HugeiconsIcon icon={Hold03Icon} size={18} />}
               tooltip="Pan tool (H)"
-            />
-            <NavButton
-              active={false}
-              onClick={() => {}}
-              icon={
-                <HugeiconsIcon
-                  icon={Cursor02Icon}
-                  size={18}
-                  className="rotate-90"
-                />
-              }
-              tooltip="Selection tool"
             />
           </div>
 
@@ -491,366 +802,11 @@ export function IdeaCanvas() {
           <NavButton
             active={false}
             onClick={() => {}}
-            icon={<HugeiconsIcon icon={Square01Icon} size={18} />}
+            icon={<HugeiconsIcon icon={Layers01Icon} size={18} />}
             tooltip="Layers"
           />
         </div>
       </div>
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// Sub-components
-// ────────────────────────────────────────────────────────────────────────────
-
-function ToolButton({
-  active,
-  onClick,
-  icon,
-  tooltip,
-}: {
-  active: boolean
-  onClick: () => void
-  icon: React.ReactNode
-  tooltip: string
-}) {
-  return (
-    <button
-      onClick={onClick}
-      title={tooltip}
-      className={cn(
-        "group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300",
-        active
-          ? "bg-primary text-primary-foreground shadow-primary/20 scale-110 shadow-lg"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-      )}
-    >
-      {icon}
-    </button>
-  )
-}
-
-function NavButton({
-  active,
-  onClick,
-  icon,
-  tooltip,
-}: {
-  active: boolean
-  onClick: () => void
-  icon: React.ReactNode
-  tooltip: string
-}) {
-  return (
-    <button
-      onClick={onClick}
-      title={tooltip}
-      className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-lg transition-all",
-        active
-          ? "bg-primary/10 text-primary"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-      )}
-    >
-      {icon}
-    </button>
-  )
-}
-
-function CanvasLayer({
-  id,
-  layer,
-  isSelected,
-  isEditing,
-  onPointerDown,
-  onDoubleClick,
-  onTextChange,
-}: {
-  id: string
-  layer: Layer
-  isSelected: boolean
-  isEditing: boolean
-  onPointerDown: (e: React.PointerEvent, id: string, layer: Layer) => void
-  onDoubleClick: () => void
-  onTextChange: (val: string) => void
-}) {
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (isEditing) return
-    onPointerDown(e, id, layer)
-  }
-
-  const commonProps = {
-    onPointerDown: handlePointerDown,
-    onDoubleClick,
-    style: { cursor: isEditing ? "text" : "grab" },
-  }
-
-  // ── Idea Card (Sticky Note Upgrade) ──
-  if (layer.type === "sticky") {
-    return (
-      <g {...commonProps}>
-        {/* Main Card */}
-        <rect
-          x={layer.x}
-          y={layer.y}
-          width={layer.width}
-          height={layer.height}
-          rx={8}
-          fill="white"
-          filter="drop-shadow(0 10px 30px rgba(0,0,0,0.08))"
-          className="transition-all duration-300"
-        />
-        {/* Selection Ring */}
-        {isSelected && (
-          <rect
-            x={layer.x - 2}
-            y={layer.y - 2}
-            width={layer.width + 4}
-            height={layer.height + 4}
-            rx={10}
-            fill="none"
-            stroke="var(--primary)"
-            strokeWidth={2.5}
-            strokeDasharray="4 4"
-          />
-        )}
-
-        {/* Card Header Section */}
-        <g transform={`translate(${layer.x + 20}, ${layer.y + 20})`}>
-          {/* Category Pill */}
-          <rect width={80} height={24} rx={4} fill="#e0e7ff" />
-          <text
-            x={40}
-            y={16}
-            textAnchor="middle"
-            fontSize="10"
-            fontWeight="800"
-            fill="#4338ca"
-            style={{ pointerEvents: "none", letterSpacing: "0.05em" }}
-          >
-            STRATEGY
-          </text>
-
-          {/* Title Placeholder (Mock) */}
-          <text
-            y={50}
-            fontSize="18"
-            fontWeight="700"
-            fill="#1e1b4b"
-            style={{ pointerEvents: "none" }}
-          >
-            {layer.text?.substring(0, 15) || "Untitled Card"}
-          </text>
-        </g>
-
-        {/* Menu Dots Right Top */}
-        <circle
-          cx={layer.x + layer.width - 25}
-          cy={layer.y + 25}
-          r={1.5}
-          fill="#94a3b8"
-        />
-        <circle
-          cx={layer.x + layer.width - 20}
-          cy={layer.y + 25}
-          r={1.5}
-          fill="#94a3b8"
-        />
-        <circle
-          cx={layer.x + layer.width - 15}
-          cy={layer.y + 25}
-          r={1.5}
-          fill="#94a3b8"
-        />
-
-        {/* Text Area Body */}
-        <foreignObject
-          x={layer.x + 20}
-          y={layer.y + 75}
-          width={layer.width - 40}
-          height={layer.height - 95}
-          style={{ pointerEvents: isEditing ? "all" : "none" }}
-        >
-          {isEditing ? (
-            <textarea
-              autoFocus
-              className="h-full w-full resize-none border-none bg-transparent p-0 text-[14px] leading-relaxed text-slate-600 outline-none"
-              defaultValue={layer.text || ""}
-              onBlur={(e) => onTextChange(e.target.value)}
-              onPointerDown={(e) => e.stopPropagation()}
-            />
-          ) : (
-            <div className="line-clamp-4 h-full w-full text-[14px] leading-relaxed text-slate-500">
-              {layer.text || ""}
-            </div>
-          )}
-        </foreignObject>
-      </g>
-    )
-  }
-
-  if (layer.type === "text") {
-    return (
-      <g {...commonProps}>
-        <foreignObject
-          x={layer.x}
-          y={layer.y}
-          width={layer.width}
-          height={layer.height}
-          style={{ pointerEvents: isEditing ? "all" : "none" }}
-        >
-          {isEditing ? (
-            <input
-              autoFocus
-              className="w-full border-none bg-transparent p-0 text-xl font-bold text-slate-900 outline-none"
-              style={{ fontSize: layer.fontSize }}
-              defaultValue={layer.text || ""}
-              onBlur={(e) => onTextChange(e.target.value)}
-              onPointerDown={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-            />
-          ) : (
-            <div
-              className={cn(
-                "w-full truncate text-xl font-bold text-slate-900 transition-all",
-                isSelected &&
-                  "bg-primary/5 ring-primary/20 rounded-lg px-2 py-1 ring-1"
-              )}
-              style={{ fontSize: layer.fontSize }}
-            >
-              {layer.text || "Text Idea"}
-            </div>
-          )}
-        </foreignObject>
-      </g>
-    )
-  }
-
-  // Shapes
-  const ShapeTag =
-    layer.type === "circle"
-      ? "ellipse"
-      : layer.type === "rectangle"
-        ? "rect"
-        : "polygon"
-  const shapeProps: any = {
-    ...commonProps,
-    fill: layer.fill,
-    fillOpacity: 0.9,
-    stroke: isSelected ? "var(--primary)" : "transparent",
-    strokeWidth: 3,
-    className: "transition-all duration-300 drop-shadow-lg",
-  }
-
-  if (layer.type === "rectangle") {
-    shapeProps.x = layer.x
-    shapeProps.y = layer.y
-    shapeProps.width = layer.width
-    shapeProps.height = layer.height
-    shapeProps.rx = 8
-  } else if (layer.type === "circle") {
-    shapeProps.cx = layer.x + layer.width / 2
-    shapeProps.cy = layer.y + layer.height / 2
-    shapeProps.rx = layer.width / 2
-    shapeProps.ry = layer.height / 2
-  } else if (layer.type === "diamond") {
-    const cx = layer.x + layer.width / 2
-    const cy = layer.y + layer.height / 2
-    shapeProps.points = `${cx},${layer.y} ${layer.x + layer.width},${cy} ${cx},${layer.y + layer.height} ${layer.x},${cy}`
-  } else {
-    shapeProps.points = `${layer.x + layer.width / 2},${layer.y} ${layer.x + layer.width},${layer.y + layer.height} ${layer.x},${layer.y + layer.height}`
-  }
-
-  return <ShapeTag {...shapeProps} />
-}
-
-function RemoteCursor({
-  x,
-  y,
-  color,
-  name,
-}: {
-  x: number
-  y: number
-  color: string
-  name: string
-}) {
-  return (
-    <g
-      style={{ pointerEvents: "none" }}
-      className="transition-transform duration-100"
-    >
-      <path
-        d={`M ${x} ${y} L ${x} ${y + 18} L ${x + 5} ${y + 13} L ${x + 11} ${y + 13} Z`}
-        fill={color}
-        stroke="white"
-        strokeWidth="1.5"
-      />
-      <g transform={`translate(${x + 12}, ${y + 4})`}>
-        <rect
-          width={name.length * 7 + 12}
-          height={18}
-          rx={4}
-          fill={color}
-          className="shadow-sm"
-        />
-        <text x={6} y={13} fontSize="10" fill="white" fontWeight="800">
-          {name}
-        </text>
-      </g>
-    </g>
-  )
-}
-
-function CanvasToolbar({
-  activeTool,
-  onToolChange,
-}: {
-  activeTool: CanvasTool
-  onToolChange: (t: CanvasTool) => void
-}) {
-  const tools = [
-    { id: "select", icon: Cursor02Icon, color: "#6366f1" },
-    { id: "rectangle", icon: RectangularIcon, color: "#f87171" },
-    { id: "circle", icon: CircleIcon, color: "#34d399" },
-    { id: "diamond", icon: Square01Icon, color: "#fbbf24" },
-    { id: "triangle", icon: TriangleIcon, color: "#a78bfa" },
-    { id: "sticky", icon: StickyNote01Icon, color: "#fb923c" },
-    { id: "text", icon: TextIcon, color: "#64748b" },
-  ] as const
-
-  return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/70 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/50">
-      {tools.map((tool) => (
-        <Button
-          key={tool.id}
-          onClick={() => onToolChange(tool.id)}
-          variant={"ghost"}
-          size={"icon"}
-          className={
-            "group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300"
-          }
-        >
-          <HugeiconsIcon
-            icon={tool.icon}
-            size={20}
-            strokeWidth={2}
-            className={cn(
-              "transition-colors duration-300",
-              activeTool === tool.id
-                ? "text-primary"
-                : "text-muted-foreground group-hover:text-foreground"
-            )}
-          />
-          {activeTool === tool.id && (
-            <div
-              className="absolute -bottom-1 h-1 w-1 rounded-full"
-              style={{ backgroundColor: "var(--primary)" }}
-            />
-          )}
-        </Button>
-      ))}
     </div>
   )
 }

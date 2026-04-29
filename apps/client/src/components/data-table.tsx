@@ -1,7 +1,5 @@
-import { Search01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@mindorbit/ui/components/button"
-import { Input } from "@mindorbit/ui/components/input"
+import { SearchInput } from "@mindorbit/ui/components/search-input"
 import {
   Table,
   TableBody,
@@ -19,6 +17,7 @@ import {
 } from "@tanstack/react-table"
 import * as React from "react"
 
+import { cn } from "@mindorbit/ui/lib/utils"
 import type { ColumnDef, RowData } from "@tanstack/react-table"
 
 // ---------------------------------------------------------------------------
@@ -41,6 +40,8 @@ export interface DataTableProps<TData extends RowData> {
   toolbar?: React.ReactNode
   /** Message shown when there are no rows */
   emptyMessage?: string
+  /** Callback when a row is clicked */
+  onRowClick?: (data: TData) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -54,6 +55,7 @@ export function DataTable<TData extends RowData>({
   pageSize = 10,
   toolbar,
   emptyMessage = "No results found.",
+  onRowClick,
 }: DataTableProps<TData>) {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
@@ -96,19 +98,13 @@ export function DataTable<TData extends RowData>({
       {(showSearch || toolbar) && (
         <div className="border-border/50 flex flex-wrap items-center justify-between gap-3 border-b p-4">
           {showSearch && (
-            <div className="relative w-full sm:w-72">
-              <HugeiconsIcon
-                icon={Search01Icon}
-                size={16}
-                className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-              />
-              <Input
-                className="bg-muted/30 pl-9"
-                placeholder="Search…"
-                value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              containerClassName="w-full sm:w-72"
+              className="bg-muted/30 border-none rounded-lg"
+              placeholder="Search…"
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
           )}
           {toolbar && (
             <div className="flex flex-wrap items-center gap-2">{toolbar}</div>
@@ -144,6 +140,10 @@ export function DataTable<TData extends RowData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={cn(
+                    onRowClick && "hover:bg-muted/50 cursor-pointer"
+                  )}
+                  onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-4">
