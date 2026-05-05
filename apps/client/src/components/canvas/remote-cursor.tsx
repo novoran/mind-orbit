@@ -1,5 +1,3 @@
-import * as React from "react"
-
 interface RemoteCursorProps {
   x: number
   y: number

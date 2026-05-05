@@ -1,12 +1,17 @@
 import { cn } from "@mindorbit/ui/lib/utils"
 import * as React from "react"
 
-import type { Layer, LineLayer, PathLayer } from "@/lib/liveblocks.config"
+import type {
+  Layer,
+  LineLayer,
+  PathLayer,
+  ShapeLayer,
+  TextLayer,
+} from "@/lib/liveblocks.config"
 
 interface CanvasLayerProps {
   id: string
   layer: Layer
-  isSelected: boolean
   isEditing: boolean
   onPointerDown: (e: React.PointerEvent, id: string, layer: Layer) => void
   onDoubleClick: () => void
@@ -16,7 +21,6 @@ interface CanvasLayerProps {
 export function CanvasLayer({
   id,
   layer,
-  isSelected,
   isEditing,
   onPointerDown,
   onDoubleClick,
@@ -43,20 +47,7 @@ export function CanvasLayer({
       {...commonProps}
       opacity={layer.opacity ?? 1}
     >
-      {isSelected && !isEditing && (
-        <rect
-          x={layer.x - 4}
-          y={layer.y - 4}
-          width={layer.width + 8}
-          height={layer.height + 8}
-          fill="none"
-          stroke="var(--primary)"
-          strokeWidth={2}
-          strokeOpacity={0.5}
-          rx={layer.borderRadius ? layer.borderRadius + 4 : 4}
-          style={{ pointerEvents: "none" }}
-        />
-      )}
+      {/* Redundant selection border removed as requested */}
       {layer.type === "sticky" ? (
         <StickyLayer
           layer={layer}
@@ -66,19 +57,18 @@ export function CanvasLayer({
       ) : layer.type === "text" ? (
         <TextLayerComponent
           layer={layer}
-          isSelected={isSelected}
           isEditing={isEditing}
-          onTextChange={(val) => onFieldChange("text", val)}
+          onTextChange={(val: string) => onFieldChange("text", val)}
         />
       ) : layer.type === "path" ? (
-        <PathLayerComponent layer={layer as PathLayer} />
+        <PathLayerComponent layer={layer} />
       ) : layer.type === "line" || layer.type === "arrow" ? (
-        <LineLayerComponent layer={layer as LineLayer} />
+        <LineLayerComponent layer={layer} />
       ) : (
         <ShapeLayerComponent
-          layer={layer}
+          layer={layer as ShapeLayer}
           isEditing={isEditing}
-          onTextChange={(val) => onFieldChange("text", val)}
+          onTextChange={(val: string) => onFieldChange("text", val)}
         />
       )}
     </g>
@@ -98,7 +88,7 @@ function PathLayerComponent({ layer }: { layer: PathLayer }) {
       d={d}
       fill="none"
       stroke={layer.fill || "#000"}
-      strokeWidth={2}
+      strokeWidth={layer.strokeWidth || 2}
       strokeDasharray={layer.dashArray}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -139,13 +129,19 @@ function LineLayerComponent({ layer }: { layer: LineLayer }) {
   )
 }
 
-function StickyLayer({ layer, isEditing, onFieldChange }: any) {
+interface StickyLayerProps {
+  layer: ShapeLayer
+  isEditing: boolean
+  onFieldChange: (field: string, val: string) => void
+}
+
+function StickyLayer({ layer, isEditing, onFieldChange }: StickyLayerProps) {
   const badgeBaseClasses =
     "text-[10px] font-extrabold tracking-wider text-indigo-700 uppercase outline-none"
   const badgeBgClasses = "bg-indigo-50"
   const badgePaddingClasses = "px-2.5"
   const contentClasses = cn(
-    "h-full w-full border-none bg-transparent p-0 leading-relaxed outline-none placeholder:text-slate-300 whitespace-pre-wrap break-words",
+    "h-full w-full border-none bg-transparent p-0 leading-relaxed break-words whitespace-pre-wrap outline-none placeholder:text-slate-300",
     layer.textAlign === "center"
       ? "text-center"
       : layer.textAlign === "right"
@@ -269,79 +265,114 @@ function StickyLayer({ layer, isEditing, onFieldChange }: any) {
   )
 }
 
+interface TextLayerComponentProps {
+  layer: TextLayer
+  isEditing: boolean
+  onTextChange: (val: string) => void
+}
+
 function TextLayerComponent({
   layer,
-  isSelected,
   isEditing,
   onTextChange,
-}: any) {
+}: TextLayerComponentProps) {
   return (
     <foreignObject
       x={layer.x}
       y={layer.y}
       width={layer.width}
       height={layer.height}
-      style={{ pointerEvents: isEditing ? "all" : "none" }}
+      className="pointer-events-none"
     >
-      {isEditing ? (
-        <textarea
-          autoFocus
-          className={cn(
-            "h-full w-full resize-none border-none bg-transparent p-0 font-bold outline-none",
-            layer.textAlign === "center"
-              ? "text-center"
-              : layer.textAlign === "right"
-                ? "text-right"
-                : "text-left"
+      <div
+        className={cn(
+          "flex h-full w-full p-2",
+          layer.textAlign === "left"
+            ? "items-start justify-start text-left"
+            : "items-center justify-center text-center"
+        )}
+        style={{
+          fontSize: layer.fontSize || 18,
+          color: layer.fill || "#000000",
+          fontWeight: 500,
+          lineHeight: 1.2,
+        }}
+      >
+        <div className="max-h-full w-full overflow-hidden wrap-break-word text-ellipsis">
+          {isEditing ? (
+            <textarea
+              autoFocus
+              className="h-full w-full resize-none border-none bg-transparent p-0 font-bold outline-none"
+              value={layer.text || ""}
+              onChange={(e) => onTextChange(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+            />
+          ) : (
+            layer.text || "Text"
           )}
-          style={{
-            fontSize: layer.fontSize ?? 20,
-            fontFamily: layer.fontFamily,
-            color: layer.textColor || "#0f172a",
-          }}
-          value={layer.text || ""}
-          onChange={(e) => onTextChange(e.target.value)}
-          onPointerDown={(e) => e.stopPropagation()}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault()
-              e.currentTarget.blur()
-            }
-          }}
-        />
-      ) : (
-        <div
-          className={cn(
-            "h-full w-full font-bold wrap-break-word whitespace-pre-wrap transition-all",
-            isSelected && "bg-primary/5 rounded-lg px-2 py-1",
-            layer.textAlign === "center"
-              ? "text-center"
-              : layer.textAlign === "right"
-                ? "text-right"
-                : "text-left"
-          )}
-          style={{
-            fontSize: layer.fontSize ?? 20,
-            fontFamily: layer.fontFamily,
-            color: layer.textColor || "#0f172a",
-          }}
-        >
-          {layer.text || "Text Idea"}
         </div>
-      )}
+      </div>
     </foreignObject>
   )
 }
 
-function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
+function getRoundedPolygonPath(
+  points: Array<{ x: number; y: number }>,
+  radius: number
+) {
+  if (radius <= 0)
+    return `M ${points.map((p) => `${p.x},${p.y}`).join(" L ")} Z`
+
+  const path = []
+  for (let i = 0; i < points.length; i++) {
+    const p1 = points[i]
+    const p2 = points[(i + 1) % points.length]
+    const p0 = points[(i - 1 + points.length) % points.length]
+
+    const v0 = { x: p0.x - p1.x, y: p0.y - p1.y }
+    const v1 = { x: p2.x - p1.x, y: p2.y - p1.y }
+
+    const d0 = Math.sqrt(v0.x * v0.x + v0.y * v0.y)
+    const d1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y)
+
+    const actualRadius = Math.min(radius, d0 / 2, d1 / 2)
+
+    const b0 = {
+      x: p1.x + (v0.x / d0) * actualRadius,
+      y: p1.y + (v0.y / d0) * actualRadius,
+    }
+    const b1 = {
+      x: p1.x + (v1.x / d1) * actualRadius,
+      y: p1.y + (v1.y / d1) * actualRadius,
+    }
+
+    if (i === 0) path.push(`M ${b0.x},${b0.y}`)
+    else path.push(`L ${b0.x},${b0.y}`)
+
+    path.push(`Q ${p1.x},${p1.y} ${b1.x},${b1.y}`)
+  }
+  return path.join(" ") + " Z"
+}
+
+interface ShapeLayerComponentProps {
+  layer: ShapeLayer
+  isEditing: boolean
+  onTextChange: (val: string) => void
+}
+
+function ShapeLayerComponent({
+  layer,
+  isEditing,
+  onTextChange,
+}: ShapeLayerComponentProps) {
   const ShapeTag =
     layer.type === "circle"
       ? "ellipse"
       : layer.type === "rectangle"
         ? "rect"
-        : "polygon"
+        : "path"
 
-  const shapeProps: any = {
+  const shapeProps: Record<string, unknown> = {
     fill: layer.fill,
     fillOpacity: 1,
     stroke: layer.stroke || "#000000",
@@ -353,122 +384,94 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
     ),
   }
 
+  const radius = layer.borderRadius ?? 8
+
   if (layer.type === "rectangle") {
     shapeProps.x = layer.x
     shapeProps.y = layer.y
     shapeProps.width = layer.width
     shapeProps.height = layer.height
-    shapeProps.rx = layer.borderRadius ?? 8
+    shapeProps.rx = radius
   } else if (layer.type === "circle") {
     shapeProps.cx = layer.x + layer.width / 2
     shapeProps.cy = layer.y + layer.height / 2
     shapeProps.rx = layer.width / 2
     shapeProps.ry = layer.height / 2
-  } else if (layer.type === "diamond") {
-    const cx = layer.x + layer.width / 2
-    const cy = layer.y + layer.height / 2
-    shapeProps.points = `${cx},${layer.y} ${layer.x + layer.width},${cy} ${cx},${layer.y + layer.height} ${layer.x},${cy}`
-  } else if (layer.type === "star") {
-    const cx = layer.x + layer.width / 2
-    const cy = layer.y + layer.height / 2
-    const rx = layer.width / 2
-    const ry = layer.height / 2
-    const points = []
-    for (let i = 0; i < 10; i++) {
-      const angle = (i * Math.PI) / 5 - Math.PI / 2
-      const r_x = i % 2 === 0 ? rx : rx * 0.5
-      const r_y = i % 2 === 0 ? ry : ry * 0.5
-      points.push(`${cx + r_x * Math.cos(angle)},${cy + r_y * Math.sin(angle)}`)
-    }
-    shapeProps.points = points.join(" ")
   } else {
-    shapeProps.points = `${layer.x + layer.width / 2},${layer.y} ${layer.x + layer.width},${layer.y + layer.height} ${layer.x},${layer.y + layer.height}`
+    let points: Array<{ x: number; y: number }> = []
+    const cx = layer.x + layer.width / 2
+    const cy = layer.y + layer.height / 2
+
+    if (layer.type === "diamond") {
+      points = [
+        { x: cx, y: layer.y },
+        { x: layer.x + layer.width, y: cy },
+        { x: cx, y: layer.y + layer.height },
+        { x: layer.x, y: cy },
+      ]
+    } else if (layer.type === "star") {
+      const rx = layer.width / 2
+      const ry = layer.height / 2
+      const numPoints = layer.starPoints || 5
+      for (let i = 0; i < numPoints * 2; i++) {
+        const angle = (i * Math.PI) / numPoints - Math.PI / 2
+        const r_x = i % 2 === 0 ? rx : rx * 0.5
+        const r_y = i % 2 === 0 ? ry : ry * 0.5
+        points.push({
+          x: cx + r_x * Math.cos(angle),
+          y: cy + r_y * Math.sin(angle),
+        })
+      }
+    } else {
+      // triangle
+      points = [
+        { x: cx, y: layer.y },
+        { x: layer.x + layer.width, y: layer.y + layer.height },
+        { x: layer.x, y: layer.y + layer.height },
+      ]
+    }
+    shapeProps.d = getRoundedPolygonPath(points, radius)
   }
 
   return (
     <g>
       <ShapeTag {...shapeProps} />
       <foreignObject
-        x={layer.x + 10}
-        y={layer.y + 10}
-        width={layer.width - 20}
-        height={layer.height - 20}
+        x={layer.x}
+        y={layer.y}
+        width={layer.width}
+        height={layer.height}
         style={{ pointerEvents: isEditing ? "all" : "none" }}
       >
         <div
           className={cn(
-            "flex h-full w-full items-center overflow-hidden",
+            "flex h-full w-full items-center px-4 py-2",
             layer.textAlign === "left"
-              ? "justify-start"
+              ? "justify-start text-left"
               : layer.textAlign === "right"
-                ? "justify-end"
-                : "justify-center"
+                ? "justify-end text-right"
+                : "justify-center text-center"
           )}
+          style={{
+            color: layer.textColor || "#000",
+            fontFamily: layer.fontFamily,
+            fontSize: layer.fontSize ?? 14,
+          }}
         >
-          {isEditing ? (
-            <div className="grid w-full">
-              <div
-                className={cn(
-                  "invisible col-start-1 row-start-1 p-0 text-sm font-bold wrap-break-word whitespace-pre-wrap",
-                  layer.textAlign === "center"
-                    ? "text-center"
-                    : layer.textAlign === "right"
-                      ? "text-right"
-                      : "text-left"
-                )}
-                style={{
-                  fontFamily: layer.fontFamily,
-                  fontSize: layer.fontSize ?? 14,
-                }}
-              >
-                {(layer.text || "") + " "}
-              </div>
+          <div className="max-h-full w-full overflow-hidden wrap-break-word">
+            {isEditing ? (
               <textarea
-                rows={1}
                 autoFocus
-                className={cn(
-                  "col-start-1 row-start-1 h-full min-h-0 w-full resize-none overflow-hidden border-none bg-transparent p-0 text-sm font-bold outline-none",
-                  layer.textAlign === "center"
-                    ? "text-center"
-                    : layer.textAlign === "right"
-                      ? "text-right"
-                      : "text-left"
-                )}
-                style={{
-                  color: layer.textColor || "#000",
-                  fontFamily: layer.fontFamily,
-                  fontSize: layer.fontSize ?? 14,
-                }}
+                className="h-full w-full resize-none border-none bg-transparent p-0 text-inherit outline-none"
+                style={{ textAlign: layer.textAlign || "center" }}
                 value={layer.text || ""}
                 onChange={(e) => onTextChange(e.target.value)}
                 onPointerDown={(e) => e.stopPropagation()}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    e.currentTarget.blur()
-                  }
-                }}
               />
-            </div>
-          ) : (
-            <div
-              className={cn(
-                "flex h-full w-full items-center overflow-hidden text-sm font-bold wrap-break-word whitespace-pre-wrap",
-                layer.textAlign === "left"
-                  ? "justify-start text-left"
-                  : layer.textAlign === "right"
-                    ? "justify-end text-right"
-                    : "justify-center text-center"
-              )}
-              style={{
-                color: layer.textColor || "#000",
-                fontFamily: layer.fontFamily,
-                fontSize: layer.fontSize ?? 14,
-              }}
-            >
-              {layer.text}
-            </div>
-          )}
+            ) : (
+              layer.text || ""
+            )}
+          </div>
         </div>
       </foreignObject>
     </g>

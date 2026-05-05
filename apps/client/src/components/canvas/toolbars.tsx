@@ -47,7 +47,7 @@ export function NavButton({
       onClick={onClick}
       title={tooltip}
       className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-lg transition-all",
+        "flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-all",
         active
           ? "bg-primary/10 text-primary"
           : "text-muted-foreground hover:bg-muted hover:text-foreground"

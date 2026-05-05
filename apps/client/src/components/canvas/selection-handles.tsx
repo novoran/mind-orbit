@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import type { Layer, LineLayer } from "@/lib/liveblocks.config"
+import type { Layer } from "@/lib/liveblocks.config"
 
 interface SelectionHandlesProps {
   layer: Layer
@@ -46,7 +46,7 @@ export function SelectionHandles({
   const rotation = layer.rotation || 0
 
   if (layer.type === "line" || layer.type === "arrow") {
-    const lineLayer = layer as LineLayer
+    const lineLayer = layer
     return (
       <g>
         {/* Connection Curve Visual Guide */}

@@ -14,14 +14,14 @@ import { Label } from "@mindorbit/ui/components/label"
 import { cn } from "@mindorbit/ui/lib/utils"
 import { useForm } from "@tanstack/react-form"
 import { Link } from "@tanstack/react-router"
-import * as React from "react"
+import { useState } from "react"
 
 import { authClient } from "@/lib/auth-client"
 import { semanticColors } from "@/lib/color-system"
 
 export function LoginForm() {
-  const [error, setError] = React.useState<string | null>(null)
-  const [showPassword, setShowPassword] = React.useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm({
     defaultValues: {

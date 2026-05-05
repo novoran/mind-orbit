@@ -27,6 +27,8 @@ interface ContextToolbarProps {
       textAlign?: "left" | "center" | "right"
       fontFamily?: string
       fontSize?: number
+      dashArray?: string
+      borderRadius?: number
     }>
   ) => void
   onDuplicate: () => void
@@ -107,7 +109,7 @@ function ColorPicker({
             "border-border flex h-6 w-6 cursor-pointer items-center justify-center overflow-hidden border bg-white transition-all hover:scale-110",
             shape,
             selectedColor === "transparent" &&
-              "ring-primary ring-2 ring-offset-2"
+              "ring-primary ring-1 ring-offset-1"
           )}
           title="Transparent"
         >
@@ -282,7 +284,7 @@ export function ContextToolbar({
         <div className="bg-border h-px w-full" />
 
         <ToolbarSection title="Rounded">
-          {[0, 8, 16, 24].map((radius) => (
+          {[0, 8, 16].map((radius) => (
             <button
               key={radius}
               onClick={(e) => {
@@ -298,7 +300,7 @@ export function ContextToolbar({
             >
               <div
                 className="border-foreground h-3.5 w-3.5 border-2"
-                style={{ borderRadius: radius / 4 }}
+                style={{ borderRadius: radius / 2 }}
               />
             </button>
           ))}

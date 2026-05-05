@@ -1,19 +1,10 @@
 import {
   AiBeautifyIcon,
-  CodeIcon,
   LeftToRightListBulletIcon,
-  LeftToRightListNumberIcon,
-  QuoteUpIcon,
-  Redo03Icon,
   Task01Icon,
-  TextAlignCenterIcon,
-  TextAlignLeftIcon,
-  TextAlignRightIcon,
   TextBoldIcon,
   TextItalicIcon,
-  TextStrikethroughIcon,
   TextUnderlineIcon,
-  Undo03Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@mindorbit/ui/lib/utils"
@@ -117,7 +108,9 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
         <ToolbarButton
           tooltip="Heading 1"
           active={editor.isActive("heading", { level: 1 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
           className="w-8 text-[11px] font-bold"
         >
           H1
@@ -125,7 +118,9 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
         <ToolbarButton
           tooltip="Heading 2"
           active={editor.isActive("heading", { level: 2 })}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           className="w-8 text-[11px] font-bold"
         >
           H2
@@ -162,7 +157,9 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
           onClick={() => {}}
         >
           <HugeiconsIcon icon={AiBeautifyIcon} size={14} />
-          <span className="text-[10px] font-bold uppercase tracking-wider">AI Rewrite</span>
+          <span className="text-[10px] font-bold tracking-wider uppercase">
+            AI Rewrite
+          </span>
         </ToolbarButton>
       </div>
     </div>

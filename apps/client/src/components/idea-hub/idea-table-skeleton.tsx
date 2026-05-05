@@ -6,24 +6,23 @@ import {
   TableHeader,
   TableRow,
 } from "@mindorbit/ui/components/table"
-import * as React from "react"
 
 export function IdeaTableSkeleton() {
   return (
-    <div className="border-border bg-card rounded-xl border shadow-sm overflow-hidden">
+    <div className="border-border bg-card overflow-hidden rounded-xl border shadow-sm">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[40%] px-6 py-4 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="text-muted-foreground w-[40%] px-6 py-4 text-[11px] font-bold tracking-wider uppercase">
               NAME
             </TableHead>
-            <TableHead className="px-6 py-4 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="text-muted-foreground px-6 py-4 text-[11px] font-bold tracking-wider uppercase">
               OWNED BY
             </TableHead>
-            <TableHead className="px-6 py-4 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="text-muted-foreground px-6 py-4 text-[11px] font-bold tracking-wider uppercase">
               CONTRIBUTORS
             </TableHead>
-            <TableHead className="px-6 py-4 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+            <TableHead className="text-muted-foreground px-6 py-4 text-[11px] font-bold tracking-wider uppercase">
               LAST EDITED
             </TableHead>
             <TableHead className="w-[50px]"></TableHead>
@@ -34,29 +33,29 @@ export function IdeaTableSkeleton() {
             <TableRow key={i}>
               <TableCell className="px-6 py-4">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 animate-pulse rounded-lg bg-muted" />
-                  <div className="flex flex-col gap-2 flex-1">
-                    <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-                    <div className="h-3 w-48 animate-pulse rounded bg-muted" />
+                  <div className="bg-muted h-10 w-10 animate-pulse rounded-lg" />
+                  <div className="flex flex-1 flex-col gap-2">
+                    <div className="bg-muted h-4 w-32 animate-pulse rounded" />
+                    <div className="bg-muted h-3 w-48 animate-pulse rounded" />
                   </div>
                 </div>
               </TableCell>
               <TableCell className="px-6 py-4">
                 <div className="flex items-center gap-2">
-                  <div className="h-7 w-7 animate-pulse rounded-full bg-muted" />
-                  <div className="h-4 w-12 animate-pulse rounded bg-muted" />
+                  <div className="bg-muted h-7 w-7 animate-pulse rounded-full" />
+                  <div className="bg-muted h-4 w-12 animate-pulse rounded" />
                 </div>
               </TableCell>
               <TableCell className="px-6 py-4">
                 <div className="flex -space-x-2">
-                  <div className="h-7 w-7 animate-pulse rounded-full border-2 border-background bg-muted" />
+                  <div className="border-background bg-muted h-7 w-7 animate-pulse rounded-full border-2" />
                 </div>
               </TableCell>
               <TableCell className="px-6 py-4">
-                <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+                <div className="bg-muted h-4 w-20 animate-pulse rounded" />
               </TableCell>
               <TableCell className="px-6 py-4">
-                <div className="h-8 w-8 animate-pulse rounded bg-muted" />
+                <div className="bg-muted h-8 w-8 animate-pulse rounded" />
               </TableCell>
             </TableRow>
           ))}

@@ -4,19 +4,21 @@ import {
   CursorMagicSelection04Icon,
   DiamondIcon,
   Hold03Icon,
-  Layers01Icon,
   LinerIcon,
   PaintBrush01Icon,
   RectangularIcon,
+  Redo03Icon,
   StarIcon,
   StickyNote02Icon,
   TextFontIcon,
   TriangleIcon,
+  Undo03Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { LiveObject } from "@liveblocks/client"
 import { shallow } from "@liveblocks/react"
 import {
+  useHistory,
   useMutation,
   useOthersMapped,
   useStorage,
@@ -34,7 +36,12 @@ import { RemoteCursor } from "./canvas/remote-cursor"
 import { SelectionHandles } from "./canvas/selection-handles"
 import { NavButton, ToolButton } from "./canvas/toolbars"
 
-import type { Layer, LineLayer, PathLayer } from "@/lib/liveblocks.config"
+import type {
+  Layer,
+  LineLayer,
+  PathLayer,
+  ShapeLayer,
+} from "@/lib/liveblocks.config"
 
 // ────────────────────────────────────────────────────────────────────────────
 // Types & Constants
@@ -117,6 +124,17 @@ export function IdeaCanvas() {
     id: string
     index: number
   } | null>(null)
+
+  const history = useHistory()
+
+  // Batch history for text editing
+  React.useEffect(() => {
+    if (editingId) {
+      history.pause()
+    } else {
+      history.resume()
+    }
+  }, [editingId, history])
   const svgRef = React.useRef<SVGSVGElement>(null)
 
   const updateMyPresence = useUpdateMyPresence()
@@ -124,17 +142,14 @@ export function IdeaCanvas() {
   // Pull layers from Liveblocks storage
   const layers = useStorage((root) => {
     const map = new Map<string, Layer>()
-    if (root.layers) {
-      for (const [id, obj] of Object.entries(root.layers)) {
-        map.set(id, obj as Layer)
-      }
+    // root.layers is a plain object in the selector snapshot and always exists
+    for (const [id, obj] of Object.entries(root.layers)) {
+      map.set(id, obj as Layer)
     }
     return map
   }, shallow)
 
-  const layerIds = useStorage((root) =>
-    root.layerIds ? [...root.layerIds] : []
-  )
+  const layerIds = useStorage((root) => [...root.layerIds])
 
   // Remote cursors
   const others = useOthersMapped(
@@ -150,96 +165,105 @@ export function IdeaCanvas() {
 
   const insertLayer = useMutation(({ storage }, layer: Layer) => {
     const id = nanoid()
-    const layers = storage.get("layers")
-    const layerIds = storage.get("layerIds")
-    layers.set(id, new LiveObject(layer))
-    layerIds.push(id)
+    const liveLayers = storage.get("layers")
+    const liveLayerIds = storage.get("layerIds")
+    liveLayers.set(id, new LiveObject(layer))
+    liveLayerIds.push(id)
     return id
   }, [])
 
   const moveLayers = useMutation(
     ({ storage }, updates: Array<{ id: string; x: number; y: number }>) => {
-      const layers = storage.get("layers")
+      const liveLayers = storage.get("layers")
       updates.forEach(({ id, x, y }) => {
-        const layer = layers.get(id)
+        const layer = liveLayers.get(id)
         if (layer) layer.update({ x, y })
       })
     },
     []
   )
 
-
   const updateLayerField = useMutation(
-    ({ storage }, id: string, field: string, value: any) => {
-      const layers = storage.get("layers")
-      const layer = layers.get(id)
-      if (layer) {
-        layer.set(field as any, value)
-      }
+    ({ storage }, id: string, field: keyof Layer, value) => {
+      const liveLayers = storage.get("layers")
+      const layer = liveLayers.get(id)
+      if (layer) layer.set(field, value)
     },
     []
   )
 
-  const duplicateLayer = useMutation(({ storage }, id: string) => {
-    const layers = storage.get("layers")
-    const layerIds = storage.get("layerIds")
-    const layer = layers.get(id)
-    if (!layer || !layerIds) return
+  const duplicateLayers = useMutation(
+    ({ storage }, ids: Array<string>) => {
+      const liveLayers = storage.get("layers")
+      const liveLayerIds = storage.get("layerIds")
 
-    const newId = nanoid()
-    const data = layer.toObject()
+      history.pause()
+      const newSelectedIds: Array<string> = []
 
-    layers.set(
-      newId,
-      new LiveObject({
-        ...data,
-        x: data.x + 40,
-        y: data.y + 40,
-      })
-    )
-    layerIds.push(newId)
-    setSelectedIds([newId])
-  }, [])
+      for (const id of ids) {
+        const layer = liveLayers.get(id)
+        if (!layer) continue
+
+        const newId = nanoid()
+        const data = layer.toObject() as Layer
+
+        liveLayers.set(
+          newId,
+          new LiveObject({
+            ...data,
+            x: data.x + 40,
+            y: data.y + 40,
+          })
+        )
+        liveLayerIds.push(newId)
+        newSelectedIds.push(newId)
+      }
+
+      if (newSelectedIds.length > 0) {
+        setSelectedIds(newSelectedIds)
+      }
+      history.resume()
+      return newSelectedIds
+    },
+    [setSelectedIds, history]
+  )
 
   const bringToFront = useMutation(({ storage }, id: string) => {
-    const layerIds = storage.get("layerIds")
-    if (!layerIds) return
-    const index = layerIds.indexOf(id)
-    if (index !== -1 && index !== layerIds.length - 1) {
-      layerIds.move(index, layerIds.length - 1)
+    const liveLayerIds = storage.get("layerIds")
+    const index = liveLayerIds.indexOf(id)
+    if (index !== -1 && index !== liveLayerIds.length - 1) {
+      liveLayerIds.move(index, liveLayerIds.length - 1)
     }
   }, [])
 
   const sendToBack = useMutation(({ storage }, id: string) => {
-    const layerIds = storage.get("layerIds")
-    if (!layerIds) return
-    const index = layerIds.indexOf(id)
+    const liveLayerIds = storage.get("layerIds")
+    const index = liveLayerIds.indexOf(id)
     if (index !== -1 && index !== 0) {
-      layerIds.move(index, 0)
+      liveLayerIds.move(index, 0)
     }
   }, [])
 
   const moveForward = useMutation(({ storage }, id: string) => {
-    const layerIds = storage.get("layerIds")
-    if (!layerIds) return
-    const index = layerIds.indexOf(id)
-    if (index !== -1 && index < layerIds.length - 1) {
-      layerIds.move(index, index + 1)
+    const liveLayerIds = storage.get("layerIds")
+    const index = liveLayerIds.indexOf(id)
+    if (index !== -1 && index < liveLayerIds.length - 1) {
+      liveLayerIds.move(index, index + 1)
     }
   }, [])
 
   const moveBackward = useMutation(({ storage }, id: string) => {
-    const layerIds = storage.get("layerIds")
-    if (!layerIds) return
-    const index = layerIds.indexOf(id)
+    const liveLayerIds = storage.get("layerIds")
+    const index = liveLayerIds.indexOf(id)
     if (index !== -1 && index > 0) {
-      layerIds.move(index, index - 1)
+      liveLayerIds.move(index, index - 1)
     }
   }, [])
 
   const rotateLayer = useMutation(
     ({ storage }, id: string, rotation: number) => {
-      const layer = storage.get("layers").get(id)
+      const liveLayers = storage.get("layers")
+      const layer = liveLayers.get(id)
       if (layer) {
         layer.update({ rotation })
       }
@@ -248,19 +272,17 @@ export function IdeaCanvas() {
   )
 
   const deleteLayer = useMutation(({ storage }, id: string) => {
-    storage.get("layers").delete(id)
-    const ids = storage.get("layerIds")
-    if (ids) {
-      const idx = ids.indexOf(id)
-      if (idx !== -1) ids.delete(idx)
-    }
+    const liveLayers = storage.get("layers")
+    const liveLayerIds = storage.get("layerIds")
+    liveLayers.delete(id)
+    const idx = liveLayerIds.indexOf(id)
+    if (idx !== -1) liveLayerIds.delete(idx)
   }, [])
 
   const updatePath = useMutation(
     ({ storage }, id: string, points: Array<Array<number>>) => {
-      const layer = storage.get("layers").get(id) as
-        | LiveObject<PathLayer>
-        | undefined
+      const liveLayers = storage.get("layers")
+      const layer = liveLayers.get(id) as LiveObject<PathLayer> | undefined
       if (layer) {
         layer.set("points", points)
       }
@@ -270,9 +292,8 @@ export function IdeaCanvas() {
 
   const updateLinePoints = useMutation(
     ({ storage }, id: string, points: Array<{ x: number; y: number }>) => {
-      const layer = storage.get("layers").get(id) as
-        | LiveObject<LineLayer>
-        | undefined
+      const liveLayers = storage.get("layers")
+      const layer = liveLayers.get(id) as LiveObject<LineLayer> | undefined
       if (layer) {
         layer.set("points", points)
       }
@@ -284,14 +305,10 @@ export function IdeaCanvas() {
     (
       { storage },
       id: string,
-      dimensions: Partial<{
-        x: number
-        y: number
-        width: number
-        height: number
-      }>
+      dimensions: { x: number; y: number; width: number; height: number }
     ) => {
-      const layer = storage.get("layers").get(id)
+      const liveLayers = storage.get("layers")
+      const layer = liveLayers.get(id)
       if (layer) {
         layer.update(dimensions)
       }
@@ -300,17 +317,9 @@ export function IdeaCanvas() {
   )
 
   const updateLayerStyle = useMutation(
-    (
-      { storage },
-      id: string,
-      style: Partial<{
-        fill: string
-        stroke: string
-        strokeWidth: number
-        opacity: number
-      }>
-    ) => {
-      const layer = storage.get("layers").get(id)
+    ({ storage }, id: string, style: Partial<Layer>) => {
+      const liveLayers = storage.get("layers")
+      const layer = liveLayers.get(id)
       if (layer) {
         layer.update(style)
       }
@@ -485,6 +494,7 @@ export function IdeaCanvas() {
 
     const pt = getCanvasPoint(e)
     if (activeTool === "pen") {
+      history.pause()
       const id = insertLayer({
         type: "path",
         x: pt.x,
@@ -493,19 +503,19 @@ export function IdeaCanvas() {
         height: 1,
         fill: "#000000",
         points: [[pt.x, pt.y]],
-      } as any)
+      })
       setDragging({
         id,
         startX: pt.x,
         startY: pt.y,
-        layerX: pt.x,
-        layerY: pt.y,
+        initialPositions: [{ id, x: pt.x, y: pt.y }],
       })
       setSelectedIds([id])
       return
     }
 
     if (activeTool === "line" || activeTool === "arrow") {
+      history.pause()
       const id = insertLayer({
         type: activeTool,
         x: pt.x,
@@ -520,13 +530,12 @@ export function IdeaCanvas() {
           { x: pt.x, y: pt.y },
           { x: pt.x, y: pt.y },
         ],
-      } as any)
+      })
       setDragging({
         id,
         startX: pt.x,
         startY: pt.y,
-        layerX: pt.x,
-        layerY: pt.y,
+        initialPositions: [{ id, x: pt.x, y: pt.y }],
       })
       setSelectedIds([id])
       return
@@ -539,7 +548,7 @@ export function IdeaCanvas() {
 
     const newLayer: Layer =
       activeTool === "text"
-        ? ({
+        ? {
             type: "text",
             x: pt.x,
             y: pt.y,
@@ -548,8 +557,9 @@ export function IdeaCanvas() {
             text: "Text",
             fontSize: 18,
             fill: "#1a1a2e",
-          } as any)
-        : ({
+            textAlign: "center",
+          }
+        : {
             type: activeTool === "sticky" ? "sticky" : activeTool,
             x: pt.x,
             y: pt.y,
@@ -564,12 +574,14 @@ export function IdeaCanvas() {
                 : undefined,
             title: activeTool === "sticky" ? "New Strategy" : undefined,
             badge: activeTool === "sticky" ? "STRATEGY" : undefined,
-          } as any)
+            textAlign: activeTool === "sticky" ? "left" : "center",
+          }
 
     if (activeTool === "star") {
-      ;(newLayer as any).points = 5 // Default to 5-pointed star
+      ;(newLayer as ShapeLayer).starPoints = 5 // Default to 5-pointed star
     }
 
+    history.pause()
     const id = insertLayer(newLayer)
     setSelectedIds([id])
 
@@ -592,7 +604,7 @@ export function IdeaCanvas() {
     setActiveTool("select")
   }
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = () => {
     if (selectionBox) {
       const box = {
         x: Math.min(
@@ -628,13 +640,11 @@ export function IdeaCanvas() {
     setResizingLinePoint(null)
     if (activeTool !== "pan") setIsPanning(false)
     else if (isPanning) setIsPanning(false)
+
+    history.resume()
   }
 
-  const handleLayerPointerDown = (
-    e: React.PointerEvent,
-    id: string,
-    layer: Layer
-  ) => {
+  const handleLayerPointerDown = (e: React.PointerEvent, id: string) => {
     if ((activeTool !== "select" && activeTool !== "pan") || editingId) return
     e.stopPropagation()
     if (activeTool === "pan") {
@@ -662,6 +672,7 @@ export function IdeaCanvas() {
       })
       .filter(Boolean) as Array<{ id: string; x: number; y: number }>
 
+    history.pause()
     setDragging({
       id,
       startX: pt.x,
@@ -728,10 +739,29 @@ export function IdeaCanvas() {
         setSelectedIds([])
         setActiveTool("select")
       }
+
+      // Undo/Redo
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        if (e.shiftKey) {
+          history.redo()
+        } else {
+          history.undo()
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "y") {
+        history.redo()
+      }
+
+      // Duplicate
+      if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+        e.preventDefault()
+        if (selectedIds.length > 0) {
+          duplicateLayers(selectedIds)
+        }
+      }
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [selectedIds, editingId, deleteLayer])
+  }, [selectedIds, editingId, deleteLayer, history, duplicateLayers])
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#f0f2f9] dark:bg-[#0a0a12]">
@@ -805,11 +835,12 @@ export function IdeaCanvas() {
                 key={id}
                 id={id}
                 layer={layer}
-                isSelected={selectedIds.includes(id)}
                 isEditing={editingId === id}
                 onPointerDown={handleLayerPointerDown}
                 onDoubleClick={() => handleLayerDoubleClick(id, layer)}
-                onFieldChange={(field, val) => updateLayerField(id, field, val)}
+                onFieldChange={(field, val) =>
+                  updateLayerField(id, field as keyof Layer, val)
+                }
               />
             )
           })}
@@ -820,14 +851,16 @@ export function IdeaCanvas() {
               layer={
                 selectedIds.length === 1
                   ? layers.get(selectedIds[0])!
-                  : ({
+                  : {
                       ...getBoundingBox(selectedIds),
                       type: "selection",
                       rotation: 0,
-                    } as any)
+                      fill: "transparent",
+                    }
               }
               onResizeStart={(handle, e) => {
-                if (selectedIds.length > 1) return // Disable resizing for multi-selection for now
+                if (!primarySelectedId || selectedIds.length > 1) return // Disable resizing for multi-selection for now
+                history.pause()
                 const pt = getCanvasPoint(e)
                 const layer = layers.get(primarySelectedId)!
                 setResizing({
@@ -844,7 +877,8 @@ export function IdeaCanvas() {
                 })
               }}
               onRotateStart={(e) => {
-                if (selectedIds.length > 1) return // Disable rotation for multi-selection for now
+                if (!primarySelectedId || selectedIds.length > 1) return // Disable rotation for multi-selection for now
+                history.pause()
                 const pt = getCanvasPoint(e)
                 const layer = layers.get(primarySelectedId)!
                 const cx = layer.x + layer.width / 2
@@ -856,7 +890,8 @@ export function IdeaCanvas() {
                 })
               }}
               onLinePointResizeStart={(index, _e) => {
-                if (selectedIds.length > 1) return
+                if (!primarySelectedId || selectedIds.length > 1) return
+                history.pause()
                 setResizingLinePoint({ id: primarySelectedId, index })
               }}
             />
@@ -885,7 +920,7 @@ export function IdeaCanvas() {
             selectedIds.forEach((id) => updateLayerStyle(id, style))
           }}
           onDuplicate={() => {
-            selectedIds.forEach((id) => duplicateLayer(id))
+            duplicateLayers(selectedIds)
           }}
           onDelete={() => {
             selectedIds.forEach((id) => deleteLayer(id))
@@ -907,7 +942,7 @@ export function IdeaCanvas() {
       )}
 
       {/* ── Top Tool Sidebar (Horizontal Floating Pill) ── */}
-      <div className="absolute top-20 left-1/2 z-40 -translate-x-1/2">
+      <div className="absolute top-18 left-1/2 z-40 -translate-x-1/2">
         <div className="bg-background/80 border-border flex items-center gap-1.5 rounded-xl border p-2 shadow-lg backdrop-blur-lg">
           <ToolButton
             active={activeTool === "rectangle"}
@@ -993,12 +1028,11 @@ export function IdeaCanvas() {
 
       {/* ── Bottom Navigation Bar (Centered Floating Pill) ── */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
-        <div className="bg-background/80 border-border flex items-center gap-4 rounded-lg border px-4 py-2 shadow-xl backdrop-blur-xl">
+        <div className="bg-background/80 border-border flex items-center gap-2 rounded-lg border px-2 py-1.5 shadow-xl backdrop-blur-xl">
           <div className="flex items-center gap-1">
             <NavButton
               active={activeTool === "select"}
               onClick={() => setActiveTool("select")}
-              className="cursor-pointer"
               icon={
                 <HugeiconsIcon icon={CursorMagicSelection04Icon} size={18} />
               }
@@ -1021,12 +1055,20 @@ export function IdeaCanvas() {
 
           <div className="bg-border h-6 w-px" />
 
-          <NavButton
-            active={false}
-            onClick={() => {}}
-            icon={<HugeiconsIcon icon={Layers01Icon} size={18} />}
-            tooltip="Layers"
-          />
+          <div className="flex items-center gap-1">
+            <NavButton
+              active={false}
+              onClick={() => history.undo()}
+              icon={<HugeiconsIcon icon={Undo03Icon} size={18} />}
+              tooltip="Undo (Ctrl+Z)"
+            />
+            <NavButton
+              active={false}
+              onClick={() => history.redo()}
+              icon={<HugeiconsIcon icon={Redo03Icon} size={18} />}
+              tooltip="Redo (Ctrl+Shift+Z)"
+            />
+          </div>
         </div>
       </div>
     </div>

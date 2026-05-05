@@ -8,64 +8,55 @@ export const client = createClient({
 })
 
 // Types for our Miro-style Canvas
-export type ShapeLayer = {
-  type: "rectangle" | "circle" | "diamond" | "triangle" | "star" | "sticky"
+export type BaseLayer = {
   x: number
   y: number
   height: number
   width: number
   fill: string
+  stroke?: string
+  strokeWidth?: number
+  dashArray?: string
+  rotation?: number
+  opacity?: number
+  borderRadius?: number
+  textAlign?: "left" | "center" | "right"
+  fontFamily?: string
+  fontSize?: number
+  textColor?: string
+}
+
+export type ShapeLayer = BaseLayer & {
+  type:
+    | "rectangle"
+    | "circle"
+    | "diamond"
+    | "triangle"
+    | "star"
+    | "sticky"
+    | "selection"
   text?: string
   title?: string
   badge?: string
+  starPoints?: number
 }
 
-export type TextLayer = {
+export type TextLayer = BaseLayer & {
   type: "text"
-  x: number
-  y: number
-  height: number
-  width: number
   text: string
-  fontSize: number
-  fill: string
 }
 
-export type PathLayer = {
+export type PathLayer = BaseLayer & {
   type: "path"
-  x: number
-  y: number
-  height: number
-  width: number
-  fill: string
   points: Array<Array<number>> // For pen
-  stroke?: string
-  strokeWidth?: number
 }
 
-export type LineLayer = {
+export type LineLayer = BaseLayer & {
   type: "line" | "arrow"
-  x: number
-  y: number
-  height: number
-  width: number
-  fill: string
   points: Array<{ x: number; y: number }> // [start, control, end]
-  stroke?: string
-  strokeWidth?: number
 }
 
-export type Layer = (ShapeLayer | TextLayer | PathLayer | LineLayer) & {
-  stroke?: string
-  strokeWidth?: number
-  textColor?: string
-  rotation?: number
-  dashArray?: string
-  borderRadius?: number
-  opacity?: number
-  textAlign?: "left" | "center" | "right"
-  fontFamily?: string
-}
+export type Layer = ShapeLayer | TextLayer | PathLayer | LineLayer
 
 declare global {
   interface Liveblocks {
