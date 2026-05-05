@@ -72,7 +72,7 @@ export function IdeaCanvas() {
   const [panStart, setPanStart] = React.useState({ x: 0, y: 0 })
   const [resizing, setResizing] = React.useState<{
     id: string
-    handle: "nw" | "ne" | "sw" | "se"
+    handle: "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w"
     startRect: { x: number; y: number; width: number; height: number }
     startX: number
     startY: number
@@ -109,8 +109,8 @@ export function IdeaCanvas() {
   const others = useOthersMapped(
     (other) => ({
       cursor: other.presence.cursor,
-      color: other.info?.color || "#6366f1",
-      name: other.info?.name || "Anonymous",
+      color: other.info.color || "#6366f1",
+      name: other.info.name || "Anonymous",
     }),
     shallow
   )
@@ -130,7 +130,7 @@ export function IdeaCanvas() {
 
   const moveLayer = useMutation(
     ({ storage }, id: string, x: number, y: number) => {
-      const layer = storage.get("layers")?.get(id)
+      const layer = storage.get("layers").get(id)
       if (layer) {
         layer.update({ x, y })
       }
@@ -138,12 +138,12 @@ export function IdeaCanvas() {
     []
   )
 
-  const updateLayerText = useMutation(
-    ({ storage }, id: string, text: string) => {
+  const updateLayerField = useMutation(
+    ({ storage }, id: string, field: string, value: any) => {
       const layers = storage.get("layers")
-      const layer = layers?.get(id)
+      const layer = layers.get(id)
       if (layer) {
-        layer.set("text", text)
+        layer.set(field as any, value)
       }
     },
     []
@@ -152,7 +152,7 @@ export function IdeaCanvas() {
   const duplicateLayer = useMutation(({ storage }, id: string) => {
     const layers = storage.get("layers")
     const layerIds = storage.get("layerIds")
-    const layer = layers?.get(id)
+    const layer = layers.get(id)
     if (!layer || !layerIds) return
 
     const newId = nanoid()
@@ -162,17 +162,26 @@ export function IdeaCanvas() {
       newId,
       new LiveObject({
         ...data,
-        x: data.x + 20,
-        y: data.y + 20,
+        x: data.x + 40,
+        y: data.y + 40,
       })
     )
     layerIds.push(newId)
     setSelectedId(newId)
   }, [])
 
+  const bringToFront = useMutation(({ storage }, id: string) => {
+    const layerIds = storage.get("layerIds")
+    if (!layerIds) return
+    const index = layerIds.indexOf(id)
+    if (index !== -1 && index !== layerIds.length - 1) {
+      layerIds.move(index, layerIds.length - 1)
+    }
+  }, [])
+
   const rotateLayer = useMutation(
     ({ storage }, id: string, rotation: number) => {
-      const layer = storage.get("layers")?.get(id)
+      const layer = storage.get("layers").get(id)
       if (layer) {
         layer.update({ rotation })
       }
@@ -181,7 +190,7 @@ export function IdeaCanvas() {
   )
 
   const deleteLayer = useMutation(({ storage }, id: string) => {
-    storage.get("layers")?.delete(id)
+    storage.get("layers").delete(id)
     const ids = storage.get("layerIds")
     if (ids) {
       const idx = ids.indexOf(id)
@@ -191,7 +200,7 @@ export function IdeaCanvas() {
 
   const updatePath = useMutation(
     ({ storage }, id: string, points: Array<Array<number>>) => {
-      const layer = storage.get("layers")?.get(id) as
+      const layer = storage.get("layers").get(id) as
         | LiveObject<PathLayer>
         | undefined
       if (layer) {
@@ -203,7 +212,7 @@ export function IdeaCanvas() {
 
   const updateLinePoints = useMutation(
     ({ storage }, id: string, points: Array<{ x: number; y: number }>) => {
-      const layer = storage.get("layers")?.get(id) as
+      const layer = storage.get("layers").get(id) as
         | LiveObject<LineLayer>
         | undefined
       if (layer) {
@@ -224,7 +233,7 @@ export function IdeaCanvas() {
         height: number
       }>
     ) => {
-      const layer = storage.get("layers")?.get(id)
+      const layer = storage.get("layers").get(id)
       if (layer) {
         layer.update(dimensions)
       }
@@ -238,7 +247,7 @@ export function IdeaCanvas() {
       id: string,
       style: Partial<{ fill: string; stroke: string; strokeWidth: number }>
     ) => {
-      const layer = storage.get("layers")?.get(id)
+      const layer = storage.get("layers").get(id)
       if (layer) {
         layer.update(style)
       }
@@ -338,10 +347,20 @@ export function IdeaCanvas() {
         newRect.y = startRect.y + dy
         newRect.width = Math.max(20, startRect.width + dx)
         newRect.height = Math.max(20, startRect.height - dy)
-      } else {
+      } else if (handle === "nw") {
         newRect.x = startRect.x + dx
         newRect.y = startRect.y + dy
         newRect.width = Math.max(20, startRect.width - dx)
+        newRect.height = Math.max(20, startRect.height - dy)
+      } else if (handle === "e") {
+        newRect.width = Math.max(20, startRect.width + dx)
+      } else if (handle === "w") {
+        newRect.x = startRect.x + dx
+        newRect.width = Math.max(20, startRect.width - dx)
+      } else if (handle === "s") {
+        newRect.height = Math.max(20, startRect.height + dy)
+      } else {
+        newRect.y = startRect.y + dy
         newRect.height = Math.max(20, startRect.height - dy)
       }
 
@@ -450,15 +469,17 @@ export function IdeaCanvas() {
             type: activeTool === "sticky" ? "sticky" : activeTool,
             x: pt.x,
             y: pt.y,
-            width: activeTool === "sticky" ? 240 : 120,
-            height: activeTool === "sticky" ? 200 : 80,
+            width: activeTool === "sticky" ? 280 : 1,
+            height: activeTool === "sticky" ? 320 : 1,
             fill,
             stroke: "#000000",
             strokeWidth: 2,
             text:
               activeTool === "sticky"
-                ? "Write your thoughts here..."
+                ? "Add your detailed description here..."
                 : undefined,
+            title: activeTool === "sticky" ? "New Strategy" : undefined,
+            badge: activeTool === "sticky" ? "STRATEGY" : undefined,
           } as any)
 
     if (activeTool === "star") {
@@ -467,13 +488,35 @@ export function IdeaCanvas() {
 
     const id = insertLayer(newLayer)
     setSelectedId(id)
-    if (activeTool === "text" || activeTool === "sticky") {
+
+    if (
+      ["rectangle", "circle", "triangle", "diamond", "star"].includes(
+        activeTool
+      )
+    ) {
+      setResizing({
+        id,
+        handle: "se",
+        startRect: { x: pt.x, y: pt.y, width: 1, height: 1 },
+        startX: pt.x,
+        startY: pt.y,
+      })
+    } else if (activeTool === "text" || activeTool === "sticky") {
       setEditingId(id)
     }
+
     setActiveTool("select")
   }
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (resizing) {
+      const pt = getCanvasPoint(e)
+      const dx = Math.abs(pt.x - resizing.startX)
+      const dy = Math.abs(pt.y - resizing.startY)
+      if (dx < 5 && dy < 5) {
+        updateLayerDimensions(resizing.id, { width: 120, height: 80 })
+      }
+    }
     setDragging(null)
     setResizing(null)
     setRotating(null)
@@ -496,6 +539,7 @@ export function IdeaCanvas() {
     }
     const pt = getCanvasPoint(e)
     setSelectedId(id)
+    bringToFront(id)
     setDragging({
       id,
       startX: pt.x,
@@ -574,12 +618,13 @@ export function IdeaCanvas() {
       <svg
         ref={svgRef}
         className={cn(
-          "h-full w-full transition-transform duration-75 outline-none",
+          "h-full w-full transition-transform duration-75 outline-none select-none",
           activeTool === "select" && "cursor-default",
           activeTool === "pan" &&
             (isPanning ? "cursor-grabbing" : "cursor-grab"),
           activeTool === "text" && "cursor-text",
-          !["select", "pan", "text"].includes(activeTool) && "cursor-crosshair"
+          !["select", "pan", "text"].includes(activeTool) && "cursor-crosshair",
+          (dragging || resizing || rotating) && "select-none"
         )}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
@@ -624,7 +669,7 @@ export function IdeaCanvas() {
                 isEditing={editingId === id}
                 onPointerDown={handleLayerPointerDown}
                 onDoubleClick={() => handleLayerDoubleClick(id, layer)}
-                onTextChange={(val) => updateLayerText(id, val)}
+                onFieldChange={(field, val) => updateLayerField(id, field, val)}
               />
             )
           })}
@@ -682,7 +727,7 @@ export function IdeaCanvas() {
       </svg>
 
       {/* ── Context Toolbar (Floating near selection) ── */}
-      {selectedId && !editingId && layers.get(selectedId) && (
+      {selectedId && layers.get(selectedId) && (
         <ContextToolbar
           layer={layers.get(selectedId)!}
           onUpdateStyle={(style) => updateLayerStyle(selectedId, style)}
@@ -701,30 +746,35 @@ export function IdeaCanvas() {
           <ToolButton
             active={activeTool === "rectangle"}
             onClick={() => setActiveTool("rectangle")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={RectangularIcon} size={18} />}
             tooltip="Rectangle (R)"
           />
           <ToolButton
             active={activeTool === "circle"}
             onClick={() => setActiveTool("circle")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={CircleIcon} size={18} />}
             tooltip="Circle (O)"
           />
           <ToolButton
             active={activeTool === "triangle"}
             onClick={() => setActiveTool("triangle")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={TriangleIcon} size={18} />}
             tooltip="Triangle (L)"
           />
           <ToolButton
             active={activeTool === "diamond"}
             onClick={() => setActiveTool("diamond")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={DiamondIcon} size={18} />}
             tooltip="Diamond (D)"
           />
           <ToolButton
             active={activeTool === "star"}
             onClick={() => setActiveTool("star")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={StarIcon} size={18} />}
             tooltip="Star (P)"
           />
@@ -732,12 +782,14 @@ export function IdeaCanvas() {
           <ToolButton
             active={activeTool === "sticky"}
             onClick={() => setActiveTool("sticky")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={StickyNote02Icon} size={18} />}
             tooltip="Sticky Note (S)"
           />
           <ToolButton
             active={activeTool === "text"}
             onClick={() => setActiveTool("text")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={TextFontIcon} size={18} />}
             tooltip="Text (T)"
           />
@@ -746,18 +798,21 @@ export function IdeaCanvas() {
           <ToolButton
             active={activeTool === "pen"}
             onClick={() => setActiveTool("pen")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={PaintBrush01Icon} size={18} />}
             tooltip="Pen (P)"
           />
           <ToolButton
             active={activeTool === "line"}
             onClick={() => setActiveTool("line")}
+            className="cursor-pointer"
             icon={<HugeiconsIcon icon={LinerIcon} size={18} />}
             tooltip="Line (L)"
           />
           <ToolButton
             active={activeTool === "arrow"}
             onClick={() => setActiveTool("arrow")}
+            className="cursor-pointer"
             icon={
               <HugeiconsIcon
                 icon={ArrowUpRight02Icon}
@@ -777,6 +832,7 @@ export function IdeaCanvas() {
             <NavButton
               active={activeTool === "select"}
               onClick={() => setActiveTool("select")}
+              className="cursor-pointer"
               icon={
                 <HugeiconsIcon icon={CursorMagicSelection04Icon} size={18} />
               }

@@ -16,6 +16,8 @@ export type ShapeLayer = {
   width: number
   fill: string
   text?: string
+  title?: string
+  badge?: string
 }
 
 export type TextLayer = {
@@ -37,6 +39,8 @@ export type PathLayer = {
   width: number
   fill: string
   points: Array<Array<number>> // For pen
+  stroke?: string
+  strokeWidth?: number
 }
 
 export type LineLayer = {
@@ -47,6 +51,8 @@ export type LineLayer = {
   width: number
   fill: string
   points: Array<{ x: number; y: number }> // [start, control, end]
+  stroke?: string
+  strokeWidth?: number
 }
 
 export type Layer = (ShapeLayer | TextLayer | PathLayer | LineLayer) & {
@@ -54,6 +60,8 @@ export type Layer = (ShapeLayer | TextLayer | PathLayer | LineLayer) & {
   strokeWidth?: number
   textColor?: string
   rotation?: number
+  dashArray?: string
+  borderRadius?: number
 }
 
 declare global {

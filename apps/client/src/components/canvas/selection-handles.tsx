@@ -1,19 +1,47 @@
 import * as React from "react"
-import { cn } from "@mindorbit/ui/lib/utils"
+
 import type { Layer, LineLayer } from "@/lib/liveblocks.config"
 
 interface SelectionHandlesProps {
   layer: Layer
-  onResizeStart: (handle: "nw" | "ne" | "sw" | "se", e: React.PointerEvent) => void
+  onResizeStart: (
+    handle: "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w",
+    e: React.PointerEvent
+  ) => void
   onRotateStart: (e: React.PointerEvent) => void
   onLinePointResizeStart?: (index: number, e: React.PointerEvent) => void
 }
 
-export function SelectionHandles({ 
-  layer, 
-  onResizeStart, 
+function getResizeCursor(handle: string, rotation: number) {
+  const handleAngles: Record<string, number> = {
+    n: 0,
+    ne: 45,
+    e: 90,
+    se: 135,
+    s: 180,
+    sw: 225,
+    w: 270,
+    nw: 315,
+  }
+  const baseAngle = handleAngles[handle]
+  const total = (rotation + baseAngle + 360) % 360
+  if ((total >= 337.5 && total <= 360) || (total >= 0 && total < 22.5))
+    return "ns-resize"
+  if (total >= 22.5 && total < 67.5) return "nesw-resize"
+  if (total >= 67.5 && total < 112.5) return "ew-resize"
+  if (total >= 112.5 && total < 157.5) return "nwse-resize"
+  if (total >= 157.5 && total < 202.5) return "ns-resize"
+  if (total >= 202.5 && total < 247.5) return "nesw-resize"
+  if (total >= 247.5 && total < 292.5) return "ew-resize"
+  if (total >= 292.5 && total < 337.5) return "nwse-resize"
+  return "default"
+}
+
+export function SelectionHandles({
+  layer,
+  onResizeStart,
   onRotateStart,
-  onLinePointResizeStart 
+  onLinePointResizeStart,
 }: SelectionHandlesProps) {
   const rotation = layer.rotation || 0
 
@@ -29,7 +57,7 @@ export function SelectionHandles({
           strokeWidth={1}
           strokeDasharray="4 4"
         />
-        
+
         {/* Control Points */}
         {lineLayer.points.map((p, i) => (
           <circle
@@ -40,7 +68,7 @@ export function SelectionHandles({
             fill="white"
             stroke="var(--primary)"
             strokeWidth={1.5}
-            className="cursor-move hover:fill-primary/20 transition-colors"
+            className="hover:fill-primary/20 cursor-move transition-colors"
             onPointerDown={(e) => {
               e.stopPropagation()
               onLinePointResizeStart?.(i, e)
@@ -51,10 +79,17 @@ export function SelectionHandles({
     )
   }
 
-  const handles: Array<"nw" | "ne" | "sw" | "se"> = ["nw", "ne", "sw", "se"]
+  const cornerHandles: Array<"nw" | "ne" | "sw" | "se"> = [
+    "nw",
+    "ne",
+    "sw",
+    "se",
+  ]
 
   return (
-    <g transform={`rotate(${rotation}, ${layer.x + layer.width / 2}, ${layer.y + layer.height / 2})`}>
+    <g
+      transform={`rotate(${rotation}, ${layer.x + layer.width / 2}, ${layer.y + layer.height / 2})`}
+    >
       {/* Bounding Box Selection */}
       <rect
         x={layer.x - 2}
@@ -67,33 +102,80 @@ export function SelectionHandles({
         style={{ pointerEvents: "none" }}
       />
 
-      {/* Rotation Handle */}
+      {/* Invisible Border Handles for side-by-side resizing */}
       <line
-        x1={layer.x + layer.width / 2}
-        y1={layer.y - 2}
-        x2={layer.x + layer.width / 2}
-        y2={layer.y - 25}
-        stroke="var(--primary)"
-        strokeWidth={1.5}
+        x1={layer.x}
+        y1={layer.y}
+        x2={layer.x + layer.width}
+        y2={layer.y}
+        stroke="transparent"
+        strokeWidth={10}
+        style={{ cursor: getResizeCursor("n", rotation) }}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          onResizeStart("n", e)
+        }}
       />
+      <line
+        x1={layer.x}
+        y1={layer.y + layer.height}
+        x2={layer.x + layer.width}
+        y2={layer.y + layer.height}
+        stroke="transparent"
+        strokeWidth={10}
+        style={{ cursor: getResizeCursor("s", rotation) }}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          onResizeStart("s", e)
+        }}
+      />
+      <line
+        x1={layer.x}
+        y1={layer.y}
+        x2={layer.x}
+        y2={layer.y + layer.height}
+        stroke="transparent"
+        strokeWidth={10}
+        style={{ cursor: getResizeCursor("w", rotation) }}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          onResizeStart("w", e)
+        }}
+      />
+      <line
+        x1={layer.x + layer.width}
+        y1={layer.y}
+        x2={layer.x + layer.width}
+        y2={layer.y + layer.height}
+        stroke="transparent"
+        strokeWidth={10}
+        style={{ cursor: getResizeCursor("e", rotation) }}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          onResizeStart("e", e)
+        }}
+      />
+
+      {/* Rotation Handle */}
       <circle
         cx={layer.x + layer.width / 2}
-        cy={layer.y - 25}
+        cy={layer.y - 20}
         r={5}
         fill="white"
         stroke="var(--primary)"
         strokeWidth={1.5}
-        className="cursor-crosshair"
+        style={{ cursor: "grab" }}
         onPointerDown={(e) => {
           e.stopPropagation()
           onRotateStart(e)
         }}
       />
 
-      {/* Resize Handles */}
-      {handles.map((h) => {
+      {/* Corner Resize Handles */}
+      {cornerHandles.map((h) => {
         const x = h.includes("e") ? layer.x + layer.width : layer.x
         const y = h.includes("s") ? layer.y + layer.height : layer.y
+
         return (
           <circle
             key={h}
@@ -103,10 +185,7 @@ export function SelectionHandles({
             fill="white"
             stroke="var(--primary)"
             strokeWidth={1.5}
-            className={cn(
-              "cursor-nwse-resize",
-              (h === "ne" || h === "sw") && "cursor-nesw-resize"
-            )}
+            style={{ cursor: getResizeCursor(h, rotation) }}
             onPointerDown={(e) => {
               e.stopPropagation()
               onResizeStart(h, e)

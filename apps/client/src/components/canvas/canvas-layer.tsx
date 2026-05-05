@@ -10,7 +10,7 @@ interface CanvasLayerProps {
   isEditing: boolean
   onPointerDown: (e: React.PointerEvent, id: string, layer: Layer) => void
   onDoubleClick: () => void
-  onTextChange: (val: string) => void
+  onFieldChange: (field: string, val: string) => void
 }
 
 export function CanvasLayer({
@@ -20,7 +20,7 @@ export function CanvasLayer({
   isEditing,
   onPointerDown,
   onDoubleClick,
-  onTextChange,
+  onFieldChange,
 }: CanvasLayerProps) {
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isEditing) return
@@ -43,14 +43,14 @@ export function CanvasLayer({
         <StickyLayer
           layer={layer}
           isEditing={isEditing}
-          onTextChange={onTextChange}
+          onFieldChange={onFieldChange}
         />
       ) : layer.type === "text" ? (
         <TextLayerComponent
           layer={layer}
           isSelected={isSelected}
           isEditing={isEditing}
-          onTextChange={onTextChange}
+          onTextChange={(val) => onFieldChange("text", val)}
         />
       ) : layer.type === "path" ? (
         <PathLayerComponent layer={layer as PathLayer} />
@@ -60,7 +60,7 @@ export function CanvasLayer({
         <ShapeLayerComponent
           layer={layer}
           isEditing={isEditing}
-          onTextChange={onTextChange}
+          onTextChange={(val) => onFieldChange("text", val)}
         />
       )}
     </g>
@@ -81,6 +81,7 @@ function PathLayerComponent({ layer }: { layer: PathLayer }) {
       fill="none"
       stroke={layer.fill || "#000"}
       strokeWidth={2}
+      strokeDasharray={layer.dashArray}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -110,71 +111,125 @@ function LineLayerComponent({ layer }: { layer: LineLayer }) {
         fill="none"
         stroke={layer.stroke || "#000"}
         strokeWidth={layer.strokeWidth || 2}
-        markerEnd={layer.type === "arrow" ? `url(#arrowhead-${layer.type})` : undefined}
+        strokeDasharray={layer.dashArray}
+        markerEnd={
+          layer.type === "arrow" ? `url(#arrowhead-${layer.type})` : undefined
+        }
         strokeLinecap="round"
       />
     </g>
   )
 }
 
-function StickyLayer({ layer, isEditing, onTextChange }: any) {
+function StickyLayer({ layer, isEditing, onFieldChange }: any) {
+  const badgeBaseClasses =
+    "text-[10px] font-extrabold tracking-wider text-indigo-700 uppercase outline-none"
+  const badgeBgClasses = "bg-indigo-50"
+  const badgePaddingClasses = "px-2.5"
+  const contentClasses =
+    "h-full w-full border-none bg-transparent p-0 text-sm leading-relaxed text-slate-500 outline-none placeholder:text-slate-300 whitespace-pre-wrap break-words"
+
   return (
     <g>
+      {/* Background with shadow */}
       <rect
         x={layer.x}
         y={layer.y}
         width={layer.width}
         height={layer.height}
-        rx={8}
+        rx={layer.borderRadius ?? 12}
         fill={layer.fill || "white"}
+        stroke={layer.stroke || "transparent"}
+        strokeWidth={layer.strokeWidth || 0}
+        strokeDasharray={layer.dashArray}
         filter="drop-shadow(0 10px 30px rgba(0,0,0,0.08))"
-        className="transition-all duration-300"
       />
-      <g transform={`translate(${layer.x + 20}, ${layer.y + 20})`}>
-        <rect width={80} height={24} rx={4} fill="#e0e7ff" />
-        <text
-          x={40}
-          y={16}
-          textAnchor="middle"
-          fontSize="10"
-          fontWeight="800"
-          fill="#4338ca"
-          style={{ pointerEvents: "none", letterSpacing: "0.05em" }}
-        >
-          STRATEGY
-        </text>
-        <text
-          y={50}
-          fontSize="18"
-          fontWeight="700"
-          fill={layer.textColor || "#1e1b4b"}
-          style={{ pointerEvents: "none" }}
-        >
-          {layer.text?.substring(0, 15) || "Untitled Card"}
-        </text>
-      </g>
+
+      {/* 1. Badge Area (Top Left) */}
       <foreignObject
         x={layer.x + 20}
-        y={layer.y + 75}
+        y={layer.y + 20}
         width={layer.width - 40}
-        height={layer.height - 95}
+        height={32}
+        style={{ pointerEvents: isEditing ? "all" : "none" }}
+      >
+        <div className="flex h-full items-center">
+          <div
+            className={cn(
+              "relative flex h-5 w-fit items-center justify-center rounded-sm",
+              badgeBgClasses,
+              badgePaddingClasses
+            )}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            {isEditing ? (
+              <div className="relative flex items-center justify-center">
+                <span
+                  className={cn(badgeBaseClasses, "invisible whitespace-pre")}
+                >
+                  {layer.badge || "BADGE"}
+                </span>
+                <input
+                  className={cn(
+                    badgeBaseClasses,
+                    "absolute inset-0 w-full border-none bg-transparent p-0 text-center outline-none"
+                  )}
+                  value={layer.badge || ""}
+                  placeholder="BADGE"
+                  autoFocus
+                  spellCheck={false}
+                  onChange={(e) => onFieldChange("badge", e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault()
+                      e.currentTarget.blur()
+                    }
+                  }}
+                />
+              </div>
+            ) : (
+              <div
+                className={cn(
+                  badgeBaseClasses,
+                  "flex items-center justify-center rounded-sm"
+                )}
+              >
+                {layer.badge || "BADGE"}
+              </div>
+            )}
+          </div>
+        </div>
+      </foreignObject>
+
+      {/* 2. Content Area (Bottom) */}
+      <foreignObject
+        x={layer.x + 20}
+        y={layer.y + 60}
+        width={layer.width - 40}
+        height={layer.height - 80}
         style={{ pointerEvents: isEditing ? "all" : "none" }}
       >
         {isEditing ? (
           <textarea
             autoFocus
-            className="h-full w-full resize-none border-none bg-transparent p-0 text-[14px] leading-relaxed outline-none"
-            style={{ color: layer.textColor || "#475569" }}
-            defaultValue={layer.text || ""}
-            onBlur={(e) => onTextChange(e.target.value)}
+            onFocus={(e) => {
+              const val = e.target.value
+              e.target.value = ""
+              e.target.value = val
+            }}
+            className={contentClasses + " resize-none overflow-hidden"}
+            style={{ color: layer.textColor }}
+            value={layer.text || ""}
+            placeholder="Description..."
+            onChange={(e) => onFieldChange("text", e.target.value)}
             onPointerDown={(e) => e.stopPropagation()}
           />
         ) : (
           <div
-            className="line-clamp-4 h-full w-full text-[14px] leading-relaxed"
-            style={{ color: layer.textColor || "#64748b" }}
+            className={contentClasses + " overflow-hidden"}
+            style={{ color: layer.textColor }}
           >
-            {layer.text || ""}
+            {layer.text || "Add content..."}
           </div>
         )}
       </foreignObject>
@@ -197,22 +252,27 @@ function TextLayerComponent({
       style={{ pointerEvents: isEditing ? "all" : "none" }}
     >
       {isEditing ? (
-        <input
+        <textarea
           autoFocus
-          className="w-full border-none bg-transparent p-0 text-xl font-bold outline-none"
+          className="h-full w-full resize-none border-none bg-transparent p-0 text-xl font-bold outline-none"
           style={{
             fontSize: layer.fontSize,
             color: layer.textColor || "#0f172a",
           }}
-          defaultValue={layer.text || ""}
-          onBlur={(e) => onTextChange(e.target.value)}
+          value={layer.text || ""}
+          onChange={(e) => onTextChange(e.target.value)}
           onPointerDown={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              e.currentTarget.blur()
+            }
+          }}
         />
       ) : (
         <div
           className={cn(
-            "trunct-xl w-full font-bold transition-all",
+            "h-full w-full font-bold wrap-break-word whitespace-pre-wrap transition-all",
             isSelected && "bg-primary/5 rounded-lg px-2 py-1"
           )}
           style={{
@@ -240,6 +300,7 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
     fillOpacity: 0.9,
     stroke: layer.stroke || "#000000",
     strokeWidth: layer.strokeWidth || 2,
+    strokeDasharray: layer.dashArray,
     className: cn(
       "drop-shadow-lg transition-colors duration-300",
       !isEditing && "cursor-move"
@@ -251,7 +312,7 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
     shapeProps.y = layer.y
     shapeProps.width = layer.width
     shapeProps.height = layer.height
-    shapeProps.rx = 8
+    shapeProps.rx = layer.borderRadius ?? 8
   } else if (layer.type === "circle") {
     shapeProps.cx = layer.x + layer.width / 2
     shapeProps.cy = layer.y + layer.height / 2
@@ -264,15 +325,14 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
   } else if (layer.type === "star") {
     const cx = layer.x + layer.width / 2
     const cy = layer.y + layer.height / 2
-    const outerRadius = Math.min(layer.width, layer.height) / 2
-    const innerRadius = outerRadius * 0.5
+    const rx = layer.width / 2
+    const ry = layer.height / 2
     const points = []
     for (let i = 0; i < 10; i++) {
       const angle = (i * Math.PI) / 5 - Math.PI / 2
-      const radius = i % 2 === 0 ? outerRadius : innerRadius
-      points.push(
-        `${cx + radius * Math.cos(angle)},${cy + radius * Math.sin(angle)}`
-      )
+      const r_x = i % 2 === 0 ? rx : rx * 0.5
+      const r_y = i % 2 === 0 ? ry : ry * 0.5
+      points.push(`${cx + r_x * Math.cos(angle)},${cy + r_y * Math.sin(angle)}`)
     }
     shapeProps.points = points.join(" ")
   } else {
@@ -284,29 +344,42 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
       <ShapeTag {...shapeProps} />
       <foreignObject
         x={layer.x + 10}
-        y={layer.y + layer.height / 2 - 15}
+        y={layer.y + 10}
         width={layer.width - 20}
-        height={30}
+        height={layer.height - 20}
         style={{ pointerEvents: isEditing ? "all" : "none" }}
       >
-        {isEditing ? (
-          <input
-            autoFocus
-            className="w-full border-none bg-transparent p-0 text-center text-sm font-bold outline-none"
-            style={{ color: layer.textColor || "#000" }}
-            defaultValue={layer.text || ""}
-            onBlur={(e) => onTextChange(e.target.value)}
-            onPointerDown={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-          />
-        ) : (
-          <div
-            className="w-full truncate text-center text-sm font-bold"
-            style={{ color: layer.textColor || "#000" }}
-          >
-            {layer.text}
-          </div>
-        )}
+        <div className="flex h-full w-full items-center justify-center overflow-hidden">
+          {isEditing ? (
+            <div className="grid w-full">
+              <div className="invisible col-start-1 row-start-1 p-0 text-center text-sm font-bold wrap-break-word whitespace-pre-wrap">
+                {(layer.text || "") + " "}
+              </div>
+              <textarea
+                rows={1}
+                autoFocus
+                className="col-start-1 row-start-1 h-full min-h-0 w-full resize-none overflow-hidden border-none bg-transparent p-0 text-center text-sm font-bold outline-none"
+                style={{ color: layer.textColor || "#000" }}
+                value={layer.text || ""}
+                onChange={(e) => onTextChange(e.target.value)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    e.currentTarget.blur()
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center overflow-hidden text-center text-sm font-bold wrap-break-word whitespace-pre-wrap"
+              style={{ color: layer.textColor || "#000" }}
+            >
+              {layer.text}
+            </div>
+          )}
+        </div>
       </foreignObject>
     </g>
   )
