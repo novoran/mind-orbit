@@ -38,7 +38,25 @@ export function CanvasLayer({
   }
 
   return (
-    <g transform={`rotate(${rotation}, ${cx}, ${cy})`} {...commonProps}>
+    <g
+      transform={`rotate(${rotation}, ${cx}, ${cy})`}
+      {...commonProps}
+      opacity={layer.opacity ?? 1}
+    >
+      {isSelected && !isEditing && (
+        <rect
+          x={layer.x - 4}
+          y={layer.y - 4}
+          width={layer.width + 8}
+          height={layer.height + 8}
+          fill="none"
+          stroke="var(--primary)"
+          strokeWidth={2}
+          strokeOpacity={0.5}
+          rx={layer.borderRadius ? layer.borderRadius + 4 : 4}
+          style={{ pointerEvents: "none" }}
+        />
+      )}
       {layer.type === "sticky" ? (
         <StickyLayer
           layer={layer}
@@ -126,8 +144,14 @@ function StickyLayer({ layer, isEditing, onFieldChange }: any) {
     "text-[10px] font-extrabold tracking-wider text-indigo-700 uppercase outline-none"
   const badgeBgClasses = "bg-indigo-50"
   const badgePaddingClasses = "px-2.5"
-  const contentClasses =
-    "h-full w-full border-none bg-transparent p-0 text-sm leading-relaxed text-slate-500 outline-none placeholder:text-slate-300 whitespace-pre-wrap break-words"
+  const contentClasses = cn(
+    "h-full w-full border-none bg-transparent p-0 leading-relaxed outline-none placeholder:text-slate-300 whitespace-pre-wrap break-words",
+    layer.textAlign === "center"
+      ? "text-center"
+      : layer.textAlign === "right"
+        ? "text-right"
+        : "text-left"
+  )
 
   return (
     <g>
@@ -218,7 +242,11 @@ function StickyLayer({ layer, isEditing, onFieldChange }: any) {
               e.target.value = val
             }}
             className={contentClasses + " resize-none overflow-hidden"}
-            style={{ color: layer.textColor }}
+            style={{
+              color: layer.textColor,
+              fontFamily: layer.fontFamily,
+              fontSize: layer.fontSize ?? 14,
+            }}
             value={layer.text || ""}
             placeholder="Description..."
             onChange={(e) => onFieldChange("text", e.target.value)}
@@ -227,7 +255,11 @@ function StickyLayer({ layer, isEditing, onFieldChange }: any) {
         ) : (
           <div
             className={contentClasses + " overflow-hidden"}
-            style={{ color: layer.textColor }}
+            style={{
+              color: layer.textColor,
+              fontFamily: layer.fontFamily,
+              fontSize: layer.fontSize ?? 14,
+            }}
           >
             {layer.text || "Add content..."}
           </div>
@@ -254,9 +286,17 @@ function TextLayerComponent({
       {isEditing ? (
         <textarea
           autoFocus
-          className="h-full w-full resize-none border-none bg-transparent p-0 text-xl font-bold outline-none"
+          className={cn(
+            "h-full w-full resize-none border-none bg-transparent p-0 font-bold outline-none",
+            layer.textAlign === "center"
+              ? "text-center"
+              : layer.textAlign === "right"
+                ? "text-right"
+                : "text-left"
+          )}
           style={{
-            fontSize: layer.fontSize,
+            fontSize: layer.fontSize ?? 20,
+            fontFamily: layer.fontFamily,
             color: layer.textColor || "#0f172a",
           }}
           value={layer.text || ""}
@@ -273,10 +313,16 @@ function TextLayerComponent({
         <div
           className={cn(
             "h-full w-full font-bold wrap-break-word whitespace-pre-wrap transition-all",
-            isSelected && "bg-primary/5 rounded-lg px-2 py-1"
+            isSelected && "bg-primary/5 rounded-lg px-2 py-1",
+            layer.textAlign === "center"
+              ? "text-center"
+              : layer.textAlign === "right"
+                ? "text-right"
+                : "text-left"
           )}
           style={{
-            fontSize: layer.fontSize,
+            fontSize: layer.fontSize ?? 20,
+            fontFamily: layer.fontFamily,
             color: layer.textColor || "#0f172a",
           }}
         >
@@ -297,7 +343,7 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
 
   const shapeProps: any = {
     fill: layer.fill,
-    fillOpacity: 0.9,
+    fillOpacity: 1,
     stroke: layer.stroke || "#000000",
     strokeWidth: layer.strokeWidth || 2,
     strokeDasharray: layer.dashArray,
@@ -349,17 +395,50 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
         height={layer.height - 20}
         style={{ pointerEvents: isEditing ? "all" : "none" }}
       >
-        <div className="flex h-full w-full items-center justify-center overflow-hidden">
+        <div
+          className={cn(
+            "flex h-full w-full items-center overflow-hidden",
+            layer.textAlign === "left"
+              ? "justify-start"
+              : layer.textAlign === "right"
+                ? "justify-end"
+                : "justify-center"
+          )}
+        >
           {isEditing ? (
             <div className="grid w-full">
-              <div className="invisible col-start-1 row-start-1 p-0 text-center text-sm font-bold wrap-break-word whitespace-pre-wrap">
+              <div
+                className={cn(
+                  "invisible col-start-1 row-start-1 p-0 text-sm font-bold wrap-break-word whitespace-pre-wrap",
+                  layer.textAlign === "center"
+                    ? "text-center"
+                    : layer.textAlign === "right"
+                      ? "text-right"
+                      : "text-left"
+                )}
+                style={{
+                  fontFamily: layer.fontFamily,
+                  fontSize: layer.fontSize ?? 14,
+                }}
+              >
                 {(layer.text || "") + " "}
               </div>
               <textarea
                 rows={1}
                 autoFocus
-                className="col-start-1 row-start-1 h-full min-h-0 w-full resize-none overflow-hidden border-none bg-transparent p-0 text-center text-sm font-bold outline-none"
-                style={{ color: layer.textColor || "#000" }}
+                className={cn(
+                  "col-start-1 row-start-1 h-full min-h-0 w-full resize-none overflow-hidden border-none bg-transparent p-0 text-sm font-bold outline-none",
+                  layer.textAlign === "center"
+                    ? "text-center"
+                    : layer.textAlign === "right"
+                      ? "text-right"
+                      : "text-left"
+                )}
+                style={{
+                  color: layer.textColor || "#000",
+                  fontFamily: layer.fontFamily,
+                  fontSize: layer.fontSize ?? 14,
+                }}
                 value={layer.text || ""}
                 onChange={(e) => onTextChange(e.target.value)}
                 onPointerDown={(e) => e.stopPropagation()}
@@ -373,8 +452,19 @@ function ShapeLayerComponent({ layer, isEditing, onTextChange }: any) {
             </div>
           ) : (
             <div
-              className="flex h-full w-full items-center justify-center overflow-hidden text-center text-sm font-bold wrap-break-word whitespace-pre-wrap"
-              style={{ color: layer.textColor || "#000" }}
+              className={cn(
+                "flex h-full w-full items-center overflow-hidden text-sm font-bold wrap-break-word whitespace-pre-wrap",
+                layer.textAlign === "left"
+                  ? "justify-start text-left"
+                  : layer.textAlign === "right"
+                    ? "justify-end text-right"
+                    : "justify-center text-center"
+              )}
+              style={{
+                color: layer.textColor || "#000",
+                fontFamily: layer.fontFamily,
+                fontSize: layer.fontSize ?? 14,
+              }}
             >
               {layer.text}
             </div>

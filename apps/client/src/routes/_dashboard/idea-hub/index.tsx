@@ -10,14 +10,14 @@ import { cn } from "@mindorbit/ui/lib/utils"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import * as React from "react"
 
+import { Button } from "@mindorbit/ui/components/button"
+import { SearchInput } from "@mindorbit/ui/components/search-input"
+import { useQuery } from "@tanstack/react-query"
 import { CreateIdeaDialog } from "@/components/idea-hub/create-idea-dialog"
 import { IdeaCardSkeleton } from "@/components/idea-hub/idea-card-skeleton"
 import { IdeaGrid } from "@/components/idea-hub/idea-grid"
 import { IdeaTable } from "@/components/idea-hub/idea-table"
 import { IdeaTableSkeleton } from "@/components/idea-hub/idea-table-skeleton"
-import { Button } from "@mindorbit/ui/components/button"
-import { SearchInput } from "@mindorbit/ui/components/search-input"
-import { useQuery } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/_dashboard/idea-hub/")({
   component: IdeaHubPage,

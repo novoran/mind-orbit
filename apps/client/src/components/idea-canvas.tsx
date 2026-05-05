@@ -58,14 +58,45 @@ type CanvasTool =
 
 export function IdeaCanvas() {
   const [activeTool, setActiveTool] = React.useState<CanvasTool>("select")
-  const [selectedId, setSelectedId] = React.useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = React.useState<Array<string>>([])
+  const primarySelectedId = selectedIds[selectedIds.length - 1] || null
+
+  const getBoundingBox = (ids: Array<string>) => {
+    if (ids.length === 0) return null
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+
+    ids.forEach((id) => {
+      const layer = layers.get(id)
+      if (layer) {
+        minX = Math.min(minX, layer.x)
+        minY = Math.min(minY, layer.y)
+        maxX = Math.max(maxX, layer.x + layer.width)
+        maxY = Math.max(maxY, layer.y + layer.height)
+      }
+    })
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    }
+  }
+  const [selectionBox, setSelectionBox] = React.useState<{
+    startX: number
+    startY: number
+    width: number
+    height: number
+  } | null>(null)
   const [editingId, setEditingId] = React.useState<string | null>(null)
   const [dragging, setDragging] = React.useState<{
     id: string
     startX: number
     startY: number
-    layerX: number
-    layerY: number
+    initialPositions: Array<{ id: string; x: number; y: number }>
   } | null>(null)
   const [camera, setCamera] = React.useState({ x: 0, y: 0, zoom: 1 })
   const [isPanning, setIsPanning] = React.useState(false)
@@ -121,22 +152,22 @@ export function IdeaCanvas() {
     const id = nanoid()
     const layers = storage.get("layers")
     const layerIds = storage.get("layerIds")
-    if (layers && layerIds) {
-      layers.set(id, new LiveObject(layer))
-      layerIds.push(id)
-    }
+    layers.set(id, new LiveObject(layer))
+    layerIds.push(id)
     return id
   }, [])
 
-  const moveLayer = useMutation(
-    ({ storage }, id: string, x: number, y: number) => {
-      const layer = storage.get("layers").get(id)
-      if (layer) {
-        layer.update({ x, y })
-      }
+  const moveLayers = useMutation(
+    ({ storage }, updates: Array<{ id: string; x: number; y: number }>) => {
+      const layers = storage.get("layers")
+      updates.forEach(({ id, x, y }) => {
+        const layer = layers.get(id)
+        if (layer) layer.update({ x, y })
+      })
     },
     []
   )
+
 
   const updateLayerField = useMutation(
     ({ storage }, id: string, field: string, value: any) => {
@@ -167,7 +198,7 @@ export function IdeaCanvas() {
       })
     )
     layerIds.push(newId)
-    setSelectedId(newId)
+    setSelectedIds([newId])
   }, [])
 
   const bringToFront = useMutation(({ storage }, id: string) => {
@@ -176,6 +207,33 @@ export function IdeaCanvas() {
     const index = layerIds.indexOf(id)
     if (index !== -1 && index !== layerIds.length - 1) {
       layerIds.move(index, layerIds.length - 1)
+    }
+  }, [])
+
+  const sendToBack = useMutation(({ storage }, id: string) => {
+    const layerIds = storage.get("layerIds")
+    if (!layerIds) return
+    const index = layerIds.indexOf(id)
+    if (index !== -1 && index !== 0) {
+      layerIds.move(index, 0)
+    }
+  }, [])
+
+  const moveForward = useMutation(({ storage }, id: string) => {
+    const layerIds = storage.get("layerIds")
+    if (!layerIds) return
+    const index = layerIds.indexOf(id)
+    if (index !== -1 && index < layerIds.length - 1) {
+      layerIds.move(index, index + 1)
+    }
+  }, [])
+
+  const moveBackward = useMutation(({ storage }, id: string) => {
+    const layerIds = storage.get("layerIds")
+    if (!layerIds) return
+    const index = layerIds.indexOf(id)
+    if (index !== -1 && index > 0) {
+      layerIds.move(index, index - 1)
     }
   }, [])
 
@@ -245,7 +303,12 @@ export function IdeaCanvas() {
     (
       { storage },
       id: string,
-      style: Partial<{ fill: string; stroke: string; strokeWidth: number }>
+      style: Partial<{
+        fill: string
+        stroke: string
+        strokeWidth: number
+        opacity: number
+      }>
     ) => {
       const layer = storage.get("layers").get(id)
       if (layer) {
@@ -278,6 +341,15 @@ export function IdeaCanvas() {
         y: prev.y + e.clientY - panStart.y,
       }))
       setPanStart({ x: e.clientX, y: e.clientY })
+      return
+    }
+
+    if (selectionBox) {
+      setSelectionBox({
+        ...selectionBox,
+        width: pt.x - selectionBox.startX,
+        height: pt.y - selectionBox.startY,
+      })
       return
     }
 
@@ -369,10 +441,15 @@ export function IdeaCanvas() {
     }
 
     if (dragging) {
-      moveLayer(
-        dragging.id,
-        dragging.layerX + (pt.x - dragging.startX),
-        dragging.layerY + (pt.y - dragging.startY)
+      const dx = pt.x - dragging.startX
+      const dy = pt.y - dragging.startY
+
+      moveLayers(
+        dragging.initialPositions.map((p) => ({
+          id: p.id,
+          x: p.x + dx,
+          y: p.y + dy,
+        }))
       )
     }
   }
@@ -395,7 +472,14 @@ export function IdeaCanvas() {
     }
 
     if (activeTool === "select") {
-      setSelectedId(null)
+      const pt = getCanvasPoint(e)
+      setSelectedIds([])
+      setSelectionBox({
+        startX: pt.x,
+        startY: pt.y,
+        width: 0,
+        height: 0,
+      })
       return
     }
 
@@ -417,7 +501,7 @@ export function IdeaCanvas() {
         layerX: pt.x,
         layerY: pt.y,
       })
-      setSelectedId(id)
+      setSelectedIds([id])
       return
     }
 
@@ -444,7 +528,7 @@ export function IdeaCanvas() {
         layerX: pt.x,
         layerY: pt.y,
       })
-      setSelectedId(id)
+      setSelectedIds([id])
       return
     }
 
@@ -487,7 +571,7 @@ export function IdeaCanvas() {
     }
 
     const id = insertLayer(newLayer)
-    setSelectedId(id)
+    setSelectedIds([id])
 
     if (
       ["rectangle", "circle", "triangle", "diamond", "star"].includes(
@@ -509,14 +593,35 @@ export function IdeaCanvas() {
   }
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    if (resizing) {
-      const pt = getCanvasPoint(e)
-      const dx = Math.abs(pt.x - resizing.startX)
-      const dy = Math.abs(pt.y - resizing.startY)
-      if (dx < 5 && dy < 5) {
-        updateLayerDimensions(resizing.id, { width: 120, height: 80 })
+    if (selectionBox) {
+      const box = {
+        x: Math.min(
+          selectionBox.startX,
+          selectionBox.startX + selectionBox.width
+        ),
+        y: Math.min(
+          selectionBox.startY,
+          selectionBox.startY + selectionBox.height
+        ),
+        width: Math.abs(selectionBox.width),
+        height: Math.abs(selectionBox.height),
       }
+
+      const ids: Array<string> = []
+      layers.forEach((layer, id) => {
+        if (
+          layer.x < box.x + box.width &&
+          layer.x + layer.width > box.x &&
+          layer.y < box.y + box.height &&
+          layer.y + layer.height > box.y
+        ) {
+          ids.push(id)
+        }
+      })
+      setSelectedIds(ids)
+      setSelectionBox(null)
     }
+
     setDragging(null)
     setResizing(null)
     setRotating(null)
@@ -538,14 +643,30 @@ export function IdeaCanvas() {
       return
     }
     const pt = getCanvasPoint(e)
-    setSelectedId(id)
-    bringToFront(id)
+
+    let newSelectedIds = selectedIds
+    if (e.shiftKey) {
+      newSelectedIds = selectedIds.includes(id)
+        ? selectedIds.filter((i) => i !== id)
+        : [...selectedIds, id]
+    } else if (!selectedIds.includes(id)) {
+      newSelectedIds = [id]
+    }
+    setSelectedIds(newSelectedIds)
+
+    const initialPositions = newSelectedIds
+      .map((sid) => {
+        const l = layers.get(sid)
+        if (!l) return null
+        return { id: sid, x: l.x, y: l.y }
+      })
+      .filter(Boolean) as Array<{ id: string; x: number; y: number }>
+
     setDragging({
       id,
       startX: pt.x,
       startY: pt.y,
-      layerX: layer.x,
-      layerY: layer.y,
+      initialPositions,
     })
   }
 
@@ -589,7 +710,7 @@ export function IdeaCanvas() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (
         (e.key === "Delete" || e.key === "Backspace") &&
-        selectedId &&
+        selectedIds.length > 0 &&
         !editingId
       ) {
         const tag = document.activeElement?.tagName.toLowerCase()
@@ -599,18 +720,18 @@ export function IdeaCanvas() {
           (document.activeElement as HTMLElement).isContentEditable
         )
           return
-        deleteLayer(selectedId)
-        setSelectedId(null)
+        selectedIds.forEach((id) => deleteLayer(id))
+        setSelectedIds([])
       }
       if (e.key === "Escape") {
         setEditingId(null)
-        setSelectedId(null)
+        setSelectedIds([])
         setActiveTool("select")
       }
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [selectedId, editingId, deleteLayer])
+  }, [selectedIds, editingId, deleteLayer])
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#f0f2f9] dark:bg-[#0a0a12]">
@@ -657,6 +778,25 @@ export function IdeaCanvas() {
         <g
           transform={`translate(${camera.x}, ${camera.y}) scale(${camera.zoom})`}
         >
+          {/* Marquee Selection Box */}
+          {selectionBox && (
+            <rect
+              className="fill-primary/5 stroke-primary"
+              x={Math.min(
+                selectionBox.startX,
+                selectionBox.startX + selectionBox.width
+              )}
+              y={Math.min(
+                selectionBox.startY,
+                selectionBox.startY + selectionBox.height
+              )}
+              width={Math.abs(selectionBox.width)}
+              height={Math.abs(selectionBox.height)}
+              strokeWidth={1 / camera.zoom}
+              strokeDasharray={`${4 / camera.zoom} ${4 / camera.zoom}`}
+            />
+          )}
+
           {layerIds.map((id) => {
             const layer = layers.get(id)
             if (!layer) return null
@@ -665,7 +805,7 @@ export function IdeaCanvas() {
                 key={id}
                 id={id}
                 layer={layer}
-                isSelected={selectedId === id}
+                isSelected={selectedIds.includes(id)}
                 isEditing={editingId === id}
                 onPointerDown={handleLayerPointerDown}
                 onDoubleClick={() => handleLayerDoubleClick(id, layer)}
@@ -675,14 +815,23 @@ export function IdeaCanvas() {
           })}
 
           {/* Selection Handles & Box */}
-          {selectedId && !editingId && layers.get(selectedId) && (
+          {selectedIds.length > 0 && !editingId && (
             <SelectionHandles
-              layer={layers.get(selectedId)!}
+              layer={
+                selectedIds.length === 1
+                  ? layers.get(selectedIds[0])!
+                  : ({
+                      ...getBoundingBox(selectedIds),
+                      type: "selection",
+                      rotation: 0,
+                    } as any)
+              }
               onResizeStart={(handle, e) => {
+                if (selectedIds.length > 1) return // Disable resizing for multi-selection for now
                 const pt = getCanvasPoint(e)
-                const layer = layers.get(selectedId)!
+                const layer = layers.get(primarySelectedId)!
                 setResizing({
-                  id: selectedId,
+                  id: primarySelectedId,
                   handle,
                   startRect: {
                     x: layer.x,
@@ -695,18 +844,20 @@ export function IdeaCanvas() {
                 })
               }}
               onRotateStart={(e) => {
+                if (selectedIds.length > 1) return // Disable rotation for multi-selection for now
                 const pt = getCanvasPoint(e)
-                const layer = layers.get(selectedId)!
+                const layer = layers.get(primarySelectedId)!
                 const cx = layer.x + layer.width / 2
                 const cy = layer.y + layer.height / 2
                 setRotating({
-                  id: selectedId,
+                  id: primarySelectedId,
                   startAngle: Math.atan2(pt.y - cy, pt.x - cx),
                   initialRotation: layer.rotation || 0,
                 })
               }}
               onLinePointResizeStart={(index, _e) => {
-                setResizingLinePoint({ id: selectedId, index })
+                if (selectedIds.length > 1) return
+                setResizingLinePoint({ id: primarySelectedId, index })
               }}
             />
           )}
@@ -727,22 +878,37 @@ export function IdeaCanvas() {
       </svg>
 
       {/* ── Context Toolbar (Floating near selection) ── */}
-      {selectedId && layers.get(selectedId) && (
+      {primarySelectedId && layers.get(primarySelectedId) && (
         <ContextToolbar
-          layer={layers.get(selectedId)!}
-          onUpdateStyle={(style) => updateLayerStyle(selectedId, style)}
-          onDuplicate={() => duplicateLayer(selectedId)}
-          onDelete={() => {
-            deleteLayer(selectedId)
-            setSelectedId(null)
+          layer={layers.get(primarySelectedId)!}
+          onUpdateStyle={(style) => {
+            selectedIds.forEach((id) => updateLayerStyle(id, style))
           }}
-          camera={camera}
+          onDuplicate={() => {
+            selectedIds.forEach((id) => duplicateLayer(id))
+          }}
+          onDelete={() => {
+            selectedIds.forEach((id) => deleteLayer(id))
+            setSelectedIds([])
+          }}
+          onBringToFront={() => {
+            selectedIds.forEach((id) => bringToFront(id))
+          }}
+          onSendToBack={() => {
+            selectedIds.forEach((id) => sendToBack(id))
+          }}
+          onMoveForward={() => {
+            selectedIds.forEach((id) => moveForward(id))
+          }}
+          onMoveBackward={() => {
+            selectedIds.forEach((id) => moveBackward(id))
+          }}
         />
       )}
 
-      {/* ── Left Tool Sidebar (Vertical Floating Pill) ── */}
-      <div className="absolute top-1/2 left-6 -translate-y-1/2">
-        <div className="bg-background/80 border-border flex flex-col items-center gap-1.5 rounded-lg border p-2 shadow-lg backdrop-blur-lg">
+      {/* ── Top Tool Sidebar (Horizontal Floating Pill) ── */}
+      <div className="absolute top-20 left-1/2 z-40 -translate-x-1/2">
+        <div className="bg-background/80 border-border flex items-center gap-1.5 rounded-xl border p-2 shadow-lg backdrop-blur-lg">
           <ToolButton
             active={activeTool === "rectangle"}
             onClick={() => setActiveTool("rectangle")}
@@ -778,7 +944,7 @@ export function IdeaCanvas() {
             icon={<HugeiconsIcon icon={StarIcon} size={18} />}
             tooltip="Star (P)"
           />
-          <Separator />
+          <Separator orientation="vertical" className="h-6" />
           <ToolButton
             active={activeTool === "sticky"}
             onClick={() => setActiveTool("sticky")}
@@ -793,7 +959,7 @@ export function IdeaCanvas() {
             icon={<HugeiconsIcon icon={TextFontIcon} size={18} />}
             tooltip="Text (T)"
           />
-          <Separator />
+          <Separator orientation="vertical" className="h-6" />
 
           <ToolButton
             active={activeTool === "pen"}

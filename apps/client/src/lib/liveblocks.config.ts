@@ -62,6 +62,9 @@ export type Layer = (ShapeLayer | TextLayer | PathLayer | LineLayer) & {
   rotation?: number
   dashArray?: string
   borderRadius?: number
+  opacity?: number
+  textAlign?: "left" | "center" | "right"
+  fontFamily?: string
 }
 
 declare global {
