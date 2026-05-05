@@ -1,131 +1,45 @@
-import {
-  AiBeautifyIcon,
-  Cancel01Icon,
-  Note01Icon,
-  PlusSignIcon,
-} from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { useLiveblocksExtension } from "@liveblocks/react-tiptap"
-import { useMutation, useStorage } from "@liveblocks/react/suspense"
 import { cn } from "@mindorbit/ui/lib/utils"
 import { EditorContent, useEditor } from "@tiptap/react"
-import { nanoid } from "nanoid"
 import * as React from "react"
+
 import { getBaseExtensions } from "./editor-extensions"
 import { EditorToolbar } from "./editor-toolbar"
 
 interface CollaborativeEditorProps {
+  /** Pass true when rendering in a narrow split-panel (adds horizontal padding) */
+  narrow?: boolean
   className?: string
 }
 
-export function CollaborativeEditor({ className }: CollaborativeEditorProps) {
-  const notes = useStorage((root) => root.notes)
-  const [activeNoteId, setActiveNoteId] = React.useState<string | null>(null)
-  const hasInitialized = React.useRef(false)
+const ZOOM_OPTIONS = [
+  { label: "50%", value: 0.5 },
+  { label: "75%", value: 0.75 },
+  { label: "90%", value: 0.9 },
+  { label: "100%", value: 1 },
+  { label: "125%", value: 1.25 },
+  { label: "150%", value: 1.5 },
+]
 
-  const addNote = useMutation(({ storage }) => {
-    const id = nanoid()
-    storage.get("notes").push({ id, title: "New Note" })
-    setActiveNoteId(id)
-  }, [])
-
-  const deleteNote = useMutation(
-    ({ storage }, id: string) => {
-      const notes = storage.get("notes")
-      const index = notes.findIndex((n) => n.id === id)
-      if (index !== -1) {
-        notes.delete(index)
-        if (activeNoteId === id) {
-          setActiveNoteId(notes.get(0)?.id ?? null)
-        }
-      }
-    },
-    [activeNoteId]
-  )
-
-  const renameNote = useMutation(({ storage }, id: string, title: string) => {
-    const notes = storage.get("notes")
-    const note = notes.find((n) => n.id === id)
-    if (note) {
-      note.update({ title })
-    }
-  }, [])
-
-  // Initialize with the first note if none active
-  React.useEffect(() => {
-    if (hasInitialized.current) return
-
-    if (notes.length > 0) {
-      if (!activeNoteId) {
-        setActiveNoteId(notes[0].id)
-      }
-      hasInitialized.current = true
-    } else {
-      // Create first note if empty
-      addNote()
-      hasInitialized.current = true
-    }
-  }, [notes, activeNoteId, addNote])
-
+export function CollaborativeEditor({
+  narrow,
+  className,
+}: CollaborativeEditorProps) {
   return (
-    <div
-      className={cn(
-        "relative flex h-full flex-col overflow-hidden bg-transparent",
-        className
-      )}
-    >
-      {/* ── Document Tab Bar ── */}
-      <div className="border-border/40 flex h-12 shrink-0 items-center justify-between border-b px-4 backdrop-blur-md">
-        <div className="no-scrollbar flex items-center gap-1 overflow-x-auto">
-          {notes.map((note) => (
-            <EditorTab
-              key={note.id}
-              label={note.title}
-              active={activeNoteId === note.id}
-              onClick={() => setActiveNoteId(note.id)}
-              onDelete={() => deleteNote(note.id)}
-              onRename={(title) => renameNote(note.id, title)}
-            />
-          ))}
-          <button
-            onClick={() => addNote()}
-            className="text-muted-foreground hover:bg-muted ml-2 flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-            title="Create New Note"
-          >
-            <HugeiconsIcon icon={PlusSignIcon} size={16} />
-          </button>
-        </div>
-
-        <button className="text-muted-foreground hover:bg-muted flex h-8 w-8 items-center justify-center rounded-lg transition-colors">
-          <HugeiconsIcon
-            icon={AiBeautifyIcon}
-            size={16}
-            className="rotate-45"
-          />
-        </button>
-      </div>
-
-      {/* ── Editor Container ── */}
-      <div className="relative flex-1 overflow-hidden">
-        {activeNoteId ? (
-          <NoteEditor key={activeNoteId} activeNoteId={activeNoteId} />
-        ) : (
-          <div className="text-muted-foreground flex h-full items-center justify-center">
-            Select or create a note
-          </div>
-        )}
-      </div>
+    <div className={cn("flex h-full flex-col overflow-hidden", className)}>
+      <NoteEditor narrow={narrow} />
     </div>
   )
 }
 
-function NoteEditor({ activeNoteId }: { activeNoteId: string }) {
+function NoteEditor({ narrow }: { narrow?: boolean }) {
+  const [zoom, setZoom] = React.useState(1)
+
   const liveblocks = useLiveblocksExtension({
-    field: activeNoteId,
+    field: "document",
     initialContent: "<p></p>",
   })
 
-  // Local state for statistics to ensure "live" client-side re-render
   const [stats, setStats] = React.useState({ words: 0, characters: 0 })
 
   const editor = useEditor({
@@ -135,23 +49,18 @@ function NoteEditor({ activeNoteId }: { activeNoteId: string }) {
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-sm dark:prose-invert min-h-full max-w-none",
+          "prose prose-sm dark:prose-invert min-h-[60vh] max-w-none",
           "prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground",
           "prose-p:leading-relaxed prose-p:text-foreground/80",
-          "px-8 py-10 focus:outline-none"
+          "focus:outline-none"
         ),
       },
     },
     onUpdate: ({ editor }) => {
-      // Real-time stats update
       setStats({
         words: editor.storage.characterCount.words(),
         characters: editor.storage.characterCount.characters(),
       })
-    },
-    // Initial stats
-    onBeforeCreate: ({ editor }) => {
-      // Wait for load
     },
     onCreate: ({ editor }) => {
       setStats({
@@ -161,7 +70,6 @@ function NoteEditor({ activeNoteId }: { activeNoteId: string }) {
     },
   })
 
-  // Sync stats when editor loads or switches
   React.useEffect(() => {
     if (editor) {
       setStats({
@@ -172,108 +80,88 @@ function NoteEditor({ activeNoteId }: { activeNoteId: string }) {
   }, [editor])
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden">
-      {/* Floating Toolbar */}
-      <div className="pointer-events-none absolute top-4 left-0 z-10 flex w-full justify-center">
-        <div className="pointer-events-auto">
-          <EditorToolbar editor={editor} />
+    <div className="flex h-full flex-col overflow-hidden">
+      {/* ── Google Docs-style Toolbar ──────────────────────────────────────── */}
+      <div className="border-border/50 sticky top-0 z-10 flex shrink-0 items-center border-b bg-[#f9fbfd] dark:bg-[#1e1e1e]">
+        <EditorToolbar editor={editor} className="flex-1" />
+
+        {/* Zoom selector — right-aligned */}
+        <div className="border-border/40 flex shrink-0 items-center border-l px-2">
+          <select
+            className="text-foreground/70 h-7 cursor-pointer rounded border-none bg-transparent px-1 text-[12px] outline-none hover:bg-black/8 dark:hover:bg-white/8"
+            value={zoom}
+            onChange={(e) => setZoom(Number(e.target.value))}
+          >
+            {ZOOM_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Scrollable Content */}
-      <div className="no-scrollbar h-full overflow-y-auto pt-16 pb-12">
-        <div className="mx-auto max-w-3xl">
-          <EditorContent editor={editor} />
-        </div>
-      </div>
-
-      {/* Stats footer */}
-      <div className="border-border/40 text-muted-foreground bg-background/5 flex shrink-0 items-center justify-between border-t px-6 py-2 text-[11px] backdrop-blur-sm">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 font-medium">
-            <div className="h-1 w-1 rounded-sm bg-slate-400" />
-            {stats.words} words
-          </span>
-          <span className="flex items-center gap-1.5 font-medium">
-            <div className="h-1 w-1 rounded-sm bg-slate-400" />
-            {stats.characters} characters
-          </span>
-        </div>
-        <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5 text-[9px] font-bold tracking-widest text-emerald-600 uppercase">
-          <div className="h-1 w-1 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-          Multiplayer active
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function EditorTab({
-  label,
-  active,
-  onClick,
-  onDelete,
-  onRename,
-}: {
-  label: string
-  active?: boolean
-  onClick: () => void
-  onDelete: () => void
-  onRename: (title: string) => void
-}) {
-  const [isEditing, setIsEditing] = React.useState(false)
-  const [value, setValue] = React.useState(label)
-
-  const handleBlur = () => {
-    setIsEditing(false)
-    if (value.trim() && value !== label) {
-      onRename(value.trim())
-    } else {
-      setValue(label)
-    }
-  }
-
-  return (
-    <div
-      onClick={onClick}
-      className={cn(
-        "group flex h-8 cursor-pointer items-center gap-1 rounded-lg px-2 text-[11px] font-bold transition-all active:scale-95",
-        active
-          ? "bg-primary/10 text-primary"
-          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-      )}
-    >
-      <HugeiconsIcon icon={Note01Icon} size={14} className="shrink-0" />
-
-      {isEditing ? (
-        <input
-          autoFocus
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={(e) => e.key === "Enter" && handleBlur()}
-          className="w-24 border-none bg-transparent p-0 font-bold outline-none"
-        />
-      ) : (
-        <span
-          onDoubleClick={() => setIsEditing(true)}
-          className="max-w-[120px] truncate"
+      {/* ── Canvas Area ────────────────────────────────────────────────────── */}
+      <div className="no-scrollbar flex-1 overflow-y-auto bg-[#f0f4f8] dark:bg-[#2d2d2d]">
+        {/*
+          A4 at 96dpi = 794px wide.
+          - Wide/notes view: paper centered with gray margins on sides
+          - Narrow/split view: paper gets horizontal padding so it doesn't touch edges
+          Zoom is applied via transform-origin: top center + scale.
+        */}
+        <div
+          className={cn(
+            "py-8 transition-all",
+            // In split mode add horizontal padding so paper doesn't touch the divider
+            narrow ? "px-4" : "px-8"
+          )}
         >
-          {label}
-        </span>
-      )}
+          <div
+            style={{
+              transformOrigin: "top center",
+              transform: `scale(${zoom})`,
+              // Compensate height so the scrollable area doesn't leave a gap
+              marginBottom: `calc(${(zoom - 1) * 100}% * -1)`,
+            }}
+          >
+            {/* A4 paper card — no inner padding, let prose handle spacing */}
+            <div
+              className={cn(
+                "mx-auto w-full max-w-[794px]",
+                "bg-white dark:bg-[#1a1a1a]",
+                // Only show the full drop shadow when not in narrow mode
+                narrow
+                  ? "shadow-sm dark:shadow-md"
+                  : "shadow-[0_1px_4px_rgba(0,0,0,0.10),0_4px_16px_rgba(0,0,0,0.07)] dark:shadow-[0_1px_4px_rgba(0,0,0,0.4),0_4px_16px_rgba(0,0,0,0.3)]"
+              )}
+            >
+              {/*
+                Inner content area:
+                - Standard document margin: 1 inch (96px) top/bottom, 1.25 inch (120px) left/right
+                - In narrow/split mode these shrink to something more compact
+              */}
+              <div className="min-h-[1123px] p-14">
+                <EditorContent editor={editor} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {active && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete()
-          }}
-          className="hover:bg-primary/20 ml-1 rounded p-0.5 opacity-0 transition-all group-hover:opacity-100"
-        >
-          <HugeiconsIcon icon={Cancel01Icon} size={12} />
-        </button>
-      )}
+      {/* ── Stats Footer ───────────────────────────────────────────────────── */}
+      <div className="border-border/40 text-muted-foreground flex shrink-0 items-center justify-between border-t bg-[#f9fbfd] px-4 py-1 text-[11px] dark:bg-[#1e1e1e]">
+        <div className="flex items-center gap-3">
+          <span>{stats.words} words</span>
+          <span className="text-foreground/30">·</span>
+          <span>{stats.characters} characters</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+          <span className="text-[10px] font-semibold tracking-wider uppercase">
+            Live
+          </span>
+        </div>
+      </div>
     </div>
   )
 }

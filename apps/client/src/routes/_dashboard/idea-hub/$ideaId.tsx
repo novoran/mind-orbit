@@ -44,7 +44,6 @@ function IdeaWorkspacePage() {
     () => ({
       layers: new LiveMap<string, LiveObject<Layer>>(),
       layerIds: new LiveList<string>([]),
-      notes: new LiveList<{ id: string; title: string }>([]),
     }),
     []
   )
@@ -200,31 +199,22 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
           </div>
         )}
 
-        {/* Notes Panel */}
+        {/* Notes Panel — pt-16 clears the floating nav bar */}
         <div
           className={cn(
             "relative h-full transition-all duration-500 ease-in-out",
             activePanel === "notes"
-              ? "w-full bg-background"
+              ? "bg-background w-full"
               : activePanel === "split"
-                ? "flex-1"
+                ? "flex-1 overflow-hidden"
                 : "w-0 overflow-hidden opacity-0"
           )}
         >
-          <div
-            className={cn(
-              "h-full w-full",
-              activePanel === "split" ? "px-4 py-20" : "px-0 py-0"
-            )}
-          >
-            <div
-              className={cn(
-                "h-full w-full overflow-hidden",
-                activePanel === "split" && "rounded-lg border border-border shadow-2xl bg-background/50 backdrop-blur-xl"
-              )}
-            >
-              <CollaborativeEditor />
-            </div>
+          <div className="flex h-full flex-col pt-16">
+            <CollaborativeEditor
+              className="flex-1 overflow-hidden"
+              narrow={activePanel === "split"}
+            />
           </div>
         </div>
       </main>
@@ -248,9 +238,9 @@ function SwitcherTab({
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+        "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
         active
-          ? "bg-foreground text-background shadow-md scale-[1.02]"
+          ? "bg-foreground text-background scale-[1.02] shadow-md"
           : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
       )}
     >
