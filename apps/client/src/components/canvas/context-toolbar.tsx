@@ -187,7 +187,7 @@ export function ContextToolbar({
   ]
 
   return (
-    <div className="bg-background/90 border-border animate-in fade-in slide-in-from-left-4 fixed top-1/2 left-6 z-50 flex w-60 -translate-y-1/2 flex-col gap-0 overflow-hidden rounded-xl border shadow-sm backdrop-blur-xl transition-all duration-300">
+    <div className="bg-background/90 border-border animate-in fade-in slide-in-from-left-4 fixed top-1/2 left-6 z-50 flex w-60 -translate-y-1/2 flex-col gap-0 overflow-hidden rounded-lg border shadow-sm backdrop-blur-xl transition-all duration-300">
       <div className="scrollbar-hide flex max-h-[75vh] flex-col gap-1.5 overflow-y-auto p-4">
         <ToolbarSection title="Background">
           <ColorPicker

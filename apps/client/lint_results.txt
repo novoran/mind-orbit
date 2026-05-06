@@ -1,0 +1,61 @@
+
+> client@0.0.1 lint
+> eslint
+
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/app-sidebar.tsx
+   37:9   warning  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  121:17  warning  'activeOrbitNode' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  124:9   warning  'userRole' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  126:9   warning  'orbits' is assigned a value but never used           @typescript-eslint/no-unused-vars
+  127:19  warning  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/canvas/canvas-layer.tsx
+  450:28  error  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/canvas/selection-handles.tsx
+  46:7  error  Unnecessary conditional, value is always falsy  @typescript-eslint/no-unnecessary-condition
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/editor/collaborative-editor.tsx
+  59:18  warning  'editor' is already declared in the upper scope on line 45 column 9  no-shadow
+  65:18  warning  'editor' is already declared in the upper scope on line 45 column 9  no-shadow
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/header.tsx
+  17:7  warning  'teamsData' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/idea-canvas.tsx
+    90:9   error    Unnecessary conditional, value is always truthy                     @typescript-eslint/no-unnecessary-condition
+   201:45  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+   210:28  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+   220:47  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+   236:28  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+   245:47  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+   804:36  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+   805:50  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+  1063:28  warning  'id' is already declared in the upper scope on line 1049 column 26  no-shadow
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/nav-main.tsx
+  31:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/nav-projects.tsx
+  32:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/nav-secondary.tsx
+  20:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/components/team-switcher.tsx
+  26:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/routes/__root.tsx
+  43:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  69:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/routes/_dashboard/profile/notifications.tsx
+   37:9   warning  'handleSave' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  148:10  warning  'NotifRow' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/shahrear/Developer/Novoran/mind-orbit/apps/client/src/routes/_dashboard/profile/security.tsx
+  62:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 28 problems (3 errors, 25 warnings)
+

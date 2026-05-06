@@ -74,16 +74,20 @@ export function IdeaCanvas() {
     let minY = Infinity
     let maxX = -Infinity
     let maxY = -Infinity
+    let found = false
 
     ids.forEach((id) => {
       const layer = layers.get(id)
       if (layer) {
+        found = true
         minX = Math.min(minX, layer.x)
         minY = Math.min(minY, layer.y)
         maxX = Math.max(maxX, layer.x + layer.width)
         maxY = Math.max(maxY, layer.y + layer.height)
       }
     })
+
+    if (minX === Infinity) return null
 
     return {
       x: minX,
@@ -109,9 +113,13 @@ export function IdeaCanvas() {
   const [isPanning, setIsPanning] = React.useState(false)
   const [panStart, setPanStart] = React.useState({ x: 0, y: 0 })
   const [resizing, setResizing] = React.useState<{
-    id: string
+    ids: Array<string>
     handle: "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w"
-    startRect: { x: number; y: number; width: number; height: number }
+    startBoundingBox: { x: number; y: number; width: number; height: number }
+    initialLayers: Map<
+      string,
+      { x: number; y: number; width: number; height: number }
+    >
     startX: number
     startY: number
   } | null>(null)
@@ -182,6 +190,71 @@ export function IdeaCanvas() {
     },
     []
   )
+
+  const finalizeLayer = useMutation(({ storage }, id: string) => {
+    const liveLayers = storage.get("layers")
+    const layer = liveLayers.get(id)
+    if (!layer) return
+
+    const type = layer.get("type")
+    const points = layer.get("points") as any
+
+    if (type === "path") {
+      if (!points || points.length === 0) return
+      let minX = Infinity
+      let minY = Infinity
+      let maxX = -Infinity
+      let maxY = -Infinity
+
+      points.forEach((p: any) => {
+        const [px, py] = p
+        minX = Math.min(minX, px)
+        minY = Math.min(minY, py)
+        maxX = Math.max(maxX, px)
+        maxY = Math.max(maxY, py)
+      })
+
+      const width = Math.max(maxX - minX, 10)
+      const height = Math.max(maxY - minY, 10)
+      const relativePoints = points.map((p: any) => [p[0] - minX, p[1] - minY])
+
+      layer.update({
+        x: layer.get("x") + minX,
+        y: layer.get("y") + minY,
+        width,
+        height,
+        points: relativePoints,
+      })
+    } else if (type === "line" || type === "arrow") {
+      if (!points || points.length < 3) return
+      let minX = Infinity
+      let minY = Infinity
+      let maxX = -Infinity
+      let maxY = -Infinity
+
+      points.forEach((p: any) => {
+        minX = Math.min(minX, p.x)
+        minY = Math.min(minY, p.y)
+        maxX = Math.max(maxX, p.x)
+        maxY = Math.max(maxY, p.y)
+      })
+
+      const width = Math.max(maxX - minX, 10)
+      const height = Math.max(maxY - minY, 10)
+      const relativePoints = points.map((p: any) => ({
+        x: p.x - minX,
+        y: p.y - minY,
+      }))
+
+      layer.update({
+        x: layer.get("x") + minX,
+        y: layer.get("y") + minY,
+        width,
+        height,
+        points: relativePoints,
+      })
+    }
+  }, [])
 
   const updateLayerField = useMutation(
     ({ storage }, id: string, field: keyof Layer, value) => {
@@ -366,8 +439,22 @@ export function IdeaCanvas() {
       const { id, index } = resizingLinePoint
       const layer = layers.get(id) as LineLayer | undefined
       if (layer) {
+        const ox = layer.x || 0
+        const oy = layer.y || 0
         const newPoints = [...layer.points]
-        newPoints[index] = { x: pt.x, y: pt.y }
+        const dx = pt.x - (ox + newPoints[index].x)
+        const dy = pt.y - (oy + newPoints[index].y)
+
+        newPoints[index] = { x: pt.x - ox, y: pt.y - oy }
+
+        // Proportional midpoint update for endpoints
+        if (index === 0 || index === 2) {
+          newPoints[1] = {
+            x: newPoints[1].x + dx / 2,
+            y: newPoints[1].y + dy / 2,
+          }
+        }
+
         updateLinePoints(id, newPoints)
       }
       return
@@ -376,7 +463,8 @@ export function IdeaCanvas() {
     if (activeTool === "pen" && dragging) {
       const layer = layers.get(dragging.id) as PathLayer | undefined
       if (layer) {
-        const newPoints = [...layer.points, [pt.x, pt.y]]
+        // Points are relative to layer.x, layer.y
+        const newPoints = [...layer.points, [pt.x - layer.x, pt.y - layer.y]]
         updatePath(dragging.id, newPoints)
       }
       return
@@ -385,8 +473,9 @@ export function IdeaCanvas() {
     if ((activeTool === "line" || activeTool === "arrow") && dragging) {
       const layer = layers.get(dragging.id) as LineLayer | undefined
       if (layer) {
-        const start = layer.points[0]
-        const end = { x: pt.x, y: pt.y }
+        const start = { x: 0, y: 0 }
+        // Make end point relative to the layer's origin (x, y)
+        const end = { x: pt.x - layer.x, y: pt.y - layer.y }
         const control = {
           x: (start.x + end.x) / 2,
           y: (start.y + end.y) / 2,
@@ -411,41 +500,58 @@ export function IdeaCanvas() {
     }
 
     if (resizing) {
-      const { id, handle, startRect, startX, startY } = resizing
+      const { ids, handle, startBoundingBox, initialLayers, startX, startY } =
+        resizing
       const dx = pt.x - startX
       const dy = pt.y - startY
 
-      const newRect = { ...startRect }
+      const newBoundingBox = { ...startBoundingBox }
 
       if (handle === "se") {
-        newRect.width = Math.max(20, startRect.width + dx)
-        newRect.height = Math.max(20, startRect.height + dy)
+        newBoundingBox.width = Math.max(20, startBoundingBox.width + dx)
+        newBoundingBox.height = Math.max(20, startBoundingBox.height + dy)
       } else if (handle === "sw") {
-        newRect.x = startRect.x + dx
-        newRect.width = Math.max(20, startRect.width - dx)
-        newRect.height = Math.max(20, startRect.height + dy)
+        newBoundingBox.x = startBoundingBox.x + dx
+        newBoundingBox.width = Math.max(20, startBoundingBox.width - dx)
+        newBoundingBox.height = Math.max(20, startBoundingBox.height + dy)
       } else if (handle === "ne") {
-        newRect.y = startRect.y + dy
-        newRect.width = Math.max(20, startRect.width + dx)
-        newRect.height = Math.max(20, startRect.height - dy)
+        newBoundingBox.y = startBoundingBox.y + dy
+        newBoundingBox.width = Math.max(20, startBoundingBox.width + dx)
+        newBoundingBox.height = Math.max(20, startBoundingBox.height - dy)
       } else if (handle === "nw") {
-        newRect.x = startRect.x + dx
-        newRect.y = startRect.y + dy
-        newRect.width = Math.max(20, startRect.width - dx)
-        newRect.height = Math.max(20, startRect.height - dy)
+        newBoundingBox.x = startBoundingBox.x + dx
+        newBoundingBox.y = startBoundingBox.y + dy
+        newBoundingBox.width = Math.max(20, startBoundingBox.width - dx)
+        newBoundingBox.height = Math.max(20, startBoundingBox.height - dy)
       } else if (handle === "e") {
-        newRect.width = Math.max(20, startRect.width + dx)
+        newBoundingBox.width = Math.max(20, startBoundingBox.width + dx)
       } else if (handle === "w") {
-        newRect.x = startRect.x + dx
-        newRect.width = Math.max(20, startRect.width - dx)
+        newBoundingBox.x = startBoundingBox.x + dx
+        newBoundingBox.width = Math.max(20, startBoundingBox.width - dx)
       } else if (handle === "s") {
-        newRect.height = Math.max(20, startRect.height + dy)
+        newBoundingBox.height = Math.max(20, startBoundingBox.height + dy)
       } else {
-        newRect.y = startRect.y + dy
-        newRect.height = Math.max(20, startRect.height - dy)
+        newBoundingBox.y = startBoundingBox.y + dy
+        newBoundingBox.height = Math.max(20, startBoundingBox.height - dy)
       }
 
-      updateLayerDimensions(id, newRect)
+      const scaleX = newBoundingBox.width / startBoundingBox.width
+      const scaleY = newBoundingBox.height / startBoundingBox.height
+
+      ids.forEach((id) => {
+        const initial = initialLayers.get(id)
+        if (!initial) return
+
+        const relativeX = initial.x - startBoundingBox.x
+        const relativeY = initial.y - startBoundingBox.y
+
+        updateLayerDimensions(id, {
+          x: newBoundingBox.x + relativeX * scaleX,
+          y: newBoundingBox.y + relativeY * scaleY,
+          width: initial.width * scaleX,
+          height: initial.height * scaleY,
+        })
+      })
       return
     }
 
@@ -460,6 +566,7 @@ export function IdeaCanvas() {
           y: p.y + dy,
         }))
       )
+      return
     }
   }
 
@@ -482,6 +589,44 @@ export function IdeaCanvas() {
 
     if (activeTool === "select") {
       const pt = getCanvasPoint(e)
+      const box = getBoundingBox(selectedIds)
+
+      if (
+        box &&
+        pt.x >= box.x &&
+        pt.x <= box.x + box.width &&
+        pt.y >= box.y &&
+        pt.y <= box.y + box.height
+      ) {
+        // Clicked inside the multi-selection bounding box (white space or element)
+        const isMultiSelect = selectedIds.length > 1
+        const primaryLayer = layers.get(selectedIds[0])
+        const isHollow =
+          primaryLayer && ["path", "line", "arrow"].includes(primaryLayer.type)
+
+        // Only allow dragging from whitespace if it's a multi-selection
+        // or a solid shape (not a path/line/arrow)
+        if (isMultiSelect || !isHollow) {
+          const initialPositions = selectedIds
+            .map((sid) => {
+              const l = layers.get(sid)
+              if (!l) return null
+              return { id: sid, x: l.x, y: l.y }
+            })
+            .filter(Boolean) as Array<{ id: string; x: number; y: number }>
+
+          history.pause()
+          setDragging({
+            id: "selection-box-drag",
+            startX: pt.x,
+            startY: pt.y,
+            initialPositions,
+          })
+          return
+        }
+      }
+
+      // Otherwise, clear selection and start marquee
       setSelectedIds([])
       setSelectionBox({
         startX: pt.x,
@@ -502,7 +647,7 @@ export function IdeaCanvas() {
         width: 1,
         height: 1,
         fill: "#000000",
-        points: [[pt.x, pt.y]],
+        points: [[0, 0]], // Start at relative origin
       })
       setDragging({
         id,
@@ -526,9 +671,9 @@ export function IdeaCanvas() {
         stroke: "#000000",
         strokeWidth: 2,
         points: [
-          { x: pt.x, y: pt.y },
-          { x: pt.x, y: pt.y },
-          { x: pt.x, y: pt.y },
+          { x: 0, y: 0 },
+          { x: 0, y: 0 },
+          { x: 0, y: 0 },
         ],
       })
       setDragging({
@@ -554,10 +699,10 @@ export function IdeaCanvas() {
             y: pt.y,
             width: 200,
             height: 40,
-            text: "Text",
+            text: "",
             fontSize: 18,
             fill: "#1a1a2e",
-            textAlign: "center",
+            textAlign: "left",
           }
         : {
             type: activeTool === "sticky" ? "sticky" : activeTool,
@@ -583,17 +728,32 @@ export function IdeaCanvas() {
 
     history.pause()
     const id = insertLayer(newLayer)
-    setSelectedIds([id])
+    // Only auto-select shapes, not pen/line/arrow as requested
+    if (
+      activeTool !== "pen" &&
+      activeTool !== "line" &&
+      activeTool !== "arrow"
+    ) {
+      setSelectedIds([id])
+    }
 
     if (
       ["rectangle", "circle", "triangle", "diamond", "star"].includes(
         activeTool
       )
     ) {
+      const initialLayers = new Map()
+      initialLayers.set(id, {
+        x: newLayer.x,
+        y: newLayer.y,
+        width: newLayer.width,
+        height: newLayer.height,
+      })
       setResizing({
-        id,
+        ids: [id],
         handle: "se",
-        startRect: { x: pt.x, y: pt.y, width: 1, height: 1 },
+        startBoundingBox: { x: pt.x, y: pt.y, width: 1, height: 1 },
+        initialLayers,
         startX: pt.x,
         startY: pt.y,
       })
@@ -604,7 +764,19 @@ export function IdeaCanvas() {
     setActiveTool("select")
   }
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (dragging) {
+      const pt = getCanvasPoint(e)
+      const dx = pt.x - dragging.startX
+      const dy = pt.y - dragging.startY
+      const dist = Math.hypot(dx, dy)
+
+      // If it was a click on the selection box without moving, clear selection
+      if (dist < 5 && dragging.id === "selection-box-drag") {
+        setSelectedIds([])
+      }
+    }
+
     if (selectionBox) {
       const box = {
         x: Math.min(
@@ -621,13 +793,34 @@ export function IdeaCanvas() {
 
       const ids: Array<string> = []
       layers.forEach((layer, id) => {
-        if (
-          layer.x < box.x + box.width &&
-          layer.x + layer.width > box.x &&
-          layer.y < box.y + box.height &&
-          layer.y + layer.height > box.y
-        ) {
-          ids.push(id)
+        const isHollow = ["path", "line", "arrow"].includes(layer.type)
+
+        if (isHollow) {
+          // Point-based precision for hollow elements
+          const points = layer.points
+          const hasPointInside = points.some((p: any) => {
+            const px = Array.isArray(p) ? p[0] : p.x
+            const py = Array.isArray(p) ? p[1] : p.y
+            const absX = layer.x + px
+            const absY = layer.y + py
+            return (
+              absX >= box.x &&
+              absX <= box.x + box.width &&
+              absY >= box.y &&
+              absY <= box.y + box.height
+            )
+          })
+          if (hasPointInside) ids.push(id)
+        } else {
+          // Standard bounding box intersection for solid shapes
+          if (
+            layer.x < box.x + box.width &&
+            layer.x + layer.width > box.x &&
+            layer.y < box.y + box.height &&
+            layer.y + layer.height > box.y
+          ) {
+            ids.push(id)
+          }
         }
       })
       setSelectedIds(ids)
@@ -635,6 +828,28 @@ export function IdeaCanvas() {
     }
 
     setDragging(null)
+    if (activeTool === "line" || activeTool === "arrow") {
+      const lastId = layerIds[layerIds.length - 1]
+      const lastLayer = layers.get(lastId) as LineLayer | undefined
+      if (lastLayer) {
+        const dist = Math.hypot(
+          lastLayer.points[2].x - lastLayer.points[0].x,
+          lastLayer.points[2].y - lastLayer.points[0].y
+        )
+        if (dist < 5) {
+          deleteLayer(lastId)
+          setSelectedIds([])
+        } else {
+          finalizeLayer(lastId)
+        }
+      }
+    }
+
+    if (activeTool === "pen") {
+      const lastId = layerIds[layerIds.length - 1]
+      finalizeLayer(lastId)
+    }
+
     setResizing(null)
     setRotating(null)
     setResizingLinePoint(null)
@@ -780,7 +995,7 @@ export function IdeaCanvas() {
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
         onPointerDown={handleSvgPointerDown}
-        onPointerUp={handlePointerUp}
+        onPointerUp={(e) => handlePointerUp(e)}
         onWheel={handleWheel}
       >
         {/* Spatial Grid Pattern */}
@@ -841,37 +1056,52 @@ export function IdeaCanvas() {
                 onFieldChange={(field, val) =>
                   updateLayerField(id, field as keyof Layer, val)
                 }
+                onResize={(_id, w, h) => {
+                  updateLayerField(_id, "width", w)
+                  updateLayerField(_id, "height", h)
+                }}
               />
             )
           })}
 
           {/* Selection Handles & Box */}
-          {selectedIds.length > 0 && !editingId && (
+          {selectedIds.length > 0 && !editingId && activeTool === "select" && (
             <SelectionHandles
               layer={
                 selectedIds.length === 1
-                  ? layers.get(selectedIds[0])!
+                  ? layers.get(selectedIds[0])
                   : {
-                      ...getBoundingBox(selectedIds),
+                      ...(getBoundingBox(selectedIds) || {
+                        x: 0,
+                        y: 0,
+                        width: 0,
+                        height: 0,
+                      }),
                       type: "selection",
                       rotation: 0,
                       fill: "transparent",
                     }
               }
               onResizeStart={(handle, e) => {
-                if (!primarySelectedId || selectedIds.length > 1) return // Disable resizing for multi-selection for now
                 history.pause()
                 const pt = getCanvasPoint(e)
-                const layer = layers.get(primarySelectedId)!
-                setResizing({
-                  id: primarySelectedId,
-                  handle,
-                  startRect: {
+                const bbox = getBoundingBox(selectedIds)!
+                const initialLayers = new Map()
+                selectedIds.forEach((id) => {
+                  const layer = layers.get(id)!
+                  initialLayers.set(id, {
                     x: layer.x,
                     y: layer.y,
                     width: layer.width,
                     height: layer.height,
-                  },
+                  })
+                })
+
+                setResizing({
+                  ids: selectedIds,
+                  handle,
+                  startBoundingBox: bbox,
+                  initialLayers,
                   startX: pt.x,
                   startY: pt.y,
                 })
@@ -942,8 +1172,8 @@ export function IdeaCanvas() {
       )}
 
       {/* ── Top Tool Sidebar (Horizontal Floating Pill) ── */}
-      <div className="absolute top-18 left-1/2 z-40 -translate-x-1/2">
-        <div className="bg-background/80 border-border flex items-center gap-1.5 rounded-xl border p-2 shadow-lg backdrop-blur-lg">
+      <div className="absolute top-16 left-1/2 z-40 -translate-x-1/2">
+        <div className="bg-background/80 border-border flex items-center gap-1.5 rounded-lg border p-2 shadow-lg backdrop-blur-lg">
           <ToolButton
             active={activeTool === "rectangle"}
             onClick={() => setActiveTool("rectangle")}

@@ -16,6 +16,7 @@ interface CanvasLayerProps {
   onPointerDown: (e: React.PointerEvent, id: string, layer: Layer) => void
   onDoubleClick: () => void
   onFieldChange: (field: string, val: string) => void
+  onResize?: (id: string, width: number, height: number) => void
 }
 
 export function CanvasLayer({
@@ -25,6 +26,7 @@ export function CanvasLayer({
   onPointerDown,
   onDoubleClick,
   onFieldChange,
+  onResize,
 }: CanvasLayerProps) {
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isEditing) return
@@ -59,6 +61,7 @@ export function CanvasLayer({
           layer={layer}
           isEditing={isEditing}
           onTextChange={(val: string) => onFieldChange("text", val)}
+          onResize={(w, h) => onResize?.(id, w, h)}
         />
       ) : layer.type === "path" ? (
         <PathLayerComponent layer={layer} />
@@ -78,26 +81,40 @@ export function CanvasLayer({
 function PathLayerComponent({ layer }: { layer: PathLayer }) {
   const d =
     layer.points.length > 0
-      ? `M ${layer.points[0][0]} ${layer.points[0][1]} ${layer.points
-          .map((p) => `L ${p[0]} ${p[1]}`)
+      ? `M ${layer.x + layer.points[0][0]} ${layer.y + layer.points[0][1]} ${layer.points
+          .slice(1)
+          .map((p) => `L ${layer.x + p[0]} ${layer.y + p[1]}`)
           .join(" ")}`
       : ""
 
   return (
-    <path
-      d={d}
-      fill="none"
-      stroke={layer.fill || "#000"}
-      strokeWidth={layer.strokeWidth || 2}
-      strokeDasharray={layer.dashArray}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+    <g>
+      <path
+        d={d}
+        fill="none"
+        stroke="transparent"
+        strokeWidth={20}
+        className="cursor-move"
+      />
+      <path
+        d={d}
+        fill="none"
+        stroke={layer.fill || "#000"}
+        strokeWidth={layer.strokeWidth || 2}
+        strokeDasharray={layer.dashArray}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
   )
 }
 
 function LineLayerComponent({ layer }: { layer: LineLayer }) {
-  const [start, control, end] = layer.points
+  const ox = layer.x || 0
+  const oy = layer.y || 0
+  const start = { x: ox + layer.points[0].x, y: oy + layer.points[0].y }
+  const control = { x: ox + layer.points[1].x, y: oy + layer.points[1].y }
+  const end = { x: ox + layer.points[2].x, y: oy + layer.points[2].y }
   const d = `M ${start.x} ${start.y} Q ${control.x} ${control.y} ${end.x} ${end.y}`
 
   return (
@@ -106,14 +123,29 @@ function LineLayerComponent({ layer }: { layer: LineLayer }) {
         <marker
           id={`arrowhead-${layer.type}`}
           markerWidth="10"
-          markerHeight="7"
-          refX="9"
-          refY="3.5"
+          markerHeight="10"
+          refX="5"
+          refY="5"
           orient="auto"
+          markerUnits="strokeWidth"
         >
-          <polygon points="0 0, 10 3.5, 0 7" fill={layer.stroke || "#000"} />
+          <path
+            d="M 2 1.5 L 8.5 5 L 2 8.5 Z"
+            fill={layer.stroke || "#000"}
+            stroke={layer.stroke || "#000"}
+            strokeWidth="1"
+            strokeLinejoin="round"
+          />
         </marker>
       </defs>
+      {/* Invisible hit-test path for easier selection/dragging */}
+      <path
+        d={d}
+        fill="none"
+        stroke="transparent"
+        strokeWidth={20}
+        className="cursor-move"
+      />
       <path
         d={d}
         fill="none"
@@ -124,6 +156,7 @@ function LineLayerComponent({ layer }: { layer: LineLayer }) {
           layer.type === "arrow" ? `url(#arrowhead-${layer.type})` : undefined
         }
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </g>
   )
@@ -136,12 +169,21 @@ interface StickyLayerProps {
 }
 
 function StickyLayer({ layer, isEditing, onFieldChange }: StickyLayerProps) {
+  const contentRef = React.useRef<HTMLTextAreaElement>(null)
+
+  React.useEffect(() => {
+    if (isEditing && contentRef.current) {
+      const timer = setTimeout(() => contentRef.current?.focus(), 10)
+      return () => clearTimeout(timer)
+    }
+  }, [isEditing])
+
   const badgeBaseClasses =
     "text-[10px] font-extrabold tracking-wider text-indigo-700 uppercase outline-none"
   const badgeBgClasses = "bg-indigo-50"
   const badgePaddingClasses = "px-2.5"
   const contentClasses = cn(
-    "h-full w-full border-none bg-transparent p-0 leading-relaxed break-words whitespace-pre-wrap outline-none placeholder:text-slate-300",
+    "m-0 h-full w-full border-none bg-transparent p-0 leading-[1.5] break-words whitespace-pre-wrap outline-none placeholder:text-slate-300",
     layer.textAlign === "center"
       ? "text-center"
       : layer.textAlign === "right"
@@ -192,11 +234,16 @@ function StickyLayer({ layer, isEditing, onFieldChange }: StickyLayerProps) {
                 <input
                   className={cn(
                     badgeBaseClasses,
-                    "absolute inset-0 w-full border-none bg-transparent p-0 text-center outline-none"
+                    "absolute inset-0 m-0 w-full border-none bg-transparent p-0 text-center outline-none"
                   )}
                   value={layer.badge || ""}
                   placeholder="BADGE"
                   autoFocus
+                  onFocus={(e) => {
+                    const val = e.target.value
+                    e.target.value = ""
+                    e.target.value = val
+                  }}
                   spellCheck={false}
                   onChange={(e) => onFieldChange("badge", e.target.value)}
                   onKeyDown={(e) => {
@@ -229,37 +276,86 @@ function StickyLayer({ layer, isEditing, onFieldChange }: StickyLayerProps) {
         height={layer.height - 80}
         style={{ pointerEvents: isEditing ? "all" : "none" }}
       >
-        {isEditing ? (
-          <textarea
-            autoFocus
-            onFocus={(e) => {
-              const val = e.target.value
-              e.target.value = ""
-              e.target.value = val
-            }}
-            className={contentClasses + " resize-none overflow-hidden"}
-            style={{
-              color: layer.textColor,
-              fontFamily: layer.fontFamily,
-              fontSize: layer.fontSize ?? 14,
-            }}
-            value={layer.text || ""}
-            placeholder="Description..."
-            onChange={(e) => onFieldChange("text", e.target.value)}
-            onPointerDown={(e) => e.stopPropagation()}
-          />
-        ) : (
-          <div
-            className={contentClasses + " overflow-hidden"}
-            style={{
-              color: layer.textColor,
-              fontFamily: layer.fontFamily,
-              fontSize: layer.fontSize ?? 14,
-            }}
-          >
-            {layer.text || "Add content..."}
+        <div
+          className={cn(
+            "flex h-full w-full items-start",
+            layer.textAlign === "center"
+              ? "justify-center"
+              : layer.textAlign === "right"
+                ? "justify-end"
+                : "justify-start"
+          )}
+        >
+          <div className="grid h-full w-full items-start">
+            {/* Mirror div to provide height/width */}
+            <div
+              className={
+                contentClasses + " invisible h-auto w-full whitespace-pre-wrap"
+              }
+              style={{
+                gridArea: "1 / 1 / 2 / 2",
+                color: layer.textColor,
+                fontFamily: layer.fontFamily,
+                fontSize: layer.fontSize ?? 14,
+                lineHeight: "1.5",
+                padding: 0,
+                margin: 0,
+                boxSizing: "border-box",
+              }}
+            >
+              {(layer.text || "\u00A0") +
+                (layer.text.endsWith("\n") ? "\u00A0" : "")}
+            </div>
+            {isEditing ? (
+              <textarea
+                ref={contentRef}
+                autoFocus
+                rows={1}
+                onFocus={(e) => {
+                  const val = e.target.value
+                  e.target.value = ""
+                  e.target.value = val
+                }}
+                className={
+                  contentClasses +
+                  " scrollbar-hide m-0 h-auto w-full resize-none overflow-hidden"
+                }
+                style={{
+                  gridArea: "1 / 1 / 2 / 2",
+                  color: layer.textColor,
+                  fontFamily: layer.fontFamily,
+                  fontSize: layer.fontSize ?? 14,
+                  lineHeight: "1.5",
+                  padding: 0,
+                  margin: 0,
+                  boxSizing: "border-box",
+                }}
+                value={layer.text || ""}
+                placeholder="Description..."
+                spellCheck={false}
+                onChange={(e) => onFieldChange("text", e.target.value)}
+                onClick={(e) => e.currentTarget.focus()}
+                onPointerDown={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <div
+                className={contentClasses + " h-auto w-full overflow-hidden"}
+                style={{
+                  gridArea: "1 / 1 / 2 / 2",
+                  color: layer.textColor,
+                  fontFamily: layer.fontFamily,
+                  fontSize: layer.fontSize ?? 14,
+                  lineHeight: "1.5",
+                  padding: 0,
+                  margin: 0,
+                  boxSizing: "border-box",
+                }}
+              >
+                {layer.text || "Add content..."}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </foreignObject>
     </g>
   )
@@ -269,50 +365,144 @@ interface TextLayerComponentProps {
   layer: TextLayer
   isEditing: boolean
   onTextChange: (val: string) => void
+  onResize?: (width: number, height: number) => void
 }
 
 function TextLayerComponent({
   layer,
   isEditing,
   onTextChange,
+  onResize,
 }: TextLayerComponentProps) {
+  const textRef = React.useRef<HTMLTextAreaElement>(null)
+  const mirrorRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (isEditing && textRef.current) {
+      const timer = setTimeout(() => textRef.current?.focus(), 10)
+      return () => clearTimeout(timer)
+    }
+  }, [isEditing])
+
+  // Auto-resize logic: always ensure the height tightly fits the content
+  // Note: we only auto-fit height; width is manual or updated during typing
+  React.useLayoutEffect(() => {
+    if (mirrorRef.current && onResize) {
+      const { height } = mirrorRef.current.getBoundingClientRect()
+      const newHeight = Math.max(height, 20)
+
+      if (Math.abs(newHeight - layer.height) > 1) {
+        onResize(layer.width, newHeight)
+      }
+    }
+  }, [layer.text, onResize, layer.width, layer.height])
+
   return (
-    <foreignObject
-      x={layer.x}
-      y={layer.y}
-      width={layer.width}
-      height={layer.height}
-      className="pointer-events-none"
-    >
-      <div
-        className={cn(
-          "flex h-full w-full p-2",
-          layer.textAlign === "left"
-            ? "items-start justify-start text-left"
-            : "items-center justify-center text-center"
-        )}
+    <g>
+      {/* Hit-test background */}
+      <rect
+        x={layer.x}
+        y={layer.y}
+        width={layer.width}
+        height={layer.height}
+        fill="transparent"
+        className={cn(!isEditing && "cursor-move")}
+      />
+      <foreignObject
+        x={layer.x}
+        y={layer.y}
+        width={layer.width}
+        height={layer.height}
         style={{
+          pointerEvents: isEditing ? "all" : "none",
           fontSize: layer.fontSize || 18,
           color: layer.fill || "#000000",
           fontWeight: 500,
-          lineHeight: 1.2,
+          lineHeight: "1.2",
         }}
       >
-        <div className="max-h-full w-full overflow-hidden wrap-break-word text-ellipsis">
-          {isEditing ? (
-            <textarea
-              autoFocus
-              className="h-full w-full resize-none border-none bg-transparent p-0 font-bold outline-none"
-              value={layer.text || ""}
-              onChange={(e) => onTextChange(e.target.value)}
-              onPointerDown={(e) => e.stopPropagation()}
-            />
-          ) : (
-            layer.text || "Text"
+        <div
+          className={cn(
+            "flex h-full w-full items-start",
+            layer.textAlign === "center"
+              ? "justify-center"
+              : layer.textAlign === "right"
+                ? "justify-end"
+                : "justify-start"
           )}
+        >
+          <div className="grid h-full w-full items-start">
+            {/* Mirror div to provide accurate measurements */}
+            <div
+              ref={mirrorRef}
+              className="invisible h-auto w-full overflow-hidden break-words whitespace-pre-wrap"
+              style={{
+                gridArea: "1 / 1 / 2 / 2",
+                fontSize: layer.fontSize || 18,
+                fontWeight: 500,
+                lineHeight: "1.2",
+                padding: 0,
+                margin: 0,
+                boxSizing: "border-box",
+              }}
+            >
+              {(layer.text || "\u00A0") +
+                (layer.text.endsWith("\n") ? "\u00A0" : "")}
+            </div>
+            {isEditing ? (
+              <textarea
+                ref={textRef}
+                autoFocus
+                rows={1}
+                onFocus={(e) => {
+                  const val = e.target.value
+                  e.target.value = ""
+                  e.target.value = val
+                }}
+                className="scrollbar-hide m-0 h-full w-full resize-none overflow-hidden border-none bg-transparent p-0 font-bold outline-none"
+                style={{
+                  gridArea: "1 / 1 / 2 / 2",
+                  fontSize: layer.fontSize || 18,
+                  color: layer.fill || "#000000",
+                  fontWeight: 500,
+                  lineHeight: "1.2",
+                  padding: 0,
+                  margin: 0,
+                  boxSizing: "border-box",
+                  textAlign: layer.textAlign || "left",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+                value={layer.text || ""}
+                spellCheck={false}
+                onChange={(e) => onTextChange(e.target.value)}
+                onClick={(e) => e.currentTarget.focus()}
+                onPointerDown={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <div
+                className="overflow-hidden wrap-break-word text-ellipsis"
+                style={{
+                  gridArea: "1 / 1 / 2 / 2",
+                  fontSize: layer.fontSize || 18,
+                  color: layer.fill || "#000000",
+                  fontWeight: 500,
+                  lineHeight: "1.2",
+                  padding: 0,
+                  margin: 0,
+                  boxSizing: "border-box",
+                  textAlign: layer.textAlign || "left",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                {layer.text || ""}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </foreignObject>
+      </foreignObject>
+    </g>
   )
 }
 
@@ -365,6 +555,15 @@ function ShapeLayerComponent({
   isEditing,
   onTextChange,
 }: ShapeLayerComponentProps) {
+  const shapeTextRef = React.useRef<HTMLTextAreaElement>(null)
+
+  React.useEffect(() => {
+    if (isEditing && shapeTextRef.current) {
+      const timer = setTimeout(() => shapeTextRef.current?.focus(), 10)
+      return () => clearTimeout(timer)
+    }
+  }, [isEditing])
+
   const ShapeTag =
     layer.type === "circle"
       ? "ellipse"
@@ -399,38 +598,55 @@ function ShapeLayerComponent({
     shapeProps.ry = layer.height / 2
   } else {
     let points: Array<{ x: number; y: number }> = []
-    const cx = layer.x + layer.width / 2
-    const cy = layer.y + layer.height / 2
+    const w = layer.width
+    const h = layer.height
 
     if (layer.type === "diamond") {
       points = [
-        { x: cx, y: layer.y },
-        { x: layer.x + layer.width, y: cy },
-        { x: cx, y: layer.y + layer.height },
-        { x: layer.x, y: cy },
+        { x: w / 2, y: 0 },
+        { x: w, y: h / 2 },
+        { x: w / 2, y: h },
+        { x: 0, y: h / 2 },
       ]
     } else if (layer.type === "star") {
-      const rx = layer.width / 2
-      const ry = layer.height / 2
       const numPoints = layer.starPoints || 5
+      const outerR = 0.5
+      const innerR = 0.25
+      const tempPoints = []
       for (let i = 0; i < numPoints * 2; i++) {
         const angle = (i * Math.PI) / numPoints - Math.PI / 2
-        const r_x = i % 2 === 0 ? rx : rx * 0.5
-        const r_y = i % 2 === 0 ? ry : ry * 0.5
-        points.push({
-          x: cx + r_x * Math.cos(angle),
-          y: cy + r_y * Math.sin(angle),
+        const r = i % 2 === 0 ? outerR : innerR
+        tempPoints.push({
+          x: 0.5 + r * Math.cos(angle),
+          y: 0.5 + r * Math.sin(angle),
         })
       }
+      // Normalize to [0, 1]
+      const minX = Math.min(...tempPoints.map((p) => p.x))
+      const maxX = Math.max(...tempPoints.map((p) => p.x))
+      const minY = Math.min(...tempPoints.map((p) => p.y))
+      const maxY = Math.max(...tempPoints.map((p) => p.y))
+      const rangeX = maxX - minX
+      const rangeY = maxY - minY
+
+      points = tempPoints.map((p) => ({
+        x: ((p.x - minX) / rangeX) * w,
+        y: ((p.y - minY) / rangeY) * h,
+      }))
     } else {
-      // triangle
+      // triangle - full height/width
       points = [
-        { x: cx, y: layer.y },
-        { x: layer.x + layer.width, y: layer.y + layer.height },
-        { x: layer.x, y: layer.y + layer.height },
+        { x: w / 2, y: 0 },
+        { x: w, y: h },
+        { x: 0, y: h },
       ]
     }
-    shapeProps.d = getRoundedPolygonPath(points, radius)
+    // Add layer.x/y offset
+    const finalPoints = points.map((p) => ({
+      x: p.x + layer.x,
+      y: p.y + layer.y,
+    }))
+    shapeProps.d = getRoundedPolygonPath(finalPoints, radius)
   }
 
   return (
@@ -445,7 +661,7 @@ function ShapeLayerComponent({
       >
         <div
           className={cn(
-            "flex h-full w-full items-center px-4 py-2",
+            "flex h-full w-full items-center px-[15%] py-[10%]",
             layer.textAlign === "left"
               ? "justify-start text-left"
               : layer.textAlign === "right"
@@ -458,19 +674,80 @@ function ShapeLayerComponent({
             fontSize: layer.fontSize ?? 14,
           }}
         >
-          <div className="max-h-full w-full overflow-hidden wrap-break-word">
-            {isEditing ? (
-              <textarea
-                autoFocus
-                className="h-full w-full resize-none border-none bg-transparent p-0 text-inherit outline-none"
-                style={{ textAlign: layer.textAlign || "center" }}
-                value={layer.text || ""}
-                onChange={(e) => onTextChange(e.target.value)}
-                onPointerDown={(e) => e.stopPropagation()}
-              />
-            ) : (
-              layer.text || ""
-            )}
+          <div className="flex h-full w-full items-center justify-center">
+            <div
+              className={cn(
+                "grid h-full w-full items-center",
+                layer.textAlign === "left"
+                  ? "justify-items-start"
+                  : layer.textAlign === "right"
+                    ? "justify-items-end"
+                    : "justify-items-center"
+              )}
+            >
+              <div
+                className="invisible h-auto w-full overflow-hidden wrap-break-word whitespace-pre-wrap"
+                style={{
+                  gridArea: "1 / 1 / 2 / 2",
+                  fontFamily: layer.fontFamily,
+                  fontSize: layer.fontSize ?? 14,
+                  lineHeight: "1.5",
+                  padding: 0,
+                  margin: 0,
+                  boxSizing: "border-box",
+                }}
+              >
+                {(layer.text || "\u00A0") +
+                  (layer.text.endsWith("\n") ? "\u00A0" : "")}
+              </div>
+              {isEditing ? (
+                <textarea
+                  ref={shapeTextRef}
+                  autoFocus
+                  rows={1}
+                  onFocus={(e) => {
+                    const val = e.target.value
+                    e.target.value = ""
+                    e.target.value = val
+                  }}
+                  className="scrollbar-hide m-0 h-auto w-full resize-none overflow-hidden border-none bg-transparent p-0 text-inherit outline-none"
+                  style={{
+                    gridArea: "1 / 1 / 2 / 2",
+                    textAlign: layer.textAlign || "center",
+                    display: "block",
+                    fontFamily: layer.fontFamily,
+                    fontSize: layer.fontSize ?? 14,
+                    color: layer.textColor || "#000",
+                    lineHeight: "1.5",
+                    padding: 0,
+                    margin: 0,
+                    boxSizing: "border-box",
+                  }}
+                  value={layer.text || ""}
+                  spellCheck={false}
+                  onChange={(e) => onTextChange(e.target.value)}
+                  onClick={(e) => e.currentTarget.focus()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <div
+                  className="overflow-hidden wrap-break-word"
+                  style={{
+                    gridArea: "1 / 1 / 2 / 2",
+                    textAlign: layer.textAlign || "center",
+                    fontFamily: layer.fontFamily,
+                    fontSize: layer.fontSize ?? 14,
+                    color: layer.textColor || "#000",
+                    lineHeight: "1.5",
+                    padding: 0,
+                    margin: 0,
+                    boxSizing: "border-box",
+                  }}
+                >
+                  {layer.text || ""}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </foreignObject>

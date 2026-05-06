@@ -44,31 +44,48 @@ export function SelectionHandles({
   onLinePointResizeStart,
 }: SelectionHandlesProps) {
   const rotation = layer.rotation || 0
+  const handleSize = 10
 
-  if (layer.type === "line" || layer.type === "arrow") {
+  const cornerHandles: Array<"nw" | "ne" | "sw" | "se"> = [
+    "nw",
+    "ne",
+    "sw",
+    "se",
+  ]
+
+  const isLine = layer.type === "line" || layer.type === "arrow"
+
+  if (isLine) {
     const lineLayer = layer
+    const ox = layer.x || 0
+    const oy = layer.y || 0
+    const p0 = { x: ox + lineLayer.points[0].x, y: oy + lineLayer.points[0].y }
+    const p1 = { x: ox + lineLayer.points[1].x, y: oy + lineLayer.points[1].y }
+    const p2 = { x: ox + lineLayer.points[2].x, y: oy + lineLayer.points[2].y }
+
     return (
       <g>
         {/* Connection Curve Visual Guide */}
         <path
-          d={`M ${lineLayer.points[0].x} ${lineLayer.points[0].y} Q ${lineLayer.points[1].x} ${lineLayer.points[1].y} ${lineLayer.points[2].x} ${lineLayer.points[2].y}`}
+          d={`M ${p0.x} ${p0.y} Q ${p1.x} ${p1.y} ${p2.x} ${p2.y}`}
           fill="none"
-          stroke="var(--primary)"
+          stroke="#4f46e5"
           strokeWidth={1}
           strokeDasharray="4 4"
+          style={{ pointerEvents: "none" }}
         />
 
         {/* Control Points */}
-        {lineLayer.points.map((p, i) => (
+        {[p0, p1, p2].map((p, i) => (
           <circle
             key={i}
             cx={p.x}
             cy={p.y}
             r={i === 1 ? 4 : 6}
             fill="white"
-            stroke="var(--primary)"
+            stroke="#4f46e5"
             strokeWidth={1.5}
-            className="hover:fill-primary/20 cursor-move transition-colors"
+            className="cursor-move transition-colors hover:fill-indigo-50"
             onPointerDown={(e) => {
               e.stopPropagation()
               onLinePointResizeStart?.(i, e)
@@ -79,120 +96,102 @@ export function SelectionHandles({
     )
   }
 
-  const cornerHandles: Array<"nw" | "ne" | "sw" | "se"> = [
-    "nw",
-    "ne",
-    "sw",
-    "se",
-  ]
-
   return (
     <g
       transform={`rotate(${rotation}, ${layer.x + layer.width / 2}, ${layer.y + layer.height / 2})`}
     >
-      {/* Bounding Box Selection */}
+      {/* Bounding Box Selection Border */}
       <rect
-        x={layer.x - 2}
-        y={layer.y - 2}
-        width={layer.width + 4}
-        height={layer.height + 4}
+        x={layer.x}
+        y={layer.y}
+        width={layer.width}
+        height={layer.height}
         fill="none"
-        stroke="var(--primary)"
+        stroke="#4f46e5"
         strokeWidth={1.5}
         style={{ pointerEvents: "none" }}
       />
 
-      {/* Invisible Border Handles for side-by-side resizing */}
-      <line
-        x1={layer.x}
-        y1={layer.y}
-        x2={layer.x + layer.width}
-        y2={layer.y}
-        stroke="transparent"
-        strokeWidth={10}
-        style={{ cursor: getResizeCursor("n", rotation) }}
-        onPointerDown={(e) => {
-          e.stopPropagation()
-          onResizeStart("n", e)
-        }}
-      />
-      <line
-        x1={layer.x}
-        y1={layer.y + layer.height}
-        x2={layer.x + layer.width}
-        y2={layer.y + layer.height}
-        stroke="transparent"
-        strokeWidth={10}
-        style={{ cursor: getResizeCursor("s", rotation) }}
-        onPointerDown={(e) => {
-          e.stopPropagation()
-          onResizeStart("s", e)
-        }}
-      />
-      <line
-        x1={layer.x}
-        y1={layer.y}
-        x2={layer.x}
-        y2={layer.y + layer.height}
-        stroke="transparent"
-        strokeWidth={10}
-        style={{ cursor: getResizeCursor("w", rotation) }}
-        onPointerDown={(e) => {
-          e.stopPropagation()
-          onResizeStart("w", e)
-        }}
-      />
-      <line
-        x1={layer.x + layer.width}
-        y1={layer.y}
-        x2={layer.x + layer.width}
-        y2={layer.y + layer.height}
-        stroke="transparent"
-        strokeWidth={10}
-        style={{ cursor: getResizeCursor("e", rotation) }}
-        onPointerDown={(e) => {
-          e.stopPropagation()
-          onResizeStart("e", e)
-        }}
-      />
+      {/* Side Handles (Invisible Hit Areas) */}
+      {["n", "s", "e", "w"]
+        .filter((h) => {
+          if (layer.type === "text") return h === "e" || h === "w"
+          return true
+        })
+        .map((h) => {
+          let x = layer.x
+          let y = layer.y
+          let width = layer.width
+          let height = layer.height
 
-      {/* Rotation Handle */}
-      <circle
-        cx={layer.x + layer.width / 2}
-        cy={layer.y - 20}
-        r={5}
-        fill="white"
-        stroke="var(--primary)"
-        strokeWidth={1.5}
-        style={{ cursor: "grab" }}
-        onPointerDown={(e) => {
-          e.stopPropagation()
-          onRotateStart(e)
-        }}
-      />
+          if (h === "n" || h === "s") {
+            y = h === "s" ? layer.y + layer.height - 5 : layer.y - 5
+            height = 10
+          } else {
+            x = h === "e" ? layer.x + layer.width - 5 : layer.x - 5
+            width = 10
+          }
 
-      {/* Corner Resize Handles */}
-      {cornerHandles.map((h) => {
-        const x = h.includes("e") ? layer.x + layer.width : layer.x
-        const y = h.includes("s") ? layer.y + layer.height : layer.y
+          return (
+            <rect
+              key={h}
+              x={x}
+              y={y}
+              width={width}
+              height={height}
+              fill="transparent"
+              style={{ cursor: getResizeCursor(h, rotation) }}
+              onPointerDown={(e) => {
+                e.stopPropagation()
+                onResizeStart(h, e)
+              }}
+            />
+          )
+        })}
 
-        return (
-          <circle
-            key={h}
-            cx={x}
-            cy={y}
-            r={5}
-            fill="white"
-            stroke="var(--primary)"
-            strokeWidth={1.5}
-            style={{ cursor: getResizeCursor(h, rotation) }}
-            onPointerDown={(e) => {
-              e.stopPropagation()
-              onResizeStart(h, e)
-            }}
-          />
-        )
-      })}
+      {/* Corner Handles (Squares) & Rotation Zones */}
+      {cornerHandles
+        .filter(() => layer.type !== "text")
+        .map((h) => {
+          const x = h.includes("e") ? layer.x + layer.width : layer.x
+          const y = h.includes("s") ? layer.y + layer.height : layer.y
+
+          return (
+            <g key={h}>
+              {/* Rotation Zone (Larger Invisible Area) */}
+              <rect
+                x={x - handleSize * 1.5}
+                y={y - handleSize * 1.5}
+                width={handleSize * 3}
+                height={handleSize * 3}
+                fill="transparent"
+                style={{
+                  cursor:
+                    'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj48cGF0aCBkPSJNMjIgMTRsLTQgNE0xNCAyMmw0LTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBhdGggZD0iTTE2IDEwYzMuMzEzIDAgNiAyLjY4NyA2IDZzLTIuNjg3IDYtNiA2LTAtMi42ODctNi02IDItNiA2LTYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+"), auto',
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation()
+                  onRotateStart(e)
+                }}
+              />
+              {/* Resize Handle (Square) */}
+              <rect
+                x={x - handleSize / 2}
+                y={y - handleSize / 2}
+                width={handleSize}
+                height={handleSize}
+                fill="white"
+                stroke="#4f46e5"
+                strokeWidth={1.5}
+                style={{ cursor: getResizeCursor(h, rotation) }}
+                onPointerDown={(e) => {
+                  e.stopPropagation()
+                  onResizeStart(h, e)
+                }}
+              />
+            </g>
+          )
+        })}
     </g>
   )
 }
