@@ -28,6 +28,12 @@ import { cn } from "@mindorbit/ui/lib/utils"
 import { nanoid } from "nanoid"
 import * as React from "react"
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@mindorbit/ui/components/dropdown-menu"
 import { Separator } from "@mindorbit/ui/components/separator"
 import { CanvasLayer } from "./canvas/canvas-layer"
 import { SHAPE_COLORS, STICKY_COLORS } from "./canvas/constants"
@@ -399,6 +405,41 @@ export function IdeaCanvas() {
     },
     []
   )
+
+  const zoomToFit = React.useCallback(() => {
+    const bbox = getBoundingBox(layerIds)
+    if (!bbox || !svgRef.current) return
+
+    const { width: sw, height: sh } = svgRef.current.getBoundingClientRect()
+    const padding = 100
+
+    const zoom = Math.min(
+      (sw - padding * 2) / bbox.width,
+      (sh - padding * 2) / bbox.height,
+      2 // Max zoom 200%
+    )
+
+    const cx = bbox.x + bbox.width / 2
+    const cy = bbox.y + bbox.height / 2
+
+    setCamera({
+      x: sw / 2 - cx * zoom,
+      y: sh / 2 - cy * zoom,
+      zoom,
+    })
+  }, [layerIds, layers, getBoundingBox])
+
+  const zoomIn = React.useCallback(() => {
+    setCamera((c) => ({ ...c, zoom: Math.min(c.zoom * 1.2, 5) }))
+  }, [])
+
+  const zoomOut = React.useCallback(() => {
+    setCamera((c) => ({ ...c, zoom: Math.max(c.zoom / 1.2, 0.1) }))
+  }, [])
+
+  const zoom100 = React.useCallback(() => {
+    setCamera((c) => ({ ...c, zoom: 1 }))
+  }, [])
 
   // ── Interaction Handlers ──────────────────────────────────────────────────
 
@@ -798,7 +839,7 @@ export function IdeaCanvas() {
         if (isHollow) {
           // Point-based precision for hollow elements
           const points = layer.points
-          const hasPointInside = points.some((p: any) => {
+          const hasPointInside = points.some((p) => {
             const px = Array.isArray(p) ? p[0] : p.x
             const py = Array.isArray(p) ? p[1] : p.y
             const absX = layer.x + px
@@ -1173,7 +1214,7 @@ export function IdeaCanvas() {
 
       {/* ── Top Tool Sidebar (Horizontal Floating Pill) ── */}
       <div className="absolute top-16 left-1/2 z-40 -translate-x-1/2">
-        <div className="bg-background/80 border-border flex items-center gap-1.5 rounded-lg border p-2 shadow-lg backdrop-blur-lg">
+        <div className="bg-background/80 border-border flex items-center gap-1.5 rounded-lg border p-2 shadow-sm backdrop-blur-sm">
           <ToolButton
             active={activeTool === "rectangle"}
             onClick={() => setActiveTool("rectangle")}
@@ -1258,7 +1299,7 @@ export function IdeaCanvas() {
 
       {/* ── Bottom Navigation Bar (Centered Floating Pill) ── */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
-        <div className="bg-background/80 border-border flex items-center gap-2 rounded-lg border px-2 py-1.5 shadow-xl backdrop-blur-xl">
+        <div className="bg-background/80 border-border flex items-center gap-2 rounded-lg border px-2 py-1.5 shadow-sm backdrop-blur-sm">
           <div className="flex items-center gap-1">
             <NavButton
               active={activeTool === "select"}
@@ -1279,9 +1320,19 @@ export function IdeaCanvas() {
 
           <div className="bg-border h-6 w-px" />
 
-          <div className="text-foreground/80 flex items-center gap-2 px-2 text-[13px] font-bold tracking-tight">
-            {Math.round(camera.zoom * 100)}%
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="text-foreground/80 hover:bg-accent font-variant-numeric flex items-center gap-2 rounded-md px-2 py-1 text-[13px] font-bold tracking-tight transition-colors outline-none">
+              {Math.round(camera.zoom * 100)}%
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" side="top" className="w-36">
+              <DropdownMenuItem onClick={zoomToFit}>
+                Zoom to fit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={zoomIn}>Zoom In</DropdownMenuItem>
+              <DropdownMenuItem onClick={zoomOut}>Zoom Out</DropdownMenuItem>
+              <DropdownMenuItem onClick={zoom100}>Zoom 100%</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <div className="bg-border h-6 w-px" />
 
