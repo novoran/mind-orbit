@@ -43,7 +43,7 @@ export type ShapeLayer = BaseLayer & {
 
 export type TextLayer = BaseLayer & {
   type: "text"
-  text: string
+  text?: string
 }
 
 export type PathLayer = BaseLayer & {

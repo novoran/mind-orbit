@@ -304,7 +304,7 @@ function StickyLayer({ layer, isEditing, onFieldChange }: StickyLayerProps) {
               }}
             >
               {(layer.text || "\u00A0") +
-                (layer.text.endsWith("\n") ? "\u00A0" : "")}
+                (layer.text?.endsWith("\n") ? "\u00A0" : "")}
             </div>
             {isEditing ? (
               <textarea
@@ -435,7 +435,7 @@ function TextLayerComponent({
             {/* Mirror div to provide accurate measurements */}
             <div
               ref={mirrorRef}
-              className="invisible h-auto w-full overflow-hidden break-words whitespace-pre-wrap"
+              className="invisible h-auto w-full overflow-hidden wrap-break-word whitespace-pre-wrap"
               style={{
                 gridArea: "1 / 1 / 2 / 2",
                 fontSize: layer.fontSize || 18,
@@ -447,7 +447,7 @@ function TextLayerComponent({
               }}
             >
               {(layer.text || "\u00A0") +
-                (layer.text.endsWith("\n") ? "\u00A0" : "")}
+                (layer.text?.endsWith("\n") ? "\u00A0" : "")}
             </div>
             {isEditing ? (
               <textarea
@@ -697,8 +697,8 @@ function ShapeLayerComponent({
                   boxSizing: "border-box",
                 }}
               >
-                {(layer.text || "\u00A0") +
-                  (layer.text.endsWith("\n") ? "\u00A0" : "")}
+                {(layer.text ?? "\u00A0") +
+                  (layer.text?.endsWith("\n") ? "\u00A0" : "")}
               </div>
               {isEditing ? (
                 <textarea

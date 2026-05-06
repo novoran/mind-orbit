@@ -15,6 +15,8 @@ import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import * as React from "react"
 
+import { Button } from "@mindorbit/ui/components/button"
+
 import type { Layer } from "@/lib/liveblocks.config"
 import type { LiveObject } from "@liveblocks/client"
 import type { Id } from "@mindorbit/backend/_generated/dataModel"
@@ -99,20 +101,31 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
   }
 
   return (
-    <div className="bg-background relative flex h-screen w-full overflow-hidden">
+    <div
+      className="bg-background relative flex h-screen w-full overflow-hidden"
+      onContextMenu={(e) => e.preventDefault()}
+    >
       {/* ── Top Navigation (Floating & Transparent) ── */}
       <nav className="pointer-events-none absolute top-0 left-0 z-50 flex h-16 w-full items-center justify-between px-6">
         {/* Left: Back & Title */}
-        <div className="pointer-events-auto flex items-center gap-4">
-          <button
+        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center rounded-lg border pr-3 pl-1 shadow-sm backdrop-blur-sm">
+          <Button
+            variant="ghost"
+            size="icon-lg"
             onClick={() => navigate({ to: "/idea-hub" })}
-            className="bg-background/80 hover:bg-background border-border text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg border shadow-sm backdrop-blur transition-all"
+            className="text-muted-foreground hover:text-foreground"
             title="Back to Idea Hub"
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
-          </button>
+          </Button>
 
-          <div className="flex flex-col">
+          <div className="bg-border/60 mx-1 h-5 w-px" />
+
+          <div
+            className="flex w-36 cursor-text items-center px-2 py-1"
+            onDoubleClick={() => setIsEditingTitle(true)}
+            title="Double click to edit title"
+          >
             {isEditingTitle ? (
               <input
                 autoFocus
@@ -123,56 +136,51 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
                   if (e.key === "Enter") handleTitleSave()
                   if (e.key === "Escape") setIsEditingTitle(false)
                 }}
-                className="bg-background/80 border-primary w-64 rounded-lg border px-3 py-1 text-sm font-bold shadow-sm backdrop-blur focus:outline-none"
+                className="w-full bg-transparent text-sm font-bold focus:outline-none"
               />
             ) : (
-              <button
-                onClick={() => setIsEditingTitle(true)}
-                className="hover:bg-muted/50 group flex items-center gap-2 rounded-lg px-2 py-1 transition-all"
-              >
-                <span className="text-sm font-bold tracking-tight">
-                  {idea?.title ?? "Untitled Idea"}
-                </span>
-                <div className="bg-muted h-1 w-1 rounded-full opacity-0 group-hover:opacity-100" />
-              </button>
+              <span className="text-foreground/90 truncate text-sm font-bold tracking-tight">
+                {idea?.title ?? "Untitled Idea"}
+              </span>
             )}
           </div>
         </div>
 
         {/* Center: Spatial Switcher */}
-        <div className="pointer-events-auto flex items-center">
-          <div className="bg-background/80 border-border flex items-center gap-1 rounded-lg border p-1 shadow-lg backdrop-blur">
-            <SwitcherTab
-              active={activePanel === "canvas"}
-              onClick={() => setActivePanel("canvas")}
-              icon={<HugeiconsIcon icon={GridIcon} size={16} />}
-              label="Canvas"
-            />
-            <SwitcherTab
-              active={activePanel === "notes"}
-              onClick={() => setActivePanel("notes")}
-              icon={<HugeiconsIcon icon={Note01Icon} size={16} />}
-              label="Notes"
-            />
-            <SwitcherTab
-              active={activePanel === "split"}
-              onClick={() => setActivePanel("split")}
-              icon={<HugeiconsIcon icon={SidebarLeftIcon} size={16} />}
-              label="Split"
-            />
-          </div>
+        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1 rounded-lg border px-1 shadow-sm backdrop-blur-sm">
+          <SwitcherTab
+            active={activePanel === "canvas"}
+            onClick={() => setActivePanel("canvas")}
+            icon={<HugeiconsIcon icon={GridIcon} size={16} />}
+            label="Canvas"
+          />
+          <SwitcherTab
+            active={activePanel === "notes"}
+            onClick={() => setActivePanel("notes")}
+            icon={<HugeiconsIcon icon={Note01Icon} size={16} />}
+            label="Notes"
+          />
+          <SwitcherTab
+            active={activePanel === "split"}
+            onClick={() => setActivePanel("split")}
+            icon={<HugeiconsIcon icon={SidebarLeftIcon} size={16} />}
+            label="Split"
+          />
         </div>
 
         {/* Right: Presence & Share */}
-        <div className="pointer-events-auto flex items-center gap-3">
-          <div className="bg-background/80 border-border flex h-10 items-center rounded-lg border px-3 shadow-md backdrop-blur">
-            <PresenceBar />
-          </div>
+        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1.5 rounded-lg border pr-1 pl-3 shadow-sm backdrop-blur-sm">
+          <PresenceBar />
 
-          <button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20 flex h-10 items-center gap-2 rounded-lg px-5 text-sm font-semibold shadow-lg transition-all active:scale-95">
+          <div className="bg-border/60 mx-1 h-5 w-px" />
+
+          <Button
+            className="h-9 px-4 font-semibold"
+            onClick={() => {}} // Placeholder for share logic
+          >
             <HugeiconsIcon icon={Share01Icon} size={16} />
             Share
-          </button>
+          </Button>
         </div>
       </nav>
 
@@ -235,17 +243,17 @@ function SwitcherTab({
   label: string
 }) {
   return (
-    <button
+    <Button
+      variant={active ? "secondary" : "ghost"}
       onClick={onClick}
       className={cn(
-        "flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
-        active
-          ? "bg-foreground text-background scale-[1.02] shadow-md"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+        "h-9 gap-2 px-4 font-medium transition-all duration-200",
+        active &&
+          "bg-foreground text-background hover:bg-foreground/90 scale-[1.02] shadow-md"
       )}
     >
       {icon}
       <span>{label}</span>
-    </button>
+    </Button>
   )
 }

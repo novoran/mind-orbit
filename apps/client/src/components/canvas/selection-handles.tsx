@@ -113,7 +113,7 @@ export function SelectionHandles({
       />
 
       {/* Side Handles (Invisible Hit Areas) */}
-      {["n", "s", "e", "w"]
+      {(["n", "s", "e", "w"] as const)
         .filter((h) => {
           if (layer.type === "text") return h === "e" || h === "w"
           return true
