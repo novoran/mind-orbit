@@ -687,7 +687,7 @@ export function IdeaCanvas() {
         y: pt.y,
         width: 1,
         height: 1,
-        fill: "#000000",
+        fill: "currentColor",
         points: [[0, 0]], // Start at relative origin
       })
       setDragging({
@@ -708,8 +708,8 @@ export function IdeaCanvas() {
         y: pt.y,
         width: 1,
         height: 1,
-        fill: "#000000",
-        stroke: "#000000",
+        fill: "none",
+        stroke: "currentColor",
         strokeWidth: 2,
         points: [
           { x: 0, y: 0 },
@@ -752,7 +752,7 @@ export function IdeaCanvas() {
             width: activeTool === "sticky" ? 280 : 1,
             height: activeTool === "sticky" ? 320 : 1,
             fill,
-            stroke: "#000000",
+            stroke: "currentColor",
             strokeWidth: 2,
             text:
               activeTool === "sticky"
@@ -1025,7 +1025,7 @@ export function IdeaCanvas() {
       <svg
         ref={svgRef}
         className={cn(
-          "h-full w-full transition-transform duration-75 outline-none select-none",
+          "text-foreground h-full w-full transition-transform duration-75 outline-none select-none",
           activeTool === "select" && "cursor-default",
           activeTool === "pan" &&
             (isPanning ? "cursor-grabbing" : "cursor-grab"),
@@ -1054,7 +1054,7 @@ export function IdeaCanvas() {
               fill="none"
               stroke="currentColor"
               strokeWidth="0.5"
-              className="text-primary/10"
+              className="text-foreground/10"
             />
           </pattern>
         </defs>

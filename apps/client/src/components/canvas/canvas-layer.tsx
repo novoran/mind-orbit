@@ -99,7 +99,7 @@ function PathLayerComponent({ layer }: { layer: PathLayer }) {
       <path
         d={d}
         fill="none"
-        stroke={layer.fill || "#000"}
+        stroke={layer.fill || "currentColor"}
         strokeWidth={layer.strokeWidth || 2}
         strokeDasharray={layer.dashArray}
         strokeLinecap="round"
@@ -131,8 +131,8 @@ function LineLayerComponent({ layer }: { layer: LineLayer }) {
         >
           <path
             d="M 2 1.5 L 8.5 5 L 2 8.5 Z"
-            fill={layer.stroke || "#000"}
-            stroke={layer.stroke || "#000"}
+            fill={layer.stroke || "currentColor"}
+            stroke={layer.stroke || "currentColor"}
             strokeWidth="1"
             strokeLinejoin="round"
           />
@@ -149,7 +149,7 @@ function LineLayerComponent({ layer }: { layer: LineLayer }) {
       <path
         d={d}
         fill="none"
-        stroke={layer.stroke || "#000"}
+        stroke={layer.stroke || "currentColor"}
         strokeWidth={layer.strokeWidth || 2}
         strokeDasharray={layer.dashArray}
         markerEnd={
@@ -416,7 +416,7 @@ function TextLayerComponent({
         style={{
           pointerEvents: isEditing ? "all" : "none",
           fontSize: layer.fontSize || 18,
-          color: layer.fill || "#000000",
+          color: layer.fill || "inherit",
           fontWeight: 500,
           lineHeight: "1.2",
         }}
@@ -463,7 +463,7 @@ function TextLayerComponent({
                 style={{
                   gridArea: "1 / 1 / 2 / 2",
                   fontSize: layer.fontSize || 18,
-                  color: layer.fill || "#000000",
+                  color: layer.fill || "inherit",
                   fontWeight: 500,
                   lineHeight: "1.2",
                   padding: 0,
@@ -485,7 +485,7 @@ function TextLayerComponent({
                 style={{
                   gridArea: "1 / 1 / 2 / 2",
                   fontSize: layer.fontSize || 18,
-                  color: layer.fill || "#000000",
+                  color: layer.fill || "inherit",
                   fontWeight: 500,
                   lineHeight: "1.2",
                   padding: 0,
@@ -574,7 +574,7 @@ function ShapeLayerComponent({
   const shapeProps: Record<string, unknown> = {
     fill: layer.fill,
     fillOpacity: 1,
-    stroke: layer.stroke || "#000000",
+    stroke: layer.stroke || "currentColor",
     strokeWidth: layer.strokeWidth || 2,
     strokeDasharray: layer.dashArray,
     className: cn(
@@ -669,7 +669,7 @@ function ShapeLayerComponent({
                 : "justify-center text-center"
           )}
           style={{
-            color: layer.textColor || "#000",
+            color: layer.textColor || "inherit",
             fontFamily: layer.fontFamily,
             fontSize: layer.fontSize ?? 14,
           }}
@@ -717,7 +717,7 @@ function ShapeLayerComponent({
                     display: "block",
                     fontFamily: layer.fontFamily,
                     fontSize: layer.fontSize ?? 14,
-                    color: layer.textColor || "#000",
+                    color: layer.textColor || "inherit",
                     lineHeight: "1.5",
                     padding: 0,
                     margin: 0,
@@ -737,7 +737,7 @@ function ShapeLayerComponent({
                     textAlign: layer.textAlign || "center",
                     fontFamily: layer.fontFamily,
                     fontSize: layer.fontSize ?? 14,
-                    color: layer.textColor || "#000",
+                    color: layer.textColor || "inherit",
                     lineHeight: "1.5",
                     padding: 0,
                     margin: 0,

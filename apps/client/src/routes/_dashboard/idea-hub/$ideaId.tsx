@@ -3,7 +3,6 @@ import {
   ArrowLeft01Icon,
   GridIcon,
   Note01Icon,
-  Share01Icon,
   SidebarLeftIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -23,7 +22,6 @@ import type { Id } from "@mindorbit/backend/_generated/dataModel"
 
 import { CollaborativeEditor } from "@/components/editor/collaborative-editor"
 import { IdeaCanvas } from "@/components/idea-canvas"
-import { PresenceBar } from "@/components/presence-bar"
 
 export const Route = createFileRoute("/_dashboard/idea-hub/$ideaId")({
   component: IdeaWorkspacePage,
@@ -169,7 +167,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
         </div>
 
         {/* Right: Presence & Share */}
-        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1.5 justify-self-end rounded-lg border pr-1 pl-2 shadow-sm backdrop-blur-sm">
+        {/* <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1.5 justify-self-end rounded-lg border pr-1 pl-2 shadow-sm backdrop-blur-sm">
           <PresenceBar />
 
           <div className="bg-border/60 mx-1 h-5 w-px" />
@@ -181,7 +179,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
             <HugeiconsIcon icon={Share01Icon} size={16} />
             Share
           </Button>
-        </div>
+        </div> */}
       </nav>
 
       {/* ── Workspace Body ── */}
