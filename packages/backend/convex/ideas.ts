@@ -1,6 +1,7 @@
-import { mutation, query } from "./_generated/server";
+import { action, internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
 
 /**
  * List all ideas for the current user and active organization.
@@ -88,9 +89,9 @@ export const update = mutation({
 });
 
 /**
- * Delete an idea.
+ * Internal mutation to delete an idea from the database.
  */
-export const remove = mutation({
+export const removeIdea = internalMutation({
   args: { id: v.id("ideas") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -104,5 +105,47 @@ export const remove = mutation({
     }
 
     await ctx.db.delete(args.id);
+  },
+});
+
+/**
+ * Delete an idea and its associated Liveblocks room.
+ */
+export const remove = action({
+  args: { id: v.id("ideas") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    // 1. Delete the idea from the database
+    await ctx.runMutation(internal.ideas.removeIdea, { id: args.id });
+
+    // 2. Delete the associated Liveblocks room
+    const roomId = args.id;
+    const secretKey = process.env.LIVEBLOCKS_SECRET_KEY;
+
+    if (!secretKey) {
+      console.warn("LIVEBLOCKS_SECRET_KEY not set, skipping room deletion");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.liveblocks.io/v2/rooms/${roomId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${secretKey}`,
+          },
+        }
+      );
+
+      if (!response.ok && response.status !== 404) {
+        const error = await response.text();
+        console.error(`Failed to delete Liveblocks room ${roomId}:`, error);
+      }
+    } catch (error) {
+      console.error(`Error deleting Liveblocks room ${roomId}:`, error);
+    }
   },
 });

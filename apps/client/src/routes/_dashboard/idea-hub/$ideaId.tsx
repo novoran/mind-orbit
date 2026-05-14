@@ -33,7 +33,7 @@ function IdeaWorkspacePage() {
   const { ideaId } = Route.useParams()
 
   // Use ideaId as the Liveblocks room ID — one room per idea
-  const roomId = `idea-${ideaId}`
+  const roomId = ideaId
 
   // Best Practice: Memoize initialization props to avoid re-creating
   // LiveMap/LiveList on every component render.
@@ -103,12 +103,12 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
   return (
     <div
       className="bg-background relative flex h-screen w-full overflow-hidden"
-      onContextMenu={(e) => e.preventDefault()}
+      // onContextMenu={(e) => e.preventDefault()}
     >
       {/* ── Top Navigation (Floating & Transparent) ── */}
-      <nav className="pointer-events-none absolute top-0 left-0 z-50 flex h-16 w-full items-center justify-between px-6">
+      <nav className="pointer-events-none absolute top-0 left-0 z-50 grid h-16 w-full grid-cols-3 items-center px-6">
         {/* Left: Back & Title */}
-        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center rounded-lg border pr-3 pl-1 shadow-sm backdrop-blur-sm">
+        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center justify-self-start rounded-lg border px-1 shadow-sm backdrop-blur-sm">
           <Button
             variant="ghost"
             size="icon-lg"
@@ -122,7 +122,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
           <div className="bg-border/60 mx-1 h-5 w-px" />
 
           <div
-            className="flex w-36 cursor-text items-center px-2 py-1"
+            className="flex w-38 cursor-text items-center px-2 py-1"
             onDoubleClick={() => setIsEditingTitle(true)}
             title="Double click to edit title"
           >
@@ -147,7 +147,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
         </div>
 
         {/* Center: Spatial Switcher */}
-        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1 rounded-lg border px-1 shadow-sm backdrop-blur-sm">
+        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1 justify-self-center rounded-lg border px-1 shadow-sm backdrop-blur-sm">
           <SwitcherTab
             active={activePanel === "canvas"}
             onClick={() => setActivePanel("canvas")}
@@ -169,7 +169,7 @@ function IdeaWorkspace({ ideaId }: { ideaId: string }) {
         </div>
 
         {/* Right: Presence & Share */}
-        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1.5 rounded-lg border pr-1 pl-3 shadow-sm backdrop-blur-sm">
+        <div className="bg-background/80 border-border pointer-events-auto flex h-11 items-center gap-1.5 justify-self-end rounded-lg border pr-1 pl-2 shadow-sm backdrop-blur-sm">
           <PresenceBar />
 
           <div className="bg-border/60 mx-1 h-5 w-px" />

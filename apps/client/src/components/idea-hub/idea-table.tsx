@@ -1,16 +1,11 @@
-import { Clock01Icon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { Clock01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Avatar, AvatarFallback } from "@mindorbit/ui/components/avatar"
-import { Button } from "@mindorbit/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@mindorbit/ui/components/dropdown-menu"
 
-import type { ColumnDef } from "@tanstack/react-table"
+import { IdeaMenu } from "./idea-menu"
+
 import type { Doc, Id } from "@mindorbit/backend/_generated/dataModel"
+import type { ColumnDef } from "@tanstack/react-table"
 
 import { DataTable } from "@/components/data-table"
 
@@ -90,41 +85,7 @@ export function IdeaTable({ ideas, onOpen, onDelete }: IdeaTableProps) {
       header: () => <div className="w-[80px]">Actions</div>,
       cell: ({ row }) => {
         const idea = row.original
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={(props) => (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  {...props}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    props.onClick?.(e)
-                  }}
-                >
-                  <HugeiconsIcon
-                    icon={MoreVerticalIcon}
-                    size={16}
-                    className="text-muted-foreground"
-                  />
-                </Button>
-              )}
-            />
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-destructive focus:bg-destructive/10 focus:text-destructive gap-2"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onDelete(idea._id)
-                }}
-              >
-                Delete Idea
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
+        return <IdeaMenu ideaId={idea._id} onDelete={onDelete} align="end" />
       },
     },
   ]

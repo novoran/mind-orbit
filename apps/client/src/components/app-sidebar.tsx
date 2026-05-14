@@ -50,11 +50,11 @@ export const data: {
       icon: DashboardCircleIcon,
       isActive: true,
     },
-    {
+    /* {
       title: "AI Chat",
       url: "/ai-chat",
       icon: AiChat02Icon,
-    },
+    }, */
     {
       title: "Idea Hub",
       url: "/idea-hub",

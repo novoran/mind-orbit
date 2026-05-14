@@ -3,33 +3,33 @@ import {
   Outlet,
   createFileRoute,
   redirect,
-  useLocation,
+  useMatches,
 } from "@tanstack/react-router"
 
+import { cn } from "@mindorbit/ui/lib/utils"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Header } from "@/components/header"
 
 function DashboardLayout() {
   const { sidebarOpen } = Route.useLoaderData()
-  const location = useLocation()
+  const matches = useMatches()
 
   // Idea workspace gets a full-screen layout (no sidebar/header)
-  // so it can function like Miro / Figma
-  const isWorkspace = /^\/idea-hub\/.+/.test(location.pathname)
-
-  if (isWorkspace) {
-    return <Outlet />
-  }
+  // We check if the current active route is the workspace route
+  const isWorkspace = matches.some((m) => m.id.includes("$ideaId"))
 
   return (
-    <SidebarProvider defaultOpen={sidebarOpen}>
-      <AppSidebar />
+    <SidebarProvider defaultOpen={sidebarOpen} open={!isWorkspace}>
+      {!isWorkspace && <AppSidebar />}
       <SidebarInset>
-        <Header />
-        <div className="h-full p-4">
+        {!isWorkspace && <Header />}
+        <div className={cn("flex h-full flex-col", !isWorkspace && "p-4")}>
           <div
-            key={location.pathname.split("/")[1]}
-            className="animate-fade-in-up h-full"
+            key={isWorkspace ? "workspace" : "dashboard"}
+            className={cn(
+              "h-full flex-1",
+              !isWorkspace && "animate-fade-in-up"
+            )}
           >
             <Outlet />
           </div>

@@ -12,7 +12,8 @@ import * as React from "react"
 
 import { Button } from "@mindorbit/ui/components/button"
 import { SearchInput } from "@mindorbit/ui/components/search-input"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { useAction } from "convex/react"
 import { CreateIdeaDialog } from "@/components/idea-hub/create-idea-dialog"
 import { IdeaCardSkeleton } from "@/components/idea-hub/idea-card-skeleton"
 import { IdeaGrid } from "@/components/idea-hub/idea-grid"
@@ -32,7 +33,11 @@ function IdeaHubPage() {
 
   const navigate = useNavigate()
   const createIdea = useConvexMutation(api.ideas.create)
-  const deleteIdea = useConvexMutation(api.ideas.remove)
+  const removeIdeaAction = useAction(api.ideas.remove)
+
+  const { mutate: deleteIdea } = useMutation({
+    mutationFn: removeIdeaAction,
+  })
 
   const { data: ideas, isLoading } = useQuery(convexQuery(api.ideas.list, {}))
 

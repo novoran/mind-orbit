@@ -9,7 +9,7 @@ import {
 
 export function IdeaTableSkeleton() {
   return (
-    <div className="border-border bg-card overflow-hidden rounded-xl border shadow-sm">
+    <div className="border-border/50 bg-background overflow-hidden rounded-xl border">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">

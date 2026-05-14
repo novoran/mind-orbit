@@ -1,17 +1,8 @@
-import {
-  Clock01Icon,
-  Delete02Icon,
-  MoreVerticalIcon,
-} from "@hugeicons/core-free-icons"
+import { Clock01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Button } from "@mindorbit/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@mindorbit/ui/components/dropdown-menu"
 import { cn } from "@mindorbit/ui/lib/utils"
+
+import { IdeaMenu } from "./idea-menu"
 
 import type { Doc, Id } from "@mindorbit/backend/_generated/dataModel"
 
@@ -81,37 +72,11 @@ export function IdeaCard({ idea, onOpen, onDelete }: IdeaCardProps) {
 
       {/* Menu button */}
       <div className="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={(props) => (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 border-none bg-black/20 text-white hover:bg-black/40 hover:text-white"
-                {...props}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  props.onClick?.(e)
-                }}
-              >
-                <HugeiconsIcon icon={MoreVerticalIcon} size={14} />
-              </Button>
-            )}
-          />
-          <DropdownMenuContent align="end" className="w-36">
-
-            <DropdownMenuItem
-              className="text-destructive focus:bg-destructive/10 focus:text-destructive gap-2"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete(idea._id)
-              }}
-            >
-              <HugeiconsIcon icon={Delete02Icon} size={14} />
-              Delete Idea
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <IdeaMenu
+          ideaId={idea._id}
+          onDelete={onDelete}
+          triggerClassName="h-7 w-7 border-none bg-black/20 text-white hover:bg-black/40 hover:text-white"
+        />
       </div>
     </div>
   )
